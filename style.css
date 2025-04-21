@@ -154,13 +154,33 @@
   
   /* Media query : version mobile */
   /* Masquer la nav desktop et afficher hamburger sur mobile */
-@media (max-width: 768px) {
-    .nav {
-      display: none;
-    }
-    .hamburger {
-      display: flex;
-    }
+/* === Override mobile header pour garder tout en ligne === */
+@media (max-width: 480px) {
+  .header {
+    /* On s’assure que le header reste en ligne */
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    gap: 10px; /* espace réduit entre logo et icônes */
+  }
+  .logo-img {
+    height: 32px;  /* Logo un peu plus petit si besoin */
+  }
+  .actions {
+    gap: 12px;     /* rapproche un peu les icônes */
+  }
+  /* On cache toujours la nav full */
+  .nav {
+    display: none;
+  }
+  /* Hamburger et icônes restent visibles */
+  .hamburger,
+  .account-btn,
+  .cart-btn {
+    display: inline-flex;
+  }
 }
   
   /* Hero Banners */
