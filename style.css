@@ -334,9 +334,22 @@ body {
 
 /* HEADER SHOP STICKY */
 .shop-header-sticky {
-  position:sticky; top:72px; /* hauteur header */
-  background:#fff; display:flex; align-items:center; justify-content:space-between;
-  padding:12px 40px; z-index:900; border-bottom:1px solid #eee;
+  position: fixed;
+  top: var(--main-header-height);
+  left: 0;
+  right: 0;
+  height: var(--shop-header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  margin-top: 15px;
+  background: #ffffff10;
+  backdrop-filter: blur(80px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 900;
+  border-bottom: 1px solid #000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 .controls { display:flex; align-items:center; gap:20px; }
 .btn-filter {
@@ -347,7 +360,7 @@ body {
 .result-count { font-size:14px; color:#777; }
 
 /* GRILLE PRODUITS */
-.shop-main { max-width:1200px; margin:40px auto; padding:0 20px; }
+.shop-main { max-width:1200px; margin:80px auto; padding:0 20px; margin-top: 110px;}
 .product-grid {
   display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:40px;
 }
@@ -477,4 +490,10 @@ body {
 }
 @media(max-width:480px) {
   .shop-header-sticky { top:64px; padding:10px 20px; }
+}
+
+/* Headers réglages page shop*/
+:root {
+  --main-header-height: 72px;   /* Hauteur de ton header principal */
+  --shop-header-height: 80px;   /* Hauteur de ton header shop */
 }
