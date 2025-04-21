@@ -324,11 +324,6 @@ body {
   }
 }
 @media (max-width: 480px) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
   .hero-banners {
     margin: 10px;
   }
@@ -501,6 +496,5 @@ body { font-family:'Rubik',sans-serif; background:#fafafa; color:#111; }
   .filter-modal.open { width:100%; }
 }
 @media(max-width:480px) {
-  .header { padding:12px 20px; }
   .shop-header-sticky { top:64px; padding:10px 20px; }
 }
