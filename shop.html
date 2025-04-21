@@ -21,8 +21,8 @@
   
     <!-- Nav desktop -->
     <nav class="nav">
-      <a href="index.html" class="nav-item active">Accueil</a>
-      <a href="shop.html" class="nav-item">Shop</a>
+      <a href="index.html" class="nav-item">Accueil</a>
+      <a href="shop.html" class="nav-item active">Shop</a>
       <a href="about.html" class="nav-item">À propos</a>
       <a href="contact.html" class="nav-item">Contact</a>
     </nav>
@@ -50,59 +50,69 @@
     </ul>
   </div>
 
-  <!-- Hero Banners -->
-  <section class="hero-banners">
-    <a href="#" class="banner">
-      <img src="https://i.imgur.com/zJtk62t.jpeg" alt="Nouvelle Collection 2025">
-    </a>
-    <a href="promo-printemps.html" class="banner">
-      <img src="https://i.imgur.com/Wtxgqa5.jpeg" alt="Promotion Printemps">
-    </a>
-  </section>
-
-  <!-- Dernières Nouveautés -->
-  <section class="section">
-    <h2 class="section-title">Dernières Nouveautés</h2>
-    <div class="product-grid">
-      <a href="product-eclat-lavande.html" class="product-card">
-        <img src="https://i.imgur.com/3OueieQ.jpeg" alt="Éclat de Lavande">
-        <h3>Metamorphosis (3 couleurs)</h3>
-        <p>20.99€</p>
-      </a>
-      <a href="product-noir-absolu.html" class="product-card">
-        <img src="https://i.imgur.com/yXuKp06.jpeg" alt="Noir Absolu">
-        <h3>Celestial B</h3>
-        <p>27.99€</p>
-      </a>
-      <a href="product-creme-pure.html" class="product-card">
-        <img src="https://i.imgur.com/ltGJ2UA.jpeg" alt="Crème Pure">
-        <h3>Urban Hibiscus (3 couleurs)</h3>
-        <p>23.99€</p>
-      </a>
+  <!-- HEADER SHOP (sticky) -->
+  <div class="shop-header-sticky" id="shopHeader">
+    <h1>Boutique</h1>
+    <div class="controls">
+      <button id="openFilters" class="btn-filter">Filtres <i class="fa-solid fa-filter"></i></button>
+      <span id="resultCount" class="result-count">0 articles</span>
+      <div id="activeFilters" class="active-filters-container">
+        <!-- JS injectera ici les filtres appliqués -->
+      </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Best-sellers -->
-  <section class="section alt-bg">
-    <h2 class="section-title">Meilleures Ventes</h2>
-    <div class="product-grid">
-      <a href="product-shadow.html" class="product-card">
-        <img src="https://i.imgur.com/uVeTzOQ.jpeg" alt="Urban Hibiscus (Forest)">
-        <h3>Urban Hibiscus (Forest)</h3>
-        <p>23.99€</p>
-      </a>
-      <a href="product-pantalon-signature.html" class="product-card">
-        <img src="https://i.imgur.com/ixxq2Oy.jpeg" alt="Skate (Baby Blue)">
-        <h3>Skate (Baby Blue)</h3>
-        <p>16.99€</p>
-      </a>
-      <a href="product-essence-grise.html" class="product-card">
-        <img src="https://i.imgur.com/16SdjUd.jpeg" alt="Bold & Free">
-        <h3>Bold & Free</h3>
-        <p>23.99€</p>
-      </a>
+  <!-- GRILLE PRODUITS -->
+  <main class="shop-main">
+    <div id="productGrid" class="product-grid">
+      <!-- JS injecte les .product-card ici -->
     </div>
-  </section>
+    <div id="noResults" class="no-results hidden">
+      <p>Aucun article ne correspond à vos filtres</p>
+    </div>
+  </main>
+
+  <!-- MODAL FILTRES DESKTOP / OVERLAY MOBILE -->
+  <aside id="filterModal" class="filter-modal">
+    <div class="filter-header">
+      <h2>Filtres</h2>
+      <!-- Croix de fermeture -->
+      <button id="closeFilters" class="close-btn" aria-label="Fermer">&times;</button>
+    </div>
+    <form id="filterForm" class="filter-form">
+      <!-- Couleurs -->
+      <details open class="filter-group">
+        <summary>Couleurs</summary>
+        <div class="options" id="filterColors"></div>
+      </details>
+      <!-- Tailles -->
+      <details open class="filter-group">
+        <summary>Tailles</summary>
+        <div class="options" id="filterSizes"></div>
+      </details>
+      <!-- Coupes -->
+      <details open class="filter-group">
+        <summary>Coupes</summary>
+        <div class="options" id="filterCuts"></div>
+      </details>
+      <!-- Sexe -->
+      <details open class="filter-group">
+        <summary>Sexe</summary>
+        <div class="options" id="filterGenders"></div>
+      </details>
+      <!-- Prix -->
+      <details open class="filter-group">
+        <summary>Prix (€)</summary>
+        <div class="price-inputs">
+          <input type="number" id="priceMin" placeholder="Min" min="0">
+          <span>–</span>
+          <input type="number" id="priceMax" placeholder="Max" min="0">
+        </div>
+      </details>
+
+      <button type="submit" id="applyFilters" class="btn-apply">Afficher tous les résultats (<span id="applyCount">0</span>)</button>
+    </form>
+  </aside>
 
   <!-- Footer -->
   <footer class="footer">
@@ -156,6 +166,8 @@
       overlay.classList.remove('open');
     });
 </script>
+
+<script src="script.js"></script>
 
 </body>
 </html>

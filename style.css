@@ -337,74 +337,182 @@ body {
   }
 }
 
-/* === Overlay général === */
-.overlay-menu {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(255,255,255,0.97);
-  transform: translateX(100%);
-  transition: transform 0.4s ease;
-  z-index: 2000;
-  display: flex;
-  flex-direction: column;
-  padding-top: 60px;
+/* RESET & TYPO */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Rubik',sans-serif; background:#fafafa; color:#111; }
+
+/* HEADER PRINCIPAL */
+.header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:20px 40px; background:rgba(255,255,255,0.8);
+  backdrop-filter:blur(10px); position:sticky; top:0; z-index:1000;
+  box-shadow:0 2px 5px rgba(0,0,0,0.05);
 }
-.overlay-menu.open {
-  transform: translateX(0);
+.logo-img { height:36px; }
+.nav { display:flex; gap:30px; }
+.nav-item { text-decoration:none; color:#444; font-weight:400; position:relative; transition:color .2s; }
+.nav-item.active, .nav-item:hover { color:#000; }
+.nav-item.active::after {
+  content:''; position:absolute; bottom:-6px; left:0; width:100%; height:2px; background:#000;
+}
+.actions { display:flex; gap:20px; }
+
+/* HEADER SHOP STICKY */
+.shop-header-sticky {
+  position: fixed;
+  top: var(--main-header-height);
+  left: 0;
+  right: 0;
+  height: var(--shop-header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  background: #ffffff10;
+  backdrop-filter: blur(80px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 900;
+  border-bottom: 1px solid #000000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.controls { display:flex; align-items:center; gap:20px; }
+.btn-filter {
+  background:#111; color:#fff; border:none; padding:8px 16px; border-radius:8px;
+  cursor:pointer; transition:background .3s;
+}
+.btn-filter:hover { background:#333; }
+.result-count { font-size:14px; color:#777; }
+
+/* GRILLE PRODUITS */
+.shop-main { max-width:1200px; margin:80px auto; padding:0 20px; }
+.product-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:40px;
+}
+.product-card {
+  position:relative; background:#fff; border-radius:16px; overflow:hidden;
+  box-shadow:0 4px 20px rgba(0,0,0,0.04); text-decoration:none; color:inherit;
+  transition:transform .3s,box-shadow .3s; display:flex; flex-direction:column;
+}
+.product-card:hover {
+  transform:translateY(-6px); box-shadow:0 8px 30px rgba(0,0,0,0.08);
+}
+.img-wrap {
+  position:relative; width:100%; padding-top:100%; overflow:hidden;
+}
+.img-wrap img {
+  position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;
+  transition:transform .4s;
+}
+.product-card:hover .img-wrap img { transform:scale(1.05); }
+
+.info {
+  padding:16px 20px 12px; flex:1; display:flex; flex-direction:column;
+}
+.info h3 { font-size:18px; font-weight:400; margin-bottom:8px; color:#111; }
+.info p { font-size:16px; font-weight:500; margin-bottom:12px; }
+.swatches {
+  display:flex; align-items:center; gap:6px; margin-top:auto;
+}
+.swatches .swatch {
+  width:16px; height:16px; border-radius:50%; border:1px solid #ddd; cursor:pointer;
+}
+.swatches .swatch.more {
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 12px;
+  width: auto;
+  padding: 0;
 }
 
-/* Boutons */
-.close-btn,
-.back-btn {
+/* AUCUN RÉSULTAT */
+.no-results {
+  text-align:center; margin:60px 0; font-size:18px; color:#777;
+}
+.hidden { display:none; }
+
+/* MODAL FILTRES */
+.filter-modal {
+  position: fixed;
+  top: 0; right: 0;
+  width: 320px;
+  height: 100%;
+  background: #fff;
+  overflow-y: auto;
+  box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+  transform: translateX(100%);
+  transition: transform .4s ease;
+  z-index: 2000;
+}
+.filter-modal.open {
+  transform: translateX(0);
+}
+@media (max-width: 768px) {
+  .filter-modal {
+    width: 100%;
+  }
+}
+/* Croix de fermeture */
+.filter-modal .close-btn {
   position: absolute;
-  top: 20px;
-  font-size: 32px;
+  top: 16px;
+  right: 16px;
+  font-size: 28px;
   background: none;
   border: none;
   cursor: pointer;
   color: #111;
-  padding: 0 20px;
-  line-height: 1;
 }
-.close-btn { right: 20px; }
-.back-btn {
-  left: 20px;
-  display: none;   /* caché par défaut */
+.filter-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:20px; border-bottom:1px solid #eee;
 }
+.close-btn {
+  font-size:24px; background:none; border:none; cursor:pointer;
+}
+.filter-form { padding:20px; }
+.filter-group { margin-bottom:24px; }
+.filter-group summary {
+  font-size:16px; font-weight:500; cursor:pointer; list-style:none;
+  outline:none;
+}
+.filter-group .options {
+  margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;
+}
+.filter-group .options label {
+  display:flex; align-items:center; gap:6px; font-size:14px; cursor:pointer;
+}
+.price-inputs {
+  display:flex; align-items:center; gap:8px; margin-top:12px;
+}
+.price-inputs input {
+  width:60px; padding:4px 6px; border:1px solid #ccc; border-radius:4px;
+}
+/* Bouton appliquer (devient simplement "Fermer et appliquer") */
+.btn-apply {
+  width: 100%;
+  padding: 12px;
+  margin-top: 24px;
+  background: #000;
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity .3s;
+}
+.btn-apply:disabled { opacity:.5; cursor:not-allowed; }
 
-/* Liste principale */
-.overlay-nav,
-.overlay-submenu {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 30px;
+/* RESPONSIVE */
+@media(max-width:1024px) {
+  .shop-header-sticky { padding:12px 20px; }
+  .btn-filter { padding:6px 12px; }
 }
-.overlay-nav a,
-.overlay-submenu a {
-  text-decoration: none;
-  font-size: 28px;
-  font-weight: 600;
-  color: #111;
-  transition: color 0.2s ease;
+@media(max-width:768px) {
+  .filter-modal { width:0; }
+  .filter-modal.open { width:100%; }
 }
-.overlay-nav a:hover,
-.overlay-submenu a:hover {
-  color: #555;
-}
-
-/* Sous‑menu caché par défaut */
-.overlay-submenu {
-  display: none;
-}
-
-/* Classe utilitaire */
-.hidden {
-  display: none !important;
+@media(max-width:480px) {
+  .header { padding:12px 20px; }
+  .shop-header-sticky { top:64px; padding:10px 20px; }
 }
