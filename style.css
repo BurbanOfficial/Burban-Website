@@ -1,339 +1,410 @@
 /* style.css */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #ffffff;
-    color: #111111;
-    line-height: 1.6;
-  }
-  
-  /* Header */
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 40px;
-    position: sticky;
-    top: 0;
-    background: #ffffff10;
-    backdrop-filter: blur(80px);
-    -webkit-backdrop-filter: blur(20px);
-    z-index: 1000;
-    border-bottom: 1px solid #000000;
-  }
-  .logo-link img {
-    height: 40px;
-  }
-  
-  /* Navigation */
-  .nav {
-    display: flex;
-    gap: 30px;
-  }
-  .nav-item {
-    text-decoration: none;
-    font-weight: 500;
-    color: #111;
-    position: relative;
-    transition: color 0.3s ease;
-  }
-  .nav-item:hover {
-    color: #555;
-  }
-  .nav-item.active {
-    font-weight: 700;
-    color: #000;
-  }
-  .nav-item.active::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: #000;
-  }
-  
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #ffffff;
+  color: #111111;
+  line-height: 1.6;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 40px;
+  position: sticky;
+  top: 0;
+  background: #ffffff10;
+  backdrop-filter: blur(80px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 1000;
+  border-bottom: 1px solid #000000;
+}
+.logo-link img {
+  height: 40px;
+}
+
+/* Navigation */
+.nav {
+  display: flex;
+  gap: 30px;
+}
+.nav-item {
+  text-decoration: none;
+  font-weight: 500;
+  color: #111;
+  position: relative;
+  transition: color 0.3s ease;
+}
+.nav-item:hover {
+  color: #555;
+}
+.nav-item.active {
+  font-weight: 700;
+  color: #000;
+}
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #000;
+}
+
 /* Conteneur des icônes et hamburger */
 .actions {
-    display: flex;
-    align-items: center;
-    gap: 0px;
-  }
-  
-  /* Hamburger (caché desktop) */
-  .hamburger {
-    display: none;
-    flex-direction: column;
-    gap: 5px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-  }
-  .hamburger .bar {
-    width: 25px;
-    height: 3px;
-    border-radius: 2px;
-    background-color: #111;
-    transition: all 0.3s ease;
-  }
+  display: flex;
+  align-items: center;
+  gap: 0px;
+}
 
-  /* Overlay menu full‑screen */
+/* Hamburger (caché desktop) */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+.hamburger .bar {
+  width: 25px;
+  height: 3px;
+  border-radius: 2px;
+  background-color: #111;
+  transition: all 0.3s ease;
+}
+
+/* Overlay menu full‑screen */
 .overlay-menu {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(255,255,255,0.97);
-    transform: translateY(-100%);
-    transition: transform 0.5s ease;
-    z-index: 2000;
-    display: flex;
-    flex-direction: column;
-  }
-  .overlay-menu.open {
-    transform: translateY(0);
-  }
-  
-  /* Bouton fermer (croix) */
-  .close-btn {
-    position: absolute;
-    top: 20px; right: 20px;
-    font-size: 32px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    line-height: 1;
-    color: #111;
-  }
-  
-  /* Liens de l’overlay */
-  .overlay-nav {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 40px;
-  }
-  .overlay-nav a {
-    text-decoration: none;
-    font-size: 32px;
-    font-weight: 600;
-    color: #111;
-    transition: color 0.3s ease;
-  }
-  .overlay-nav a:hover {
-    color: #555;
-  }
-  
-  /* Icônes compte + panier */
-  .icons {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-  .account-btn,
-  .cart-btn {
-    font-size: 24px;
-    text-decoration: none;
-    color: #111;
-    transition: transform 0.3s ease;
-  }
-  .account-btn:hover,
-  .cart-btn:hover {
-    transform: scale(1.1);
-  }
-  
-  /* Media query : version mobile */
-  /* Masquer la nav desktop et afficher hamburger sur mobile */
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(255,255,255,0.97);
+  transform: translateY(-100%);
+  transition: transform 0.5s ease;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+}
+.overlay-menu.open {
+  transform: translateY(0);
+}
+
+/* Bouton fermer (croix) */
+.close-btn {
+  position: absolute;
+  top: 20px; right: 20px;
+  font-size: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  color: #111;
+}
+
+/* Liens de l’overlay */
+.overlay-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+}
+.overlay-nav a {
+  text-decoration: none;
+  font-size: 32px;
+  font-weight: 600;
+  color: #111;
+  transition: color 0.3s ease;
+}
+.overlay-nav a:hover {
+  color: #555;
+}
+
+/* Icônes compte + panier */
+.icons {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.account-btn,
+.cart-btn {
+  font-size: 24px;
+  text-decoration: none;
+  color: #111;
+  transition: transform 0.3s ease;
+}
+.account-btn:hover,
+.cart-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Media query : version mobile */
+/* Masquer la nav desktop et afficher hamburger sur mobile */
 /* === Override mobile header pour garder tout en ligne === */
 @media (max-width: 480px) {
+.header {
+  /* On s’assure que le header reste en ligne */
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  gap: 10px; /* espace réduit entre logo et icônes */
+}
+.logo-img {
+  height: 32px;  /* Logo un peu plus petit si besoin */
+}
+.actions {
+  gap: 12px;     /* rapproche un peu les icônes */
+}
+/* On cache toujours la nav full */
+.nav {
+  display: none;
+}
+/* Hamburger et icônes restent visibles */
+.hamburger,
+.account-btn,
+.cart-btn {
+  display: inline-flex;
+}
+}
+
+/* Hero Banners */
+.hero-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 40px;
+}
+.banner img {
+  width: 100%;
+  display: block;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+/* Sections */
+.section {
+  padding: 80px 40px;
+  text-align: center;
+}
+.section-title {
+  font-size: 28px;
+  margin-bottom: 40px;
+}
+.alt-bg {
+  background-color: #f9f9f9;
+}
+
+/* Grille produits */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+}
+.product-card {
+  display: block;
+  text-decoration: none;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+}
+.product-card:hover {
+  transform: translateY(-5px);
+}
+.product-card img {
+  width: 100%;
+  display: block;
+}
+.product-card h3 {
+  font-size: 18px;
+  margin: 12px;
+  color: #111;
+}
+.product-card p {
+  margin: 0 12px 20px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Footer */
+.footer {
+  background-color: #111;
+  color: #fff;
+  padding: 40px 20px 20px;
+}
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.footer-brand img {
+  height: 40px;
+  margin-bottom: 10px;
+}
+.footer-brand p {
+  margin: 0;
+}
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+.footer-links h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #fff;
+}
+.footer-links a {
+  display: block;
+  color: #ccc;
+  text-decoration: none;
+  margin-bottom: 6px;
+  transition: color 0.3s ease;
+}
+.footer-links a:hover {
+  color: #fff;
+}
+.footer-bottom {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 14px;
+  border-top: 1px solid #333;
+  padding-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
   .header {
-    /* On s’assure que le header reste en ligne */
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    justify-content: space-between;
-    align-items: center;
     padding: 15px 20px;
-    gap: 10px; /* espace réduit entre logo et icônes */
   }
-  .logo-img {
-    height: 32px;  /* Logo un peu plus petit si besoin */
-  }
-  .actions {
-    gap: 12px;     /* rapproche un peu les icônes */
-  }
-  /* On cache toujours la nav full */
   .nav {
-    display: none;
+    gap: 20px;
   }
-  /* Hamburger et icônes restent visibles */
-  .hamburger,
-  .account-btn,
-  .cart-btn {
-    display: inline-flex;
+  .hero-banners {
+    margin: 20px;
+  }
+  .section {
+    padding: 60px 20px;
   }
 }
-  
-  /* Hero Banners */
+@media (max-width: 768px) {
+  .nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
   .hero-banners {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin: 40px;
-  }
-  .banner img {
-    width: 100%;
-    display: block;
-    border-radius: 16px;
-    object-fit: cover;
-  }
-  
-  /* Sections */
-  .section {
-    padding: 80px 40px;
-    text-align: center;
+    margin: 15px;
   }
   .section-title {
-    font-size: 28px;
-    margin-bottom: 40px;
+    font-size: 24px;
+    margin-bottom: 30px;
   }
-  .alt-bg {
-    background-color: #f9f9f9;
-  }
-  
-  /* Grille produits */
   .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 30px;
+    gap: 20px;
   }
-  .product-card {
-    display: block;
-    text-decoration: none;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    transition: transform 0.3s ease;
+}
+@media (max-width: 480px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
   }
-  .product-card:hover {
-    transform: translateY(-5px);
+  .hero-banners {
+    margin: 10px;
   }
-  .product-card img {
-    width: 100%;
-    display: block;
+  .section-title {
+    font-size: 20px;
   }
-  .product-card h3 {
-    font-size: 18px;
-    margin: 12px;
-    color: #111;
-  }
-  .product-card p {
-    margin: 0 12px 20px;
-    color: #666;
-    font-weight: 500;
-  }
-  
-  /* Footer */
-  .footer {
-    background-color: #111;
-    color: #fff;
-    padding: 40px 20px 20px;
-  }
-  .footer-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 40px;
-    justify-content: space-between;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  .footer-brand img {
-    height: 40px;
-    margin-bottom: 10px;
-  }
-  .footer-brand p {
-    margin: 0;
-  }
-  .footer-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 40px;
-  }
-  .footer-links h4 {
-    margin-bottom: 10px;
-    font-size: 16px;
-    color: #fff;
-  }
-  .footer-links a {
-    display: block;
-    color: #ccc;
-    text-decoration: none;
-    margin-bottom: 6px;
-    transition: color 0.3s ease;
-  }
-  .footer-links a:hover {
-    color: #fff;
-  }
-  .footer-bottom {
-    text-align: center;
-    margin-top: 30px;
-    font-size: 14px;
-    border-top: 1px solid #333;
-    padding-top: 20px;
-  }
-  
-  /* Responsive */
-  @media (max-width: 1024px) {
-    .header {
-      padding: 15px 20px;
-    }
-    .nav {
-      gap: 20px;
-    }
-    .hero-banners {
-      margin: 20px;
-    }
-    .section {
-      padding: 60px 20px;
-    }
-  }
-  @media (max-width: 768px) {
-    .nav {
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-    }
-    .hero-banners {
-      margin: 15px;
-    }
-    .section-title {
-      font-size: 24px;
-      margin-bottom: 30px;
-    }
-    .product-grid {
-      gap: 20px;
-    }
-  }
-  @media (max-width: 480px) {
-    .header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 15px;
-    }
-    .hero-banners {
-      margin: 10px;
-    }
-    .section-title {
-      font-size: 20px;
-    }
-  }
-  
+}
+
+/* === Overlay général === */
+.overlay-menu {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(255,255,255,0.97);
+  transform: translateX(100%);
+  transition: transform 0.4s ease;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  padding-top: 60px;
+}
+.overlay-menu.open {
+  transform: translateX(0);
+}
+
+/* Boutons */
+.close-btn,
+.back-btn {
+  position: absolute;
+  top: 20px;
+  font-size: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #111;
+  padding: 0 20px;
+  line-height: 1;
+}
+.close-btn { right: 20px; }
+.back-btn {
+  left: 20px;
+  display: none;   /* caché par défaut */
+}
+
+/* Liste principale */
+.overlay-nav,
+.overlay-submenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+.overlay-nav a,
+.overlay-submenu a {
+  text-decoration: none;
+  font-size: 28px;
+  font-weight: 600;
+  color: #111;
+  transition: color 0.2s ease;
+}
+.overlay-nav a:hover,
+.overlay-submenu a:hover {
+  color: #555;
+}
+
+/* Sous‑menu caché par défaut */
+.overlay-submenu {
+  display: none;
+}
+
+/* Classe utilitaire */
+.hidden {
+  display: none !important;
+}

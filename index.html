@@ -40,15 +40,30 @@
   </header>
 
   <!-- Overlay menu mobile -->
-  <div class="overlay-menu" id="overlayMenu">
-    <button class="close-btn" aria-label="Fermer le menu">&times;</button>
-    <ul class="overlay-nav">
-      <li><a href="index.html">Accueil</a></li>
-      <li><a href="shop.html">Shop</a></li>
-      <li><a href="about.html">À propos</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-  </div>
+<div class="overlay-menu" id="overlayMenu">
+  <!-- Fermeture principale -->
+  <button class="close-btn" aria-label="Fermer le menu">×</button>
+  <!-- Retour au menu (caché par défaut) -->
+  <button class="back-btn" aria-label="Retour">&larr;</button>
+
+  <!-- Menu principal -->
+  <ul class="overlay-nav">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="#" data-submenu="shop">Shop</a></li>
+    <li><a href="about.html">À propos</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+
+  <!-- Sous‑menu Shop -->
+  <ul class="overlay-submenu" data-submenu="shop">
+    <li><a href="shop.html">Voir tous les articles</a></li>
+    <li><a href="shop.html?category=tshirts">T‑shirts</a></li>
+    <li><a href="shop.html?category=sweats">Sweats</a></li>
+    <li><a href="shop.html?category=chaussettes">Chaussettes</a></li>
+    <!-- ajoute ici toutes tes catégories -->
+  </ul>
+</div>
+
 
   <!-- Hero Banners -->
   <section class="hero-banners">
@@ -155,6 +170,47 @@
     closeBtn.addEventListener('click', () => {
       overlay.classList.remove('open');
     });
+</script>
+
+<script>
+  const overlay    = document.getElementById('overlayMenu');
+  const closeBtn   = overlay.querySelector('.close-btn');
+  const backBtn    = overlay.querySelector('.back-btn');
+  const mainNav    = overlay.querySelector('.overlay-nav');
+  const subMenus   = overlay.querySelectorAll('.overlay-submenu');
+  const shopLink   = mainNav.querySelector('[data-submenu="shop"]');
+
+  // Ouvrir overlay
+  hamburger.addEventListener('click', () => {
+    overlay.classList.add('open');
+  });
+
+  // Fermer overlay (croix)
+  closeBtn.addEventListener('click', () => {
+    overlay.classList.remove('open');
+    // Réinitialise vue si on était dans un sous-menu
+    backBtn.classList.add('hidden');
+    closeBtn.classList.remove('hidden');
+    mainNav.classList.remove('hidden');
+    subMenus.forEach(sm => sm.classList.add('hidden'));
+  });
+
+  // Clic sur Shop → afficher son sous‑menu
+  shopLink.addEventListener('click', e => {
+    e.preventDefault();
+    mainNav.classList.add('hidden');
+    closeBtn.classList.add('hidden');
+    backBtn.classList.remove('hidden');
+    overlay.querySelector('.overlay-submenu[data-submenu="shop"]').classList.remove('hidden');
+  });
+
+  // Back ← : revenir au menu principal
+  backBtn.addEventListener('click', () => {
+    subMenus.forEach(sm => sm.classList.add('hidden'));
+    backBtn.classList.add('hidden');
+    mainNav.classList.remove('hidden');
+    closeBtn.classList.remove('hidden');
+  });
 </script>
 
 </body>
