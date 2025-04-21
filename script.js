@@ -2,30 +2,100 @@
 // Chaque couleur contient désormais une propriété `url` que TU choisis.
 const products = [
     {
-      id: 'eclat-lavande',
-      name: 'Éclat de Lavande',
-      price: 119,
+      id: 'metamorphosis',
+      name: 'Metamorphosis',
+      price: 20.99,
       colors: [
         {
-          name: 'Lavande',
-          code: '#B497BD',
-          img: 'https://i.imgur.com/ol3tK3L.jpeg',
-          hover: 'https://i.imgur.com/ol3tK3L_hover.jpeg',
+          name: 'Blanc',
+          code: '#fff',
+          img: 'https://i.imgur.com/3OueieQ.jpeg',
+          hover: 'https://i.imgur.com/ol3tK3L.jpeg',
           url: 'product-eclat-lavande-lavande.html'
         },
         {
-          name: 'Noir',
-          code: '#111111',
+          name: 'Lavande',
+          code: '#f7ecff',
+          img: 'https://i.imgur.com/hoodie2.jpg',
+          hover: 'https://i.imgur.com/hoodie2_hover.jpg',
+          url: 'product-eclat-lavande-noir.html'
+        },
+        {
+          name: 'Rose Pastel',
+          code: '#ffe9eb',
           img: 'https://i.imgur.com/hoodie2.jpg',
           hover: 'https://i.imgur.com/hoodie2_hover.jpg',
           url: 'product-eclat-lavande-noir.html'
         },
         // ...
       ],
-      sizes: ['S','M','L','XL'],
-      cut: 'Regular',
+      sizes: ['S','M','L','XL','2XL','3XL'],
+      cut: 'Droite',
       gender: 'Unisexe'
     },
+
+
+
+    {
+        id: 'celestial-b',
+        name: 'Celestial B',
+        price: 27.99,
+        colors: [
+          {
+            name: 'Blanc',
+            code: '#fff',
+            img: 'https://i.imgur.com/yXuKp06.jpeg',
+            hover: 'https://i.imgur.com/sfV3Vfw.jpeg',
+            url: 'product-eclat-lavande-lavande.html'
+          },
+          // ...
+        ],
+        sizes: ['S','M','L','XL','2XL','3XL'],
+        cut: 'Droite',
+        gender: 'Unisexe'
+      },
+
+
+
+      {
+        id: 'urban-crest',
+        name: 'Urban Crest',
+        price: 21.99,
+        colors: [
+          {
+            name: 'Noir',
+            code: '#000',
+            img: 'https://i.imgur.com/BhsaSDc.jpeg',
+            hover: 'https://i.imgur.com/U0oUcsA.jpeg',
+            url: 'product-eclat-lavande-lavande.html'
+          },
+          // ...
+        ],
+        sizes: ['S','M','L','XL','2XL','3XL'],
+        cut: 'Droite',
+        gender: 'Unisexe'
+      },
+
+
+
+      {
+        id: 'colorful-burst',
+        name: 'Colorful Burst',
+        price: 34.99,
+        colors: [
+          {
+            name: 'Bleu Marine',
+            code: '#171f2c',
+            img: 'https://i.imgur.com/50AGnb5.jpeg',
+            hover: 'https://i.imgur.com/WZgnZhx.jpeg',
+            url: 'product-eclat-lavande-lavande.html'
+          },
+          // ...
+        ],
+        sizes: ['S','M','L','XL','2XL','3XL'],
+        cut: 'Droite',
+        gender: 'Unisexe'
+      },
     // ... autres produits
   ];
   
