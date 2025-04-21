@@ -332,26 +332,6 @@ body {
   }
 }
 
-/* RESET & TYPO */
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Rubik',sans-serif; background:#fafafa; color:#111; }
-
-/* HEADER PRINCIPAL */
-.header {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:20px 40px; background:rgba(255,255,255,0.8);
-  backdrop-filter:blur(10px); position:sticky; top:0; z-index:1000;
-  box-shadow:0 2px 5px rgba(0,0,0,0.05);
-}
-.logo-img { height:36px; }
-.nav { display:flex; gap:30px; }
-.nav-item { text-decoration:none; color:#444; font-weight:400; position:relative; transition:color .2s; }
-.nav-item.active, .nav-item:hover { color:#000; }
-.nav-item.active::after {
-  content:''; position:absolute; bottom:-6px; left:0; width:100%; height:2px; background:#000;
-}
-.actions { display:flex; gap:20px; }
-
 /* HEADER SHOP STICKY */
 .shop-header-sticky {
   position:sticky; top:72px; /* hauteur header */
