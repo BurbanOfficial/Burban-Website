@@ -5,6 +5,7 @@ const products = [
       id: 'metamorphosis',
       name: 'Metamorphosis',
       price: 20.99,
+      type: 'T-Shirt',
       colors: [
         {
           name: 'Blanc',
@@ -40,6 +41,7 @@ const products = [
         id: 'celestial-b',
         name: 'Celestial B',
         price: 27.99,
+        type: 'T-Shirt',
         colors: [
           {
             name: 'Blanc',
@@ -61,6 +63,7 @@ const products = [
         id: 'urban-crest',
         name: 'Urban Crest',
         price: 21.99,
+        type: 'Casquette',
         colors: [
           {
             name: 'Noir',
@@ -82,6 +85,7 @@ const products = [
         id: 'colorful-burst',
         name: 'Colorful Burst',
         price: 34.99,
+        type: 'Sweat sans capuche',
         colors: [
           {
             name: 'Bleu Marine',
@@ -96,16 +100,53 @@ const products = [
         cut: 'Droite',
         gender: 'Unisexe'
       },
+
+
+
+      {
+        id: 'urban-hibiscus',
+        name: 'Urban Hibiscus',
+        price: 23.99,
+        type: 'Sweat sans capuche',
+        colors: [
+          {
+            name: 'Vert Foncé',
+            code: '#1a3626',
+            img: 'https://i.imgur.com/zfkJZog.jpeg',
+            hover: 'https://i.imgur.com/uVeTzOQ.jpeg',
+            url: 'product-eclat-lavande-lavande.html'
+          },
+          {
+            name: 'Bleu Indigo',
+            code: '#395d82',
+            img: 'https://i.imgur.com/4j5IjyP.jpeg',
+            hover: 'https://i.imgur.com/8a0UYy0.jpeg',
+            url: 'product-eclat-lavande-lavande.html'
+          },
+          {
+            name: 'Sauge',
+            code: '#7e8560',
+            img: 'https://i.imgur.com/62dxFU2.jpeg',
+            hover: 'https://i.imgur.com/pMVsAJC.jpeg',
+            url: 'product-eclat-lavande-lavande.html'
+          },
+          // ...
+        ],
+        sizes: ['S','M','L','XL','2XL','3XL'],
+        cut: 'Droite',
+        gender: 'Unisexe'
+      },
     // ... autres produits
   ];
   
- // État et variables
+ // État et références DOM
 let filtered = [...products];
 const state = {
   colors:  new Set(),
   sizes:   new Set(),
   cuts:    new Set(),
   genders: new Set(),
+  types:   new Set(),
   priceMin:null,
   priceMax:null
 };
@@ -120,61 +161,73 @@ const applyBtn   = document.getElementById('applyFilters');
 const applyCount = document.getElementById('applyCount');
 const clearAll   = document.getElementById('clearAll');
 
-// Affichage des options
+// Rend l’UI de chaque groupe de filtres, trié alphabétiquement
 function renderFilterOptions(id, items) {
-  const c = document.getElementById(id);
-  c.innerHTML = '';
-  items.forEach(i => {
-    const lbl = document.createElement('label');
-    lbl.innerHTML = `<input type="checkbox" value="${i}"> ${i}`;
-    c.append(lbl);
+  const container = document.getElementById(id);
+  container.innerHTML = '';
+  items.sort((a,b) => a.localeCompare(b, 'fr')).forEach(item => {
+    const label = document.createElement('label');
+    label.innerHTML = `<input type="checkbox" value="${item}"> ${item}`;
+    container.append(label);
   });
 }
+
+// Initialiser tous les groupes
 renderFilterOptions('filterColors',  [...new Set(products.flatMap(p=>p.colors.map(c=>c.name)))]);
 renderFilterOptions('filterSizes',   [...new Set(products.flatMap(p=>p.sizes))]);
 renderFilterOptions('filterCuts',    [...new Set(products.map(p=>p.cut))]);
 renderFilterOptions('filterGenders', [...new Set(products.map(p=>p.gender))]);
+renderFilterOptions('filterTypes',   [...new Set(products.map(p=>p.type))]);
 
-// Calcul du nombre de produits correspondant
+// Calcule le nombre d’articles correspondant à l’état courant
 function previewCount() {
   return products.filter(p => {
     if (state.colors.size && ![...state.colors].some(c => p.colors.some(pc=>pc.name===c))) return false;
-    if (state.sizes.size  && ![...state.sizes].some(s => p.sizes.includes(s))) return false;
-    if (state.cuts.size   && !state.cuts.has(p.cut)) return false;
-    if (state.genders.size&& !state.genders.has(p.gender)) return false;
-    if (state.priceMin !== null && p.price < state.priceMin) return false;
-    if (state.priceMax !== null && p.price > state.priceMax) return false;
+    if (state.sizes.size  && ![...state.sizes].some(s => p.sizes.includes(s)))        return false;
+    if (state.cuts.size   && !state.cuts.has(p.cut))                                     return false;
+    if (state.genders.size&& !state.genders.has(p.gender))                                return false;
+    if (state.types.size  && !state.types.has(p.type))                                   return false;
+    if (state.priceMin !== null && p.price < state.priceMin)                             return false;
+    if (state.priceMax !== null && p.price > state.priceMax)                             return false;
     return true;
   }).length;
 }
 
-// Mise à jour compteur aperçu
-document.querySelectorAll('#filterForm input').forEach(inp => {
-  inp.addEventListener('change', () => {
-    const grp = inp.closest('.filter-group').querySelector('summary').textContent.trim();
-    const val = inp.value;
-    if (inp.type==='checkbox') {
-      const map = {'Couleurs':'colors','Tailles':'sizes','Coupes':'cuts','Sexe':'genders'};
-      if (inp.checked) state[map[grp]].add(val);
-      else             state[map[grp]].delete(val);
-    } else if (inp.id==='priceMin') {
-      state.priceMin = inp.value ? Number(inp.value) : null;
-    } else if (inp.id==='priceMax') {
-      state.priceMax = inp.value ? Number(inp.value) : null;
+// Met à jour les Sets et le compteur d’aperçu
+document.querySelectorAll('#filterForm input').forEach(input => {
+  input.addEventListener('change', () => {
+    const group = input.closest('.filter-group').querySelector('summary').textContent.trim();
+    const val   = input.value;
+    if (input.type === 'checkbox') {
+      const map = {
+        'Couleurs':'colors',
+        'Tailles':'sizes',
+        'Coupes':'cuts',
+        'Sexe':'genders',
+        'Types':'types'
+      };
+      input.checked
+        ? state[map[group]].add(val)
+        : state[map[group]].delete(val);
+    } else if (input.id === 'priceMin') {
+      state.priceMin = input.value ? Number(input.value) : null;
+    } else if (input.id === 'priceMax') {
+      state.priceMax = input.value ? Number(input.value) : null;
     }
     applyCount.textContent = previewCount();
   });
 });
 
-// Appliquer les filtres au clic
+// Applique vraiment les filtres au clic
 applyBtn.addEventListener('click', () => {
   filtered = products.filter(p => {
     if (state.colors.size && ![...state.colors].some(c => p.colors.some(pc=>pc.name===c))) return false;
-    if (state.sizes.size  && ![...state.sizes].some(s => p.sizes.includes(s))) return false;
-    if (state.cuts.size   && !state.cuts.has(p.cut)) return false;
-    if (state.genders.size&& !state.genders.has(p.gender)) return false;
-    if (state.priceMin !== null && p.price < state.priceMin) return false;
-    if (state.priceMax !== null && p.price > state.priceMax) return false;
+    if (state.sizes.size  && ![...state.sizes].some(s => p.sizes.includes(s)))        return false;
+    if (state.cuts.size   && !state.cuts.has(p.cut))                                     return false;
+    if (state.genders.size&& !state.genders.has(p.gender))                                return false;
+    if (state.types.size  && !state.types.has(p.type))                                   return false;
+    if (state.priceMin !== null && p.price < state.priceMin)                             return false;
+    if (state.priceMax !== null && p.price > state.priceMax)                             return false;
     return true;
   });
   renderProducts();
@@ -226,32 +279,28 @@ function renderProducts() {
   });
 }
 
-// Listener "Tout supprimé" : Vider, réafficher, réinitialiser UI
+// Tout supprimer
 clearAll.addEventListener('click', () => {
-  // 1) Vider l'état
-  state.colors.clear();
-  state.sizes.clear();
-  state.cuts.clear();
-  state.genders.clear();
-  state.priceMin = null;
-  state.priceMax = null;
+  // Vider les Sets
+  ['colors','sizes','cuts','genders','types'].forEach(k => state[k].clear());
+  state.priceMin = state.priceMax = null;
 
-  // 2) Vider les inputs du formulaire
+  // Réinitialiser UI du formulaire
   document.querySelectorAll('#filterForm input').forEach(i => {
     i.checked = false;
     if (i.type === 'number') i.value = '';
   });
 
-  // 3) Réafficher tous les produits
+  // Réafficher
   filtered = [...products];
   renderProducts();
 
-  // 4) Réinitialiser les compteurs
+  // Remise à zéro des compteurs
   applyCount.textContent = products.length;
   countSpan.textContent  = `${products.length} article${products.length>1?'s':''}`;
 });
 
-// Ouvrir/fermer modal
+// Ouvrir / fermer modal
 btnFilter.addEventListener('click', () => modal.classList.add('open'));
 btnClose .addEventListener('click', () => modal.classList.remove('open'));
 
