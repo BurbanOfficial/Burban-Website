@@ -497,3 +497,17 @@ body {
   --main-header-height: 72px;   /* Hauteur de ton header principal */
   --shop-header-height: 80px;   /* Hauteur de ton header shop */
 }
+
+/* Bouton Tout supprimé centré */
+.clear-all-btn {
+  position:absolute; left:50%; transform:translateX(-50%);
+  background:#eee; color:#555; border:none;
+  border-radius:12px; padding:4px 8px; cursor:pointer;
+  font-size:14px;
+}
+
+@media(max-width:480px) {
+  .clear-all-btn {
+    display: none;
+  }
+}

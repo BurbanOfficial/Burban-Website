@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -7,41 +6,31 @@
   <title>BURBAN | Boutique Officielle</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Header principal -->
   <header class="header">
-    <!-- Logo -->
     <a href="index.html" class="logo-link">
       <img src="https://i.imgur.com/Kl9kTBg.png" alt="Burban Logo" class="logo-img">
     </a>
-  
-    <!-- Nav desktop -->
     <nav class="nav">
       <a href="index.html" class="nav-item">Accueil</a>
       <a href="shop.html" class="nav-item active">Shop</a>
       <a href="about.html" class="nav-item">À propos</a>
       <a href="contact.html" class="nav-item">Contact</a>
     </nav>
-  
-    <!-- Icônes + hamburger -->
     <div class="actions">
-      <a href="account.html" class="account-btn" aria-label="Mon compte"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="cart.html" class="cart-btn" aria-label="Mon panier"><i class="fa-solid fa-bag-shopping"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
-      <button class="hamburger" aria-label="Ouvrir le menu">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </button>
+      <a href="account.html" class="account-btn"><i class="fa-solid fa-user"></i></a>
+      <a href="cart.html"    class="cart-btn"><i class="fa-solid fa-bag-shopping"></i></a>
+      <button class="hamburger"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
     </div>
   </header>
 
   <!-- Overlay menu mobile -->
   <div class="overlay-menu" id="overlayMenu">
-    <button class="close-btn" aria-label="Fermer le menu">&times;</button>
+    <button class="close-btn">&times;</button>
     <ul class="overlay-nav">
       <li><a href="index.html">Accueil</a></li>
       <li><a href="shop.html">Shop</a></li>
@@ -50,57 +39,49 @@
     </ul>
   </div>
 
-  <!-- HEADER SHOP (sticky) -->
+  <!-- Header Shop sticky -->
   <div class="shop-header-sticky" id="shopHeader">
     <h1>Boutique</h1>
     <div class="controls">
-      <button id="openFilters" class="btn-filter">Filtres <i class="fa-solid fa-filter"></i></button>
+      <button id="openFilters" class="btn-filter">
+        Filtres <i class="fa-solid fa-filter"></i>
+      </button>
       <span id="resultCount" class="result-count">0 articles</span>
-      <div id="activeFilters" class="active-filters-container">
-        <!-- JS injectera ici les filtres appliqués -->
-      </div>
     </div>
+    <button id="clearAll" class="clear-all-btn">↺ Supprimer les filtres</button>
   </div>
 
-  <!-- GRILLE PRODUITS -->
+  <!-- Grille produits -->
   <main class="shop-main">
-    <div id="productGrid" class="product-grid">
-      <!-- JS injecte les .product-card ici -->
-    </div>
+    <div id="productGrid" class="product-grid"></div>
     <div id="noResults" class="no-results hidden">
       <p>Aucun article ne correspond à vos filtres</p>
     </div>
   </main>
 
-  <!-- MODAL FILTRES DESKTOP / OVERLAY MOBILE -->
+  <!-- Modal filtres -->
   <aside id="filterModal" class="filter-modal">
     <div class="filter-header">
       <h2>Filtres</h2>
-      <!-- Croix de fermeture -->
-      <button id="closeFilters" class="close-btn" aria-label="Fermer">&times;</button>
+      <button id="closeFilters" class="close-btn">&times;</button>
     </div>
     <form id="filterForm" class="filter-form">
-      <!-- Couleurs -->
       <details open class="filter-group">
         <summary>Couleurs</summary>
-        <div class="options" id="filterColors"></div>
+        <div id="filterColors" class="options"></div>
       </details>
-      <!-- Tailles -->
       <details open class="filter-group">
         <summary>Tailles</summary>
-        <div class="options" id="filterSizes"></div>
+        <div id="filterSizes" class="options"></div>
       </details>
-      <!-- Coupes -->
       <details open class="filter-group">
         <summary>Coupes</summary>
-        <div class="options" id="filterCuts"></div>
+        <div id="filterCuts" class="options"></div>
       </details>
-      <!-- Sexe -->
       <details open class="filter-group">
         <summary>Sexe</summary>
-        <div class="options" id="filterGenders"></div>
+        <div id="filterGenders" class="options"></div>
       </details>
-      <!-- Prix -->
       <details open class="filter-group">
         <summary>Prix (€)</summary>
         <div class="price-inputs">
@@ -109,8 +90,9 @@
           <input type="number" id="priceMax" placeholder="Max" min="0">
         </div>
       </details>
-
-      <button type="submit" id="applyFilters" class="btn-apply">Afficher tous les résultats (<span id="applyCount">0</span>)</button>
+      <button type="button" id="applyFilters" class="btn-apply">
+        Afficher tous les résultats (<span id="applyCount">0</span>)
+      </button>
     </form>
   </aside>
 
@@ -145,29 +127,22 @@
       </div>
     </div>
     <div class="footer-bottom">
-        &copy; 2024 - <span id="year"></span> Burban. Tous Droits Réservés.
+      &copy; 2024 - <span id="year"></span> Burban. Tous Droits Réservés.
     </div>
   </footer>
 
-<script>
-    // Mise à jour automatique de l'année
+  <script>
+    // Année automatique
     document.getElementById('year').textContent = new Date().getFullYear();
-</script>
 
-<script>
+    // Overlay mobile
     const hamburger = document.querySelector('.hamburger');
-    const overlay = document.getElementById('overlayMenu');
-    const closeBtn = overlay.querySelector('.close-btn');
-  
-    hamburger.addEventListener('click', () => {
-      overlay.classList.add('open');
-    });
-    closeBtn.addEventListener('click', () => {
-      overlay.classList.remove('open');
-    });
-</script>
+    const overlay   = document.getElementById('overlayMenu');
+    const closeOv   = overlay.querySelector('.close-btn');
+    hamburger.addEventListener('click',   () => overlay.classList.add('open'));
+    closeOv.addEventListener('click',     () => overlay.classList.remove('open'));
+  </script>
 
-<script src="script.js"></script>
-
+  <script src="script.js"></script>
 </body>
 </html>
