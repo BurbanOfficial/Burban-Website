@@ -1,13 +1,13 @@
 // server.js
-import express from 'express';
-import path from 'path';
-import cors from 'cors';
-import geoip from 'geoip-lite';
-import { createClient } from '@mollie/api-client';
+const express = require('express');
+const app = express();
+const path = require('path');
+const cors = require('cors');
+const geoip = require('geoip-lite');
 
 // Mollie API client
-const app = express();
-const mollieClient = createClient({ apiKey: process.env.MOLLIE_API_KEY });
+const Mollie = require('@mollie/api-client');
+const mollieClient = Mollie({ apiKey: process.env.MOLLIE_API_KEY });
 
 app.use(cors());
 app.use(express.json());
