@@ -1,9 +1,10 @@
 // server.js
-const express = require('express');
+import express from 'express';
+import path from 'path';
+import cors from 'cors';
+import geoip from 'geoip-lite';
+
 const app = express();
-const path = require('path');
-const cors = require('cors');
-const geoip = require('geoip-lite');
 
 // Mollie API client
 const Mollie = require('@mollie/api-client');
