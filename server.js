@@ -7,7 +7,7 @@ import geoip from 'geoip-lite';
 const app = express();
 
 // Mollie API client
-const Mollie = require('@mollie/api-client');
+import Mollie from '@mollie/api-client';
 const mollieClient = Mollie({ apiKey: process.env.MOLLIE_API_KEY });
 
 app.use(cors());
