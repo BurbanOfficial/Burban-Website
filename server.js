@@ -1,20 +1,19 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import createMollieClient from '@mollie/api-client';
+import mollieModule from '@mollie/api-client';
 import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
 
-// Instanciation du client Mollie
-const mollieClient = createMollieClient({ apiKey: process.env.MOLLIE_API_KEY });
+const mollieClient = mollieModule.default({ apiKey: process.env.MOLLIE_API_KEY });
 
 app.post('/create-payment', async (req, res) => {
   try {
     const { amount, description, orderId } = req.body;
-    const value = amount.toFixed(2); // par exemple "49.99"
-    
+    const value = amount.toFixed(2);
+
     const payment = await mollieClient.payments.create({
       amount: { currency: 'EUR', value },
       description,
