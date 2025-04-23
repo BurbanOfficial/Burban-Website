@@ -6,8 +6,6 @@ import geoip from 'geoip-lite';
 // On importe correctement la fonction par défaut
 import createMollieClient from '@mollie/api-client';
 
-dotenv.config();
-
 const app = express();
 app.use(cors());
 app.use(express.json());
