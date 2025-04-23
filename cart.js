@@ -97,13 +97,17 @@ calculateTotals();
 
 // 8) Passage à la validation / paiement
 checkoutBtn.addEventListener('click', () => {
-  // Exemple de redirection vers votre endpoint de paiement (Mollie)
-  // Vous pouvez remplacer par votre logique de création de paiement
+  // Calcul du montant total en euros
+  const amount = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+
+  checkoutBtn.disabled = true;
+  checkoutBtn.textContent = 'Redirection…';
+
   fetch('/create-payment', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      amount: cart.reduce((sum, i) => sum + i.price * i.quantity, 0),
+      amount,
       description: 'Commande Burban',
       orderId: Date.now().toString()
     })
@@ -113,11 +117,13 @@ checkoutBtn.addEventListener('click', () => {
     if (data.checkoutUrl) {
       window.location.href = data.checkoutUrl;
     } else {
-      alert('Erreur lors de la création du paiement.');
+      throw new Error('URL de paiement non fournie');
     }
   })
   .catch(err => {
     console.error(err);
-    alert('Une erreur est survenue.');
+    alert('Erreur lors de la création du paiement, veuillez réessayer.');
+    checkoutBtn.disabled = false;
+    checkoutBtn.textContent = 'Passer à la validation';
   });
 });
