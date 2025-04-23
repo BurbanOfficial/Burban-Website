@@ -1,49 +1,58 @@
-// server.js
 import express from 'express';
-import path from 'path';
-import cors from 'cors';
-import geoip from 'geoip-lite';
-// On importe correctement la fonction par défaut
-import createMollieClient from '@mollie/api-client';
+import { createMollieClient } from '@mollie/api-client';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
-app.use(cors());
+const port = process.env.PORT || 3000;
+const mollieClient = createMollieClient({ apiKey: process.env.MOLLIE_API_KEY });
+
 app.use(express.json());
-app.use(express.static(path.join(process.cwd(), 'public')));
+app.use(express.static('public')); // Pour servir les fichiers statiques du frontend
 
-// On crée l'instance Mollie avec createMollieClient
-const mollieClient = createMollieClient({
-  apiKey: process.env.MOLLIE_API_KEY
-});
-
-// Exemple de route de test GeoIP
-app.get('/geoip', (req, res) => {
-  const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress).split(',')[0].trim();
-  res.json({ ip, geo: geoip.lookup(ip) });
-});
-
-// Votre logique d'expédition et de calcul...
-// ...
-
-// Endpoint de création de paiement
+// Route pour créer un paiement
 app.post('/create-payment', async (req, res) => {
   try {
-    // … calcul de totalCents, etc.
+    const { amount, description, redirectUrl, webhookUrl } = req.body;
+
     const payment = await mollieClient.payments.create({
       amount: {
         currency: 'EUR',
-        value: (totalCents / 100).toFixed(2)
+        value: amount,
       },
-      description: `Commande #${orderId}`,
-      redirectUrl: `https://burbanofficial.com/success?o=${orderId}`,
-      webhookUrl:  `https://burbanofficial.com/webhook-mollie`,
-      metadata: { orderId }
+      description,
+      redirectUrl,
+      webhookUrl,
+      method: 'creditcard', // Ou tout autre méthode supportée
     });
-    res.json({ checkoutUrl: payment.getCheckoutUrl() });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+
+    res.json({ checkoutUrl: payment._links.checkout.href });
+  } catch (error) {
+    console.error('Erreur lors de la création du paiement:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur' });
   }
+});
+
+// Webhook pour recevoir les notifications de paiement
+app.post('/webhook', (req, res) => {
+  const paymentId = req.body.id;
+
+  mollieClient.payments.get(paymentId)
+    .then(payment => {
+      if (payment.isPaid()) {
+        // Traiter la commande comme payée
+        console.log('Paiement réussi:', payment);
+      } else {
+        // Traiter la commande comme échouée ou annulée
+        console.log('Paiement échoué ou annulé:', payment);
+      }
+    })
+    .catch(error => {
+      console.error('Erreur lors de la récupération du paiement:', error);
+    });
+
+  res.status(200).send();
 });
 
 const PORT = process.env.PORT || 3000;
