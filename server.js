@@ -3,11 +3,11 @@ import express from 'express';
 import path from 'path';
 import cors from 'cors';
 import geoip from 'geoip-lite';
+import Mollie from '@mollie/api-client';
 
-const app = express();
 
 // Mollie API client
-import Mollie from '@mollie/api-client';
+const app = express();
 const mollieClient = Mollie({ apiKey: process.env.MOLLIE_API_KEY });
 
 app.use(cors());
