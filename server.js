@@ -1,19 +1,19 @@
-// server.js
+// Utilisation de CommonJS avec `require`
 const express = require('express');
-const app = express();
 const path = require('path');
 const cors = require('cors');
 const geoip = require('geoip-lite');
-
-// Mollie API client
 const Mollie = require('@mollie/api-client');
-const mollieClient = Mollie({ apiKey: process.env.MOLLIE_API_KEY });
 
+// Création du client Mollie
+const mollieClient = Mollie.createClient({ apiKey: process.env.MOLLIE_API_KEY });
+
+const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Route de test GeoIP (inchangée)
+// Route de test GeoIP
 app.get('/geoip', (req, res) => {
   const xForwardedFor = req.headers['x-forwarded-for'];
   const ip = xForwardedFor ? xForwardedFor.split(',')[0].trim() : req.connection.remoteAddress;
@@ -21,7 +21,7 @@ app.get('/geoip', (req, res) => {
   res.json({ ip, geo });
 });
 
-// --- TARIFS D'EXPÉDITION & FONCTIONS ASSOCIEES (inchangés) ---
+// --- TARIFS D'EXPÉDITION & FONCTIONS ASSOCIEES ---
 const shippingRates = { /* … comme avant … */ };
 function getCategory(item) { /* … */ }
 function getShippingCost(item, region) { /* … */ }
@@ -54,7 +54,7 @@ app.post('/create-payment', async (req, res) => {
     const shippingCents = getCombinedShippingCost(items, region);
     const totalCents  = Math.round(subTotalEuros * 100) + taxCents + shippingCents;
 
-    // 3) Gestion des vouchers (on pourrait les passer en metadata si besoin)
+    // 3) Gestion des vouchers
     // … tu peux ajouter ici ta logique de coupons si tu veux l’intégrer côté Mollie …
 
     // 4) Création du paiement Mollie
@@ -85,7 +85,7 @@ app.post('/create-payment', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Serveur démarré sur le port ${PORT}`));
 
-// Keep-alive ping (inchangé)
+// Keep-alive ping
 const https = require('https');
 const SERVER_URL = 'https://burban-mollie-payments.onrender.com'; // mets ici ton URL publique
 
