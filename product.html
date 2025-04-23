@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BURBAN | Nom du Produit</title>
+
+  <!-- Police Poppins & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <!-- CSS global -->
+  <link rel="stylesheet" href="F:/Burban Website/style.css" />
+  <!-- CSS produit -->
+  <link rel="stylesheet" href="F:/Burban Website/public/product.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <!-- Logo -->
+    <a href="index.html" class="logo-link">
+      <img src="https://i.imgur.com/Kl9kTBg.png" alt="Burban Logo" class="logo-img">
+    </a>
+  
+    <!-- Nav desktop -->
+    <nav class="nav">
+      <a href="index.html" class="nav-item">Accueil</a>
+      <a href="shop.html" class="nav-item active">Shop</a>
+      <a href="about.html" class="nav-item">À propos</a>
+      <a href="contact.html" class="nav-item">Contact</a>
+    </nav>
+  
+    <!-- Icônes + hamburger -->
+    <div class="actions">
+      <a href="account.html" class="account-btn" aria-label="Mon compte"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="cart.html" class="cart-btn" aria-label="Mon panier"><i class="fa-solid fa-bag-shopping"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <button class="hamburger" aria-label="Ouvrir le menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Overlay menu mobile -->
+  <div class="overlay-menu" id="overlayMenu">
+    <button class="close-btn" aria-label="Fermer le menu">&times;</button>
+    <ul class="overlay-nav">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="about.html">À propos</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- Page Produit -->
+  <div class="product-page"
+       data-product-id="metamorphosis"
+       data-product-name="Metamorphosis"
+       data-product-price="20.99">
+    <!-- Gallery -->
+    <div class="gallery">
+      <div class="gallery-main">
+        <img id="mainImage" src="https://i.imgur.com/ol3tK3L.jpeg" alt="Nom du produit">
+      </div>
+      <div class="gallery-thumbs">
+        <img src="https://i.imgur.com/ol3tK3L.jpeg" data-src="https://i.imgur.com/ol3tK3L.jpeg" class="active">
+        <img src="https://i.imgur.com/hoodie2.jpg"     data-src="https://i.imgur.com/hoodie2.jpg">
+        <img src="https://i.imgur.com/BhsaSDc.jpeg"    data-src="https://i.imgur.com/BhsaSDc.jpeg">
+      </div>
+    </div>
+
+    <!-- Info produit -->
+    <div class="product-info">
+      <h1>Metamorphosis</h1>
+      <div class="price">20.99€</div>
+      <div class="description">
+        Hoodie streetwear luxueux mêlant confort et style.
+      </div>
+
+      <!-- Couleurs -->
+      <div class="option-group">
+        <label>Couleur</label>
+        <div class="color-options">
+          <span class="color-swatch active"
+                data-color-name="Blanc"
+                style="background:#ffffff"
+                title="Blanc"></span>
+          <span class="color-swatch"
+                data-color-name="Lavande"
+                style="background:#B497BD"
+                title="Lavande"></span>
+          <span class="color-swatch"
+                data-color-name="Noir"
+                style="background:#111111"
+                title="Noir"></span>
+        </div>
+      </div>
+
+      <!-- Tailles -->
+      <div class="option-group">
+        <label>Taille</label>
+        <div class="size-options">
+          <span class="size-swatch" data-size="S">S</span>
+          <span class="size-swatch" data-size="M">M</span>
+          <span class="size-swatch" data-size="L">L</span>
+          <span class="size-swatch" data-size="XL">XL</span>
+        </div>
+        <div id="sizeError" class="error-message hidden">
+          Veuillez sélectionner une taille.
+        </div>
+      </div>
+
+      <!-- Guide des tailles -->
+        <a href="https://exemple.com/guide-tailles.pdf"
+           target="_blank"
+           rel="noopener"
+           class="size-guide-btn">
+          Voir le guide complet
+        </a>
+      </details>
+
+      <!-- Boutons -->
+      <div class="btn-row">
+        <button class="btn btn-back" onclick="window.location.href='shop.html'">
+          <i class="fa-solid fa-arrow-left"></i>&nbsp;Retour à la boutique
+        </button>
+        <button id="addToCart" class="btn btn-add">
+          <i class="fa-solid fa-bag-shopping"></i>&nbsp;Ajouter au panier
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <img src="https://i.imgur.com/Nup8sfC.png" alt="Burban Logo">
+        <p>Plus qu'une marque, une identité.</p>
+      </div>
+      <div class="footer-links">
+        <div>
+          <h4>Navigation</h4>
+          <a href="index.html">Accueil</a>
+          <a href="shop.html">Shop</a>
+          <a href="about.html">À propos</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <div>
+          <h4>Assistance</h4>
+          <a href="#">FAQ</a>
+          <a href="#">Livraison</a>
+          <a href="#">Retour</a>
+          <a href="#">CGV</a>
+        </div>
+        <div>
+          <h4>Suivez-nous</h4>
+          <a href="#">Instagram</a>
+          <a href="#">Facebook</a>
+          <a href="#">TikTok</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2024 - <span id="year"></span> Burban. Tous Droits Réservés.
+    </div>
+  </footer>
+
+  <script src="products-script.js" defer></script>
+</body>
+</html>

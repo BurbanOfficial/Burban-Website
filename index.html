@@ -1,14 +1,19 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BURBAN | Boutique Officielle</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>BURBAN | Mon Panier</title>
+
+  <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Global CSS -->
+  <link rel="stylesheet" href="https://burbanofficial.github.io/Burban-Website/style.css" />
+  <!-- Cart-specific CSS -->
+  <link rel="stylesheet" href="https://burbanofficial.github.io/Burban-Website/public/cart.css" />
 </head>
 <body>
 
@@ -21,7 +26,7 @@
   
     <!-- Nav desktop -->
     <nav class="nav">
-      <a href="index.html" class="nav-item active">Accueil</a>
+      <a href="index.html" class="nav-item">Accueil</a>
       <a href="shop.html" class="nav-item">Shop</a>
       <a href="about.html" class="nav-item">À propos</a>
       <a href="contact.html" class="nav-item">Contact</a>
@@ -50,59 +55,40 @@
     </ul>
   </div>
 
-  <!-- Hero Banners -->
-  <section class="hero-banners">
-    <a href="#" class="banner">
-      <img src="https://i.imgur.com/zJtk62t.jpeg" alt="Nouvelle Collection 2025">
-    </a>
-    <a href="promo-printemps.html" class="banner">
-      <img src="https://i.imgur.com/Wtxgqa5.jpeg" alt="Promotion Printemps">
-    </a>
-  </section>
-
-  <!-- Dernières Nouveautés -->
-  <section class="section">
-    <h2 class="section-title">Dernières Nouveautés</h2>
-    <div class="product-grid">
-      <a href="product-eclat-lavande.html" class="product-card">
-        <img src="https://i.imgur.com/3OueieQ.jpeg" alt="Éclat de Lavande">
-        <h3>Metamorphosis (3 couleurs)</h3>
-        <p>20.99€</p>
-      </a>
-      <a href="product-noir-absolu.html" class="product-card">
-        <img src="https://i.imgur.com/yXuKp06.jpeg" alt="Noir Absolu">
-        <h3>Celestial B</h3>
-        <p>27.99€</p>
-      </a>
-      <a href="product-creme-pure.html" class="product-card">
-        <img src="https://i.imgur.com/ltGJ2UA.jpeg" alt="Crème Pure">
-        <h3>Urban Hibiscus (3 couleurs)</h3>
-        <p>23.99€</p>
-      </a>
+  <!-- Panier -->
+  <main class="cart-page">
+    <h1>Mon Panier</h1>
+    <div id="emptyMessage" class="empty-cart hidden">
+      <p>Votre panier est vide.</p>
+      <a href="shop.html" class="btn btn-back">Retour à la boutique</a>
     </div>
-  </section>
+    <div id="cartContainer" class="cart-container hidden">
+      <!-- Liste des articles -->
+      <div class="cart-items" id="cartItems"></div>
 
-  <!-- Best-sellers -->
-  <section class="section alt-bg">
-    <h2 class="section-title">Meilleures Ventes</h2>
-    <div class="product-grid">
-      <a href="product-shadow.html" class="product-card">
-        <img src="https://i.imgur.com/uVeTzOQ.jpeg" alt="Urban Hibiscus (Forest)">
-        <h3>Urban Hibiscus (Forest)</h3>
-        <p>23.99€</p>
-      </a>
-      <a href="product-pantalon-signature.html" class="product-card">
-        <img src="https://i.imgur.com/ixxq2Oy.jpeg" alt="Skate (Baby Blue)">
-        <h3>Skate (Baby Blue)</h3>
-        <p>16.99€</p>
-      </a>
-      <a href="product-essence-grise.html" class="product-card">
-        <img src="https://i.imgur.com/16SdjUd.jpeg" alt="Bold & Free">
-        <h3>Bold & Free</h3>
-        <p>23.99€</p>
-      </a>
+      <!-- Récapitulatif -->
+      <aside class="cart-summary">
+        <h2>Récapitulatif</h2>
+        <div class="summary-row">
+          <span>Sous-total</span>
+          <span id="subTotal">0€</span>
+        </div>
+        <div class="summary-row">
+          <span>TVA (20%)</span>
+          <span id="tax">0€</span>
+        </div>
+        <div class="summary-row">
+          <span>Livraison</span>
+          <span id="shipping">Gratuit</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span id="total">0€</span>
+        </div>
+        <button id="checkoutBtn" class="btn btn-add">Passer à la validation</button>
+      </aside>
     </div>
-  </section>
+  </main>
 
   <!-- Footer -->
   <footer class="footer">
@@ -139,23 +125,42 @@
     </div>
   </footer>
 
-<script>
-    // Mise à jour automatique de l'année
-    document.getElementById('year').textContent = new Date().getFullYear();
-</script>
+  <!-- Cart JS -->
+  <script src="https://burbanofficial.github.io/Burban-Website/public/cart.js"></script>
 
-<script>
-    const hamburger = document.querySelector('.hamburger');
-    const overlay = document.getElementById('overlayMenu');
-    const closeBtn = overlay.querySelector('.close-btn');
+  <!-- Mollie Components JS -->
+  <script src="https://js.mollie.com/v1/mollie.js"></script>
   
-    hamburger.addEventListener('click', () => {
-      overlay.classList.add('open');
-    });
-    closeBtn.addEventListener('click', () => {
-      overlay.classList.remove('open');
-    });
-</script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const checkoutBtn = document.getElementById('checkoutBtn');
+      
+      checkoutBtn.addEventListener('click', () => {
+        const amount = 100;  // Montant total à payer (en centimes)
+        const description = "Commande Burban";
+        const redirectUrl = "http://localhost:3000/success";  // URL de redirection après paiement réussi
+        const webhookUrl = "http://localhost:3000/webhook"; // URL de webhook pour les notifications de paiement
 
+        fetch('/create-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ amount, description, redirectUrl, webhookUrl }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.checkoutUrl) {
+            window.location.href = data.checkoutUrl; // Redirection vers le paiement Mollie
+          } else {
+            alert('Erreur lors de la création du paiement.');
+          }
+        })
+        .catch(error => {
+          console.error('Erreur:', error);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
