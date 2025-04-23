@@ -1,7 +1,6 @@
-// server.js
 import express from 'express';
 import bodyParser from 'body-parser';
-import Mollie from '@mollie/api-client';
+import createMollieClient from '@mollie/api-client';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -9,13 +8,13 @@ const app = express();
 app.use(bodyParser.json());
 
 // Instanciation du client Mollie
-const mollieClient = Mollie({ apiKey: process.env.MOLLIE_API_KEY });
+const mollieClient = createMollieClient({ apiKey: process.env.MOLLIE_API_KEY });
 
 app.post('/create-payment', async (req, res) => {
   try {
     const { amount, description, orderId } = req.body;
-    // amount doit être un nombre (ex : 49.99)
-    const value = amount.toFixed(2); // "49.99"
+    const value = amount.toFixed(2); // par exemple "49.99"
+    
     const payment = await mollieClient.payments.create({
       amount: { currency: 'EUR', value },
       description,
@@ -23,6 +22,7 @@ app.post('/create-payment', async (req, res) => {
       webhookUrl:  `https://burbanofficial.com/webhook-mollie`,
       metadata: { orderId }
     });
+
     res.json({ checkoutUrl: payment.getCheckoutUrl() });
   } catch (err) {
     console.error(err);
