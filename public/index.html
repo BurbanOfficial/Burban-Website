@@ -130,7 +130,14 @@
 
   <!-- Mollie Components JS -->
   <script src="https://js.mollie.com/v1/mollie.js"></script>
-  
+
+  <script>
+    // URL de ton backend Render
+    const BACKEND_URL = 'https://burban-mollie-payments.onrender.com';
+    // URL de ton frontend (là où est hébergé ce HTML)
+    const FRONTEND_URL = 'https://burbanofficial.github.io/Burban-Website';
+  </script>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const checkoutBtn = document.getElementById('checkoutBtn');
