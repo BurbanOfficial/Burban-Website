@@ -12,7 +12,7 @@ const products = [
           code: '#fff',
           img: 'https://i.imgur.com/3OueieQ.jpeg',
           hover: 'https://i.imgur.com/ol3tK3L.jpeg',
-          url: 'product-eclat-lavande-lavande.html'
+          url: 'https://burbanofficial.github.io/Burban-Website/public/product.html'
         },
         {
           name: 'Lavande',
