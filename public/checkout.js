@@ -1,56 +1,78 @@
-// Récupération des articles du panier (localStorage ou autre)
-function getCartItems() {
-  return JSON.parse(localStorage.getItem('cartItems')) || [];
-}
-
 document.addEventListener('DOMContentLoaded', async () => {
-  const stripe = Stripe('pk_test_51Q9ORzRwel3656rYJlUj8k1U3WIaRCLY3VyXH5iaBOujGY6mgaYAMXeJSvfbz6kUgNdXW6VWXqWheXhAa3gGZSmH001jacudkb'); // Remplacez par votre clé publique
-  const elements = stripe.elements();
-  const cardElement = elements.create('card', {
-    style: {
-      base: {
-        fontSize: '16px',
-        color: '#32325d',
-        '::placeholder': { color: '#a0aec0' },
-      },
-      invalid: { color: '#fa755a' }
+  const stripe = Stripe('pk_test_VOTRE_CLE_PUBLIQUE'); // Remplace par ta clé Stripe
+
+  // 1. Récupérer le clientSecret depuis votre serveur
+  const { client_secret: clientSecret } = await fetch('/secret').then(r => r.json());
+
+  // 2. Créer Elements avec apparence personnalisée
+  const appearance = { theme: 'flat' };
+  const elements = stripe.elements({ clientSecret, appearance, loader: 'auto' });
+
+  // 3. Ajouter Link Authentication (email)
+  const linkAuth = elements.create('linkAuthentication');
+  linkAuth.mount('#link-authentication-element');
+  linkAuth.on('change', (event) => {
+    // event.value.email contient l'email entré
+  });
+
+  // 4. Adresse de livraison
+  const shippingAddress = elements.create('address', {
+    mode: 'shipping',
+    phoneNumber: true,
+    allowedCountries: ['FR']
+  });
+  shippingAddress.mount('#shipping-address-element');
+
+  // 5. Adresse de facturation
+  const billingAddress = elements.create('address', {
+    mode: 'billing',
+    phoneNumber: true,
+    allowedCountries: ['FR']
+  });
+  billingAddress.mount('#billing-address-element');
+
+  // 6. Élément de paiement
+  const paymentElement = elements.create('payment', {
+    layout: 'accordion',
+    fields: {
+      billingDetails: { address: 'never' }
+    },
+    paymentMethodOrder: ['apple_pay', 'google_pay', 'card', 'klarna', 'revolut_pay', 'billie']
+  });
+  paymentElement.mount('#payment-element');
+
+  // 7. Gestion des erreurs Stripe
+  paymentElement.on('change', (event) => {
+    const errorDiv = document.getElementById('error-message');
+    if (event.error) {
+      errorDiv.textContent = event.error.message;
+    } else {
+      errorDiv.textContent = '';
     }
   });
-  cardElement.mount('#card-element');
 
-  const form = document.getElementById('payment-form');
-  const errorMessage = document.getElementById('error-message');
-  const submitBtn = document.getElementById('submit');
-
-  // 1. Créer un PaymentIntent sur le serveur
-  const { clientSecret, error: backendError } = await fetch('/create-payment-intent', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ items: getCartItems() })
-  }).then(r => r.json());
-
-  if (backendError) {
-    errorMessage.textContent = backendError;
-    submitBtn.disabled = true;
-    return;
-  }
-
-  // 2. Gérer la soumission du formulaire
-  form.addEventListener('submit', async (e) => {
+  // 8. Soumission du paiement
+  const submitButton = document.getElementById('submit-button');
+  submitButton.addEventListener('click', async (e) => {
     e.preventDefault();
-    submitBtn.disabled = true;
+    submitButton.disabled = true;
 
-    const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: { card: cardElement }
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        // return_url: 'https://votresite.com/merci' // à configurer
+      }
     });
 
     if (error) {
-      // Afficher l'erreur
-      errorMessage.textContent = error.message;
-      submitBtn.disabled = false;
-    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-      // Paiement réussi – redirection ou message
-      window.location.href = 'https://burbanofficial.com/public/success.html';
+      document.getElementById('error-message').textContent = error.message;
+      submitButton.disabled = false;
     }
+  });
+
+  // 9. Code promo
+  document.getElementById('apply-promo').addEventListener('click', async () => {
+    const code = document.getElementById('promo-input').value;
+    alert(`Code promo "${code}" appliqué (fonction serveur à implémenter).`);
   });
 });
