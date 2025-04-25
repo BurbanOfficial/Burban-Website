@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  const stripe = Stripe('pk_test_VOTRE_CLE_PUBLIQUE'); // Remplace par ta clé Stripe
+  const stripe = Stripe('pk_test_51Q9ORzRwel3656rYJlUj8k1U3WIaRCLY3VyXH5iaBOujGY6mgaYAMXeJSvfbz6kUgNdXW6VWXqWheXhAa3gGZSmH001jacudkb'); // Remplace par ta clé Stripe
 
   // 1. Récupérer le clientSecret depuis votre serveur
   const { client_secret: clientSecret } = await fetch('/secret').then(r => r.json());
