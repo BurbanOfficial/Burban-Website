@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Paiement – Burban</title>
+  <script src="https://js.stripe.com/v3/"></script>
+  <link rel="stylesheet" href="https://burbanofficial.github.io/Burban-Website/public/checkout.css" />
+</head>
+<body>
+  <main class="payment-page">
+    <h1>Finaliser le paiement</h1>
+    <!-- Container pour Stripe Elements -->
+    <form id="payment-form">
+      <div id="card-element"><!-- Element Card sera inséré ici --></div>
+      <button id="submit" type="submit">Payer</button>
+      <p id="error-message" role="alert"></p>
+    </form>
+  </main>
+
+  <script src="https://burbanofficial.github.io/Burban-Website/public/checkout.js"></script>
+</body>
+</html>

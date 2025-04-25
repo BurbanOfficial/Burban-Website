@@ -1,0 +1,243 @@
+/* ========================================================================
+   Checkout Page Stylesheet
+   Description : Épuré, professionnel et responsive pour Stripe Elements
+   Author      : Your Company
+   ======================================================================== */
+
+/* -----------------------------------
+   1. Variables de thème
+   ----------------------------------- */
+   :root {
+    --font-family-base: 'Poppins', sans-serif;
+    --color-bg: #f9f9fb;
+    --color-card-bg: #ffffff;
+    --color-primary: #1a202c;
+    --color-secondary: #4a5568;
+    --color-accent: #3182ce;
+    --color-error: #e53e3e;
+    --color-border: #e2e8f0;
+    --color-placeholder: #a0aec0;
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --transition-speed: 0.2s;
+  }
+  
+  /* -----------------------------------
+     2. Reset minimaliste
+     ----------------------------------- */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: var(--font-family-base);
+    background-color: var(--color-bg);
+    color: var(--color-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+  }
+  
+  /* -----------------------------------
+     3. Container et Layout
+     ----------------------------------- */
+  .payment-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+  
+  .payment-page h1 {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-primary);
+    text-align: center;
+  }
+  
+  /* Formulaire principal */
+  #payment-form {
+    background-color: var(--color-card-bg);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 420px;
+  }
+  
+  /* -----------------------------------
+     4. Stripe Elements & Champs
+     ----------------------------------- */
+  #card-element {
+    background-color: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    transition: border-color var(--transition-speed) ease;
+  }
+  
+  #card-element.StripeElement--focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(49,130,206,0.2);
+  }
+  
+  #card-element.StripeElement--invalid {
+    border-color: var(--color-error);
+    box-shadow: none;
+  }
+  
+  /* Placeholder styling inside Stripe Elements */
+  .StripeElement--webkit-autofill {
+    background-color: transparent !important;
+  }
+  
+  /* -----------------------------------
+     5. Bouton de paiement
+     ----------------------------------- */
+  #submit {
+    display: block;
+    width: 100%;
+    padding: var(--spacing-sm);
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: var(--color-accent);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+    border: 1px solid transparent;
+  }
+  
+  #submit:hover {
+    background-color: rgba(49,130,206,0.85);
+    transform: translateY(-1px);
+  }
+  
+  #submit:active {
+    transform: translateY(0);
+  }
+  
+  #submit:disabled {
+    background-color: var(--color-border);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  /* -----------------------------------
+     6. Messages d'erreur et aide
+     ----------------------------------- */
+  #error-message {
+    margin-top: var(--spacing-xs);
+    font-size: 0.875rem;
+    color: var(--color-error);
+    min-height: 1.2em;
+    line-height: 1.2;
+  }
+  
+  /* -----------------------------------
+     7. Accessibilité & Focus
+     ----------------------------------- */
+  #submit:focus,
+  #payment-form input:focus,
+  #payment-form button:focus {
+    outline: 3px solid rgba(49,130,206,0.5);
+    outline-offset: 2px;
+  }
+  
+  /* -----------------------------------
+     8. Responsive
+     ----------------------------------- */
+  @media (max-width: 480px) {
+    .payment-page {
+      padding: var(--spacing-md) var(--spacing-sm);
+    }
+  
+    #payment-form {
+      padding: var(--spacing-md);
+    }
+  
+    .payment-page h1 {
+      font-size: 1.75rem;
+    }
+  }
+  
+  /* -----------------------------------
+     9. Animation d’entrée
+     ----------------------------------- */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .payment-page,
+  #payment-form,
+  #card-element,
+  #submit {
+    animation: fadeInUp 0.4s ease-out both;
+  }
+  
+  /* -----------------------------------
+     10. Styles additionnels (optionnels)
+     ----------------------------------- */
+  /* Spinner de chargement sur le bouton */
+  #submit.loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+  }
+  
+  #submit.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1em;
+    height: 1em;
+    margin: -0.5em 0 0 -0.5em;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  

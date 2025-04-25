@@ -7,35 +7,40 @@
 
   <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Global CSS -->
-  <link rel="stylesheet" href="https://burbanofficial.github.io/Burban-Website/style.css" />
+  <link rel="stylesheet"
+        href="https://burbanofficial.github.io/Burban-Website/style.css" />
   <!-- Cart-specific CSS -->
-  <link rel="stylesheet" href="https://burbanofficial.github.io/Burban-Website/public/cart.css" />
+  <link rel="stylesheet"
+        href="https://burbanofficial.github.io/Burban-Website/public/cart.css" />
 </head>
 <body>
 
   <!-- Header -->
   <header class="header">
-    <!-- Logo -->
     <a href="index.html" class="logo-link">
-      <img src="https://i.imgur.com/Kl9kTBg.png" alt="Burban Logo" class="logo-img">
+      <img src="https://i.imgur.com/Kl9kTBg.png"
+           alt="Burban Logo"
+           class="logo-img">
     </a>
-  
-    <!-- Nav desktop -->
     <nav class="nav">
       <a href="index.html" class="nav-item">Accueil</a>
-      <a href="shop.html" class="nav-item">Shop</a>
+      <a href="shop.html"  class="nav-item">Shop</a>
       <a href="about.html" class="nav-item">À propos</a>
       <a href="contact.html" class="nav-item">Contact</a>
     </nav>
-  
-    <!-- Icônes + hamburger -->
     <div class="actions">
-      <a href="account.html" class="account-btn" aria-label="Mon compte"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="cart.html" class="cart-btn" aria-label="Mon panier"><i class="fa-solid fa-bag-shopping"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="account.html" class="account-btn" aria-label="Mon compte">
+        <i class="fa-solid fa-user"></i>
+      </a>
+      <a href="cart.html" class="cart-btn" aria-label="Mon panier">
+        <i class="fa-solid fa-bag-shopping"></i>
+      </a>
       <button class="hamburger" aria-label="Ouvrir le menu">
         <span class="bar"></span>
         <span class="bar"></span>
@@ -44,7 +49,7 @@
     </div>
   </header>
 
-  <!-- Overlay menu mobile -->
+  <!-- Menu mobile -->
   <div class="overlay-menu" id="overlayMenu">
     <button class="close-btn" aria-label="Fermer le menu">&times;</button>
     <ul class="overlay-nav">
@@ -58,11 +63,14 @@
   <!-- Panier -->
   <main class="cart-page">
     <h1>Mon Panier</h1>
+
     <div id="emptyMessage" class="empty-cart hidden">
       <p>Votre panier est vide.</p>
       <a href="shop.html" class="btn btn-back">Retour à la boutique</a>
     </div>
+
     <div id="cartContainer" class="cart-container hidden">
+
       <!-- Liste des articles -->
       <div class="cart-items" id="cartItems"></div>
 
@@ -85,7 +93,10 @@
           <span>Total</span>
           <span id="total">0€</span>
         </div>
-        <button id="checkoutBtn" class="btn btn-add">Passer à la validation</button>
+        <!-- Bouton vers Stripe Elements -->
+        <button id="checkoutBtn" class="btn btn-add" disabled>
+          Passer à la validation
+        </button>
       </aside>
     </div>
   </main>
@@ -121,53 +132,19 @@
       </div>
     </div>
     <div class="footer-bottom">
-        &copy; 2024 - <span id="year"></span> Burban. Tous Droits Réservés.
+      &copy; 2024 - <span id="year"></span> Burban. Tous Droits Réservés.
     </div>
   </footer>
 
-  <!-- Cart JS -->
+  <!-- Cart JS : gère l'affichage et active checkoutBtn -->
   <script src="https://burbanofficial.github.io/Burban-Website/public/cart.js"></script>
 
-  <!-- Mollie Components JS -->
-  <script src="https://js.mollie.com/v1/mollie.js"></script>
-
   <script>
-    // URL de ton backend Render
-    const BACKEND_URL = 'https://burban-mollie-payments.onrender.com';
-    // URL de ton frontend (là où est hébergé ce HTML)
-    const FRONTEND_URL = 'https://burbanofficial.github.io/Burban-Website';
-  </script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const checkoutBtn = document.getElementById('checkoutBtn');
-      
-      checkoutBtn.addEventListener('click', () => {
-        const amount = 100;  // Montant total à payer (en centimes)
-        const description = "Commande Burban";
-        const redirectUrl = "http://localhost:3000/success";  // URL de redirection après paiement réussi
-        const webhookUrl = "http://localhost:3000/webhook"; // URL de webhook pour les notifications de paiement
-
-        fetch('/create-payment', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ amount, description, redirectUrl, webhookUrl }),
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.checkoutUrl) {
-            window.location.href = data.checkoutUrl; // Redirection vers le paiement Mollie
-          } else {
-            alert('Erreur lors de la création du paiement.');
-          }
-        })
-        .catch(error => {
-          console.error('Erreur:', error);
-        });
-      });
+    // Redirection vers Stripe Elements
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+      window.location.href = 'checkout.html';
     });
   </script>
+
 </body>
 </html>
