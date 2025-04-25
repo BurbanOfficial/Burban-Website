@@ -1,78 +1,115 @@
-document.addEventListener('DOMContentLoaded', async () => {
-  const stripe = Stripe('pk_test_51Q9ORzRwel3656rYJlUj8k1U3WIaRCLY3VyXH5iaBOujGY6mgaYAMXeJSvfbz6kUgNdXW6VWXqWheXhAa3gGZSmH001jacudkb'); // Remplace par ta clé Stripe
+// This is your test publishable API key.
+const stripe = Stripe("pk_test_51Q9ORzRwel3656rYJlUj8k1U3WIaRCLY3VyXH5iaBOujGY6mgaYAMXeJSvfbz6kUgNdXW6VWXqWheXhAa3gGZSmH001jacudkb");
 
-  // 1. Récupérer le clientSecret depuis votre serveur
-  const { client_secret: clientSecret } = await fetch('/secret').then(r => r.json());
+let checkout;
+initialize();
 
-  // 2. Créer Elements avec apparence personnalisée
-  const appearance = { theme: 'flat' };
-  const elements = stripe.elements({ clientSecret, appearance, loader: 'auto' });
+const validateEmail = async (email) => {
+  const updateResult = await checkout.updateEmail(email);
+  const isValid = updateResult.type !== "error";
 
-  // 3. Ajouter Link Authentication (email)
-  const linkAuth = elements.create('linkAuthentication');
-  linkAuth.mount('#link-authentication-element');
-  linkAuth.on('change', (event) => {
-    // event.value.email contient l'email entré
+  return { isValid, message: !isValid ? updateResult.error.message : null };
+};
+
+document
+  .querySelector("#payment-form")
+  .addEventListener("submit", handleSubmit);
+
+// Fetches a Checkout Session and captures the client secret
+async function initialize() {
+  const fetchClientSecret = () =>
+    fetch("/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((r) => r.json())
+      .then((r) => r.clientSecret);
+
+  const appearance = {
+    theme: 'stripe',
+  };
+  checkout = await stripe.initCheckout({
+    fetchClientSecret,
+    elementsOptions: { appearance },
   });
 
-  // 4. Adresse de livraison
-  const shippingAddress = elements.create('address', {
-    mode: 'shipping',
-    phoneNumber: true,
-    allowedCountries: ['FR']
-  });
-  shippingAddress.mount('#shipping-address-element');
+  document.querySelector("#button-text").textContent = `Pay ${
+    checkout.session().total.total.amount
+  } now`;
+  const emailInput = document.getElementById("email");
+  const emailErrors = document.getElementById("email-errors");
 
-  // 5. Adresse de facturation
-  const billingAddress = elements.create('address', {
-    mode: 'billing',
-    phoneNumber: true,
-    allowedCountries: ['FR']
+  emailInput.addEventListener("input", () => {
+    // Clear any validation errors
+    emailErrors.textContent = "";
   });
-  billingAddress.mount('#billing-address-element');
 
-  // 6. Élément de paiement
-  const paymentElement = elements.create('payment', {
-    layout: 'accordion',
-    fields: {
-      billingDetails: { address: 'never' }
-    },
-    paymentMethodOrder: ['apple_pay', 'google_pay', 'card', 'klarna', 'revolut_pay', 'billie']
-  });
-  paymentElement.mount('#payment-element');
+  emailInput.addEventListener("blur", async () => {
+    const newEmail = emailInput.value;
+    if (!newEmail) {
+      return;
+    }
 
-  // 7. Gestion des erreurs Stripe
-  paymentElement.on('change', (event) => {
-    const errorDiv = document.getElementById('error-message');
-    if (event.error) {
-      errorDiv.textContent = event.error.message;
-    } else {
-      errorDiv.textContent = '';
+    const { isValid, message } = await validateEmail(newEmail);
+    if (!isValid) {
+      emailErrors.textContent = message;
     }
   });
 
-  // 8. Soumission du paiement
-  const submitButton = document.getElementById('submit-button');
-  submitButton.addEventListener('click', async (e) => {
-    e.preventDefault();
-    submitButton.disabled = true;
+  const paymentElement = checkout.createPaymentElement();
+  paymentElement.mount("#payment-element");
+  const billingAddressElement = checkout.createBillingAddressElement();
+  billingAddressElement.mount("#billing-address-element");
+}
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        // return_url: 'https://votresite.com/merci' // à configurer
-      }
-    });
+async function handleSubmit(e) {
+  e.preventDefault();
+  setLoading(true);
 
-    if (error) {
-      document.getElementById('error-message').textContent = error.message;
-      submitButton.disabled = false;
-    }
-  });
+  const email = document.getElementById("email").value;
+  const { isValid, message } = await validateEmail(email);
+  if (!isValid) {
+    showMessage(message);
+    setLoading(false);
+    return;
+  }
 
-  // 9. Code promo
-  document.getElementById('apply-promo').addEventListener('click', async () => {
-    const code = document.getElementById('promo-input').value;
-    alert(`Code promo "${code}" appliqué (fonction serveur à implémenter).`);
-  });
-});
+  const { error } = await checkout.confirm();
+
+  // This point will only be reached if there is an immediate error when
+  // confirming the payment. Otherwise, your customer will be redirected to
+  // your `return_url`. For some payment methods like iDEAL, your customer will
+  // be redirected to an intermediate site first to authorize the payment, then
+  // redirected to the `return_url`.
+  showMessage(error.message);
+
+  setLoading(false);
+}
+
+// ------- UI helpers -------
+
+function showMessage(messageText) {
+  const messageContainer = document.querySelector("#payment-message");
+
+  messageContainer.classList.remove("hidden");
+  messageContainer.textContent = messageText;
+
+  setTimeout(function () {
+    messageContainer.classList.add("hidden");
+    messageContainer.textContent = "";
+  }, 4000);
+}
+
+// Show a spinner on payment submission
+function setLoading(isLoading) {
+  if (isLoading) {
+    // Disable the button and show a spinner
+    document.querySelector("#submit").disabled = true;
+    document.querySelector("#spinner").classList.remove("hidden");
+    document.querySelector("#button-text").classList.add("hidden");
+  } else {
+    document.querySelector("#submit").disabled = false;
+    document.querySelector("#spinner").classList.add("hidden");
+    document.querySelector("#button-text").classList.remove("hidden");
+  }
+}
