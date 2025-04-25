@@ -2,7 +2,6 @@
   "name": "burban-website",
   "version": "1.0.0",
   "main": "script.js",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
@@ -17,6 +16,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "geoip-lite": "^1.4.10"
+    "geoip-lite": "^1.4.10",
+    "stripe": "^18.0.0"
   }
 }
