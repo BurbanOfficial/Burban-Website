@@ -1,115 +1,81 @@
-// This is your test publishable API key.
-const stripe = Stripe("pk_test_51Q9ORzRwel3656rYJlUj8k1U3WIaRCLY3VyXH5iaBOujGY6mgaYAMXeJSvfbz6kUgNdXW6VWXqWheXhAa3gGZSmH001jacudkb");
+const STORAGE_KEY = 'cartItems';
+const items = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
-let checkout;
-initialize();
-
-const validateEmail = async (email) => {
-  const updateResult = await checkout.updateEmail(email);
-  const isValid = updateResult.type !== "error";
-
-  return { isValid, message: !isValid ? updateResult.error.message : null };
-};
-
-document
-  .querySelector("#payment-form")
-  .addEventListener("submit", handleSubmit);
-
-// Fetches a Checkout Session and captures the client secret
-async function initialize() {
-  const fetchClientSecret = () =>
-    fetch("/create-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((r) => r.json())
-      .then((r) => r.clientSecret);
-
-  const appearance = {
-    theme: 'stripe',
-  };
-  checkout = await stripe.initCheckout({
-    fetchClientSecret,
-    elementsOptions: { appearance },
+function formatAmount(cents) {
+  return (cents/100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
+}
+function calculateTotals(items) {
+  const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const tax      = Math.round(subtotal * 0.2);
+  const shipping = 500;
+  return { subtotal, tax, shipping, total: subtotal + tax + shipping };
+}
+function renderOrderSummary() {
+  const { subtotal, tax, shipping, total } = calculateTotals(items);
+  const container = document.getElementById('summary-container');
+  let html = '';
+  items.forEach(i => {
+    html += `<div class="item-row"><span>${i.name} x${i.quantity}</span><span>${formatAmount(i.price*i.quantity)}</span></div>`;
   });
-
-  document.querySelector("#button-text").textContent = `Pay ${
-    checkout.session().total.total.amount
-  } now`;
-  const emailInput = document.getElementById("email");
-  const emailErrors = document.getElementById("email-errors");
-
-  emailInput.addEventListener("input", () => {
-    // Clear any validation errors
-    emailErrors.textContent = "";
-  });
-
-  emailInput.addEventListener("blur", async () => {
-    const newEmail = emailInput.value;
-    if (!newEmail) {
-      return;
-    }
-
-    const { isValid, message } = await validateEmail(newEmail);
-    if (!isValid) {
-      emailErrors.textContent = message;
-    }
-  });
-
-  const paymentElement = checkout.createPaymentElement();
-  paymentElement.mount("#payment-element");
-  const billingAddressElement = checkout.createBillingAddressElement();
-  billingAddressElement.mount("#billing-address-element");
+  html += `
+    <div class="summary-row"><span>Sous-total</span><span>${formatAmount(subtotal)}</span></div>
+    <div class="summary-row"><span>TVA (20%)</span><span>${formatAmount(tax)}</span></div>
+    <div class="summary-row"><span>Livraison</span><span>${formatAmount(shipping)}</span></div>
+    <div class="summary-row total"><span>Total</span><span>${formatAmount(total)}</span></div>
+  `;
+  container.innerHTML = html;
 }
 
-async function handleSubmit(e) {
-  e.preventDefault();
-  setLoading(true);
+let stripe, elements;
+let shippingComplete = false, billingComplete = false;
 
-  const email = document.getElementById("email").value;
-  const { isValid, message } = await validateEmail(email);
-  if (!isValid) {
-    showMessage(message);
-    setLoading(false);
+async function initialize() {
+  const { publishableKey } = await fetch(`${BACKEND_URL}/config`).then(r=>r.json());
+  stripe = Stripe(publishableKey);
+
+  const { clientSecret } = await fetch(`${BACKEND_URL}/create-payment-intent`, {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ items })
+  }).then(r=>r.json());
+
+  elements = stripe.elements({ clientSecret });
+
+  elements.create('address', { mode: 'shipping' }).mount('#shipping-element')
+    .on('change', e=>{ shippingComplete = e.complete; document.getElementById('address-error').textContent = ''; });
+  elements.create('address', { mode: 'billing' }).mount('#billing-element')
+    .on('change', e=>{ billingComplete = e.complete; document.getElementById('address-error').textContent = ''; });
+
+  elements.create('linkAuthentication').mount('#link-auth-element');
+
+  const appearance = {};
+  const layoutOpts = { type:'accordion', defaultCollapsed:false, radios:false, spacedAccordionItems:true };
+  elements.create('payment', { appearance, layout: layoutOpts }).mount('#payment-element');
+}
+
+document.getElementById('to-step-2').addEventListener('click', e=>{
+  e.preventDefault();
+  if (!shippingComplete||!billingComplete) {
+    document.getElementById('address-error').textContent = 'Veuillez renseigner les deux adresses.';
     return;
   }
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step-2').classList.add('active');
+});
 
-  const { error } = await checkout.confirm();
+document.getElementById('back-button').addEventListener('click', e=>{
+  e.preventDefault();
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step-1').classList.add('active');
+});
 
-  // This point will only be reached if there is an immediate error when
-  // confirming the payment. Otherwise, your customer will be redirected to
-  // your `return_url`. For some payment methods like iDEAL, your customer will
-  // be redirected to an intermediate site first to authorize the payment, then
-  // redirected to the `return_url`.
-  showMessage(error.message);
-
-  setLoading(false);
-}
-
-// ------- UI helpers -------
-
-function showMessage(messageText) {
-  const messageContainer = document.querySelector("#payment-message");
-
-  messageContainer.classList.remove("hidden");
-  messageContainer.textContent = messageText;
-
-  setTimeout(function () {
-    messageContainer.classList.add("hidden");
-    messageContainer.textContent = "";
-  }, 4000);
-}
-
-// Show a spinner on payment submission
-function setLoading(isLoading) {
-  if (isLoading) {
-    // Disable the button and show a spinner
-    document.querySelector("#submit").disabled = true;
-    document.querySelector("#spinner").classList.remove("hidden");
-    document.querySelector("#button-text").classList.add("hidden");
-  } else {
-    document.querySelector("#submit").disabled = false;
-    document.querySelector("#spinner").classList.add("hidden");
-    document.querySelector("#button-text").classList.remove("hidden");
+document.getElementById('pay-button').addEventListener('click', async e=>{
+  e.preventDefault(); document.getElementById('pay-button').disabled = true;
+  const { error } = await stripe.confirmPayment({ elements, confirmParams:{ return_url: window.location.origin + '/success.html' } });
+  if (error) {
+    document.getElementById('error-message').textContent = error.message;
+    document.getElementById('pay-button').disabled = false;
   }
-}
+});
+
+renderOrderSummary();
+initialize();
