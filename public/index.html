@@ -342,6 +342,24 @@
 
   <!-- Scripts -->
   <script>
+    const hamburger = document.querySelector('.hamburger');
+    const overlay = document.getElementById('overlayMenu');
+    const closeBtn = overlay.querySelector('.close-btn');
+  
+    hamburger.addEventListener('click', () => {
+      overlay.classList.add('open');
+    });
+    closeBtn.addEventListener('click', () => {
+      overlay.classList.remove('open');
+    });
+</script>
+
+<script>
+  // Mise à jour automatique de l'année
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+  <script>
     // --- Chargement et gestion du panier ---
     function loadCart() {
       const container = document.getElementById('cart-items');
