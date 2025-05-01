@@ -1,0 +1,315 @@
+/* ========= Product Page Styles ========= */
+
+.product-page {
+    display: flex;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 100px auto 60px;
+    padding: 0 20px;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Gallery */
+  .gallery {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .gallery-main {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .gallery-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    touch-action: pan-y;
+  }
+  .gallery-thumbs {
+    display: flex;
+    gap: 8px;
+  }
+  .gallery-thumbs img {
+    width: 64px; height: 64px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    opacity: .7;
+    transition: opacity .2s;
+  }
+  .gallery-thumbs img.active,
+  .gallery-thumbs img:hover {
+    opacity: 1;
+  }
+  
+  /* Info produit */
+  .product-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .product-info h1 {
+    font-size: 32px;
+    font-weight: 500;
+    color: #111;
+  }
+  .product-info .price {
+    font-size: 24px;
+    font-weight: 700;
+    color: #000;
+  }
+  .product-info .description {
+    font-size: 16px;
+    color: #444;
+    line-height: 1.5;
+  }
+  
+  /* Option groups */
+  .option-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .option-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  /* Couleurs en cercles */
+  .color-options {
+    display: flex;
+    gap: 12px;
+  }
+  .color-swatch {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color .2s, transform .2s;
+    border: 1px solid #000;
+  }
+  .color-swatch.active {
+    border-color: #111;
+    transform: scale(1.1);
+    border: 2px solid #000;
+  }
+  
+  /* Tailles en cercles */
+  .size-options {
+    display: flex;
+    gap: 12px;
+  }
+  .size-swatch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    color: #111;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background .2s, color .2s, transform .2s;
+  }
+  .size-swatch.active {
+    background: #111;
+    color: #fff;
+    transform: scale(1.1);
+  }
+  
+  /* Guide des tailles */
+  .size-guide {
+    font-size: 14px;
+    color: #333;
+  }
+  .size-guide summary {
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .size-guide table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+  .size-guide th,
+  .size-guide td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+  .size-guide th {
+    background: #f9f9f9;
+  }
+  
+  /* Boutons */
+  .btn-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-top: 20px;
+  }
+  .btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .3s;
+  }
+  .btn-back {
+    background: transparent;
+    color: #555;
+  }
+  .btn-back:hover {
+    color: #c00;
+  }
+  .btn-add {
+    background: #111;
+    color: #fff;
+  }
+  .btn-add:hover {
+    background: #333;
+  }
+  
+  /* Responsive */
+  @media(max-width:768px) {
+    .product-page {
+      flex-direction: column;
+      margin-top: 80px;
+    }
+    .gallery, .product-info {
+      width: 100%;
+    }
+    .gallery-thumbs {
+      justify-content: center;
+    }
+    .btn-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  /* Bouton du guide des tailles */
+.size-guide-btn {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 8px 16px;
+    background: #111;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background .3s;
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+    width: 210px;
+  }
+  .size-guide-btn:hover {
+    background: #333;
+  }
+
+  /* Erreur de sélection */
+.error-message {
+    color: #c00;
+    font-size: 14px;
+    margin-top: 6px;
+  }
+.hidden { display: none; }
+
+/* Bouton Guide des tailles (taille réduite) */
+.size-guide-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0px 0;
+  padding: 6px 12px;
+  background-color: #000;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.size-guide-btn i {
+  font-size: 16px;
+}
+.size-guide-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+/* Accordion (description & composition) */
+.accordion {
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  background-color: #fff;
+  margin-top: 20px;
+}
+.accordion-item + .accordion-item {
+  border-top: 1px solid #eee;
+}
+.accordion-toggle {
+  background-color: #000;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 8px;
+  transition: background-color 0.3s ease;
+}
+.accordion-toggle::after {
+  content: '\f107';
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900;
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%) rotate(0deg);
+  transition: transform 0.3s linear;
+}
+.accordion-toggle:hover {
+  background-color: #fff;
+  color: #000;
+}
+.accordion-content {
+  padding: 16px;
+  background-color: #transparent;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.accordion-content.open {
+  padding-top: 12px;
+  padding-bottom: 20px;
+}
+.accordion-toggle[aria-expanded="true"]::after {
+  transform: translateY(-50%) rotate(-180deg);
+}
+.accordion-content p {
+  margin: 0;
+  line-height: 1.6;
+  color: #000000;
+  font-size: 14px;
+}
+
+.accordion-wrapper {
+  overflow: hidden;
+  transition: height 0.4s ease;
+  height: 0;
+}
+  
+  
