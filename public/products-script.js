@@ -58,3 +58,74 @@ document.getElementById('addToCart').addEventListener('click', () => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
   alert(`Ajouté : ${name} (${color}, ${size})`);
 });
+
+document.querySelectorAll(".accordion-toggle").forEach(button => {
+  button.addEventListener("click", () => {
+    const targetId = button.getAttribute("data-target");
+    const content = document.getElementById(targetId);
+    const wrapper = content.parentElement;
+
+    const isOpen = wrapper.style.height && wrapper.style.height !== "0px";
+
+    if (isOpen) {
+      wrapper.style.height = `${wrapper.scrollHeight}px`; // reset height to start transition
+      requestAnimationFrame(() => {
+        wrapper.style.height = "0px";
+      });
+    } else {
+      wrapper.style.height = "auto";
+      const height = wrapper.scrollHeight;
+      wrapper.style.height = "0px";
+      requestAnimationFrame(() => {
+        wrapper.style.height = `${height}px`;
+      });
+    }
+  });
+});
+
+/* Tactile */
+  const mainImage = document.getElementById("mainImage");
+  const thumbnails = document.querySelectorAll(".gallery-thumbs img");
+
+  let currentIndex = 0;
+  const images = Array.from(thumbnails).map(img => img.getAttribute("data-src"));
+
+  thumbnails.forEach((thumb, index) => {
+    thumb.addEventListener("click", () => {
+      currentIndex = index;
+      updateMainImage();
+    });
+  });
+
+  function updateMainImage() {
+    mainImage.style.opacity = 0;
+    setTimeout(() => {
+      mainImage.src = images[currentIndex];
+      thumbnails.forEach(img => img.classList.remove("active"));
+      thumbnails[currentIndex].classList.add("active");
+      mainImage.style.opacity = 1;
+    }, 150);
+  }
+
+  // Swipe detection
+  let startX = 0;
+
+  mainImage.addEventListener("touchstart", (e) => {
+    startX = e.touches[0].clientX;
+  });
+
+  mainImage.addEventListener("touchend", (e) => {
+    const endX = e.changedTouches[0].clientX;
+    const deltaX = endX - startX;
+
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX < 0) {
+        // Swipe left
+        currentIndex = (currentIndex + 1) % images.length;
+      } else {
+        // Swipe right
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+      }
+      updateMainImage();
+    }
+  });

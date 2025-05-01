@@ -27,6 +27,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    user-select: none;
+    touch-action: pan-y;
   }
   .gallery-thumbs {
     display: flex;
@@ -222,5 +224,92 @@
     margin-top: 6px;
   }
 .hidden { display: none; }
+
+/* Bouton Guide des tailles (taille réduite) */
+.size-guide-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0px 0;
+  padding: 6px 12px;
+  background-color: #000;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.size-guide-btn i {
+  font-size: 16px;
+}
+.size-guide-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+/* Accordion (description & composition) */
+.accordion {
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  background-color: #fff;
+  margin-top: 20px;
+}
+.accordion-item + .accordion-item {
+  border-top: 1px solid #eee;
+}
+.accordion-toggle {
+  background-color: #000;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 8px;
+  transition: background-color 0.3s ease;
+}
+.accordion-toggle::after {
+  content: '\f107';
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900;
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%) rotate(0deg);
+  transition: transform 0.3s linear;
+}
+.accordion-toggle:hover {
+  background-color: #fff;
+  color: #000;
+}
+.accordion-content {
+  padding: 16px;
+  background-color: #transparent;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.accordion-content.open {
+  padding-top: 12px;
+  padding-bottom: 20px;
+}
+.accordion-toggle[aria-expanded="true"]::after {
+  transform: translateY(-50%) rotate(-180deg);
+}
+.accordion-content p {
+  margin: 0;
+  line-height: 1.6;
+  color: #000000;
+  font-size: 14px;
+}
+
+.accordion-wrapper {
+  overflow: hidden;
+  transition: height 0.4s ease;
+  height: 0;
+}
   
   
