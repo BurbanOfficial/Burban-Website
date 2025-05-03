@@ -223,6 +223,7 @@ body {
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   transition: transform 0.3s ease;
+  position: relative;
 }
 .product-card:hover {
   transform: translateY(-5px);
@@ -510,4 +511,76 @@ body {
   .clear-all-btn {
     display: none;
   }
+}
+
+.badges {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  max-width: 24px;
+  height: 24px;
+  padding: 0 4px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 12px;
+  transition: max-width 0.3s ease;
+  cursor: pointer;
+}
+
+.badge i,
+.badge .flag-icon {
+  flex-shrink: 0;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.badge span {
+  margin-left: 4px;
+  font-size: 12px;
+  color: black;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.badge.eco:hover {
+  max-width: 120px; /* s'étend pour laisser place au texte */
+}
+
+.badge.europe:hover {
+  max-width: 170px; /* s'étend pour laisser place au texte */
+}
+
+.badge:hover span {
+  opacity: 1;
+}
+
+/* Couleurs d’icônes (facultatif) */
+.badge.eco i {
+  color: #3a9a00;
+}
+.badge.europe i {
+  color: #003399;
+}
+
+a:hover {
+  color: #2E7D32;      /* couleur de ton choix */
+  transition: color 0.2s ease-in-out;
+}
+
+/* 2. Personnaliser la couleur de fond et de texte lors de la sélection */
+::-moz-selection {     /* pour Firefox */
+  background-color: #2E7D32;
+  color: #fff;
+}
+::selection {          /* pour les autres navigateurs */
+  background-color: #2E7D32;
+  color: #fff;
 }
