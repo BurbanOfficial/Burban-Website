@@ -9,7 +9,7 @@ const products = [
     price: 20.99,
     type: 'T-Shirt',
     colors: [
-      { name: 'Blanc', code: '#fff', img: 'https://i.imgur.com/3OueieQ.jpeg', hover: 'https://i.imgur.com/ol3tK3L.jpeg', url: 'https://burbanofficial.com/Burban-Website/public/metamorphosis-ar00050.html' },
+      { name: 'Blanc', code: '#fff', img: 'https://i.imgur.com/3OueieQ.jpeg', hover: 'https://i.imgur.com/ol3tK3L.jpeg', url: 'https://burbanofficial.github.io/Burban-Website/public/metamorphosis-ar00050.html' },
       { name: 'Lavande', code: '#f7ecff', img: 'https://i.imgur.com/ITx8c7r.jpeg', hover: 'https://i.imgur.com/yeYYPqa.jpeg', url: '/public/metamorphosis-ar00051.html' },
       { name: 'Rose Pastel', code: '#ffe9eb', img: 'https://i.imgur.com/0dnXLh4.jpeg', hover: 'https://i.imgur.com/HKaRX8P.jpeg', url: '/public/metamorphosis-ar00052.html' },
       // …
