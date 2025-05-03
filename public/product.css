@@ -32,7 +32,9 @@
   }
   .gallery-thumbs {
     display: flex;
-    gap: 8px;
+    flex-wrap: wrap;           /* autorise le retour à la ligne */
+    gap: 8px;                  /* espace entre les miniatures */
+    justify-content: flex-start;
   }
   .gallery-thumbs img {
     width: 64px; height: 64px;
@@ -40,7 +42,7 @@
     border-radius: 8px;
     cursor: pointer;
     opacity: .7;
-    transition: opacity .2s;
+    transition: transform 0.2s;
   }
   .gallery-thumbs img.active,
   .gallery-thumbs img:hover {
@@ -269,8 +271,9 @@
   cursor: pointer;
   font-weight: 600;
   font-size: 15px;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   transition: background-color 0.3s ease;
+  border-radius: 15px;
 }
 .accordion-toggle::after {
   content: '\f107';
@@ -310,6 +313,7 @@
   overflow: hidden;
   transition: height 0.4s ease;
   height: 0;
+  margin-top: -30px;
 }
   
   
