@@ -246,9 +246,11 @@
         <div class="summary-row total">
           <span>Total</span><span id="total">0€</span>
         </div>
-        <!-- <div class="summary-row" id="loyalty-points-row">
-          <span>Points de fidélité gagnés</span><span id="loyalty-points">0 points</span>
-        </div> -->
+        <h5>La remise sélectionnée sera appliquée lors du paiement.</h5><br>
+        <div class="summary-row" id="loyalty-points-row">
+          <span>Fidélité : points à recevoir</span><span id="loyalty-points">0 points</span>
+        </div>
+        <h5>Unqiuement pour les clients fidélisés.<br><br><a href="https://burbanofficial.com/signup.html" style="display:inline-block;padding:8px 16px;background:#000;color:#fff;text-decoration:none;border-radius:4px;font-weight:500;">Créer un compte ou se connecter</a></h5>
 
         <!-- Section Bons de réduction -->
         <div id="voucher-section">
@@ -410,15 +412,123 @@
 
     // --- Bons de réduction ---
     async function getUserPoints(){try{const u=auth.currentUser;if(u){const d=await db.collection('users').doc(u.uid).get();return d.exists?d.data().points||0:0;}return 0;}catch(e){console.error(e);return 0;}}
-    function updateVoucherOptions(){const div=document.getElementById('voucher-options');if(!auth.currentUser){div.innerHTML=`<p style="font-style:italic;color:#a00;">Connectez-vous pour voir vos coupons.</p>`;return;}getUserPoints().then(points=>{const subt=document.getElementById('subTotal').innerText.replace('€','');const total=parseFloat(subt);const vouchers=[{points:500,value:5,min:30},{points:1000,value:10,min:40},{points:2000,value:20,min:80},{points:2500,value:30,min:100}];let html='';vouchers.forEach(v=>{if(points>=v.points){if(total>=v.min){html+=`<div style="margin-bottom:8px;"><input type="checkbox" class="voucher-checkbox" id="v${v.value}" value="${v.value}" data-points="${v.points}"><label for="v${v.value}" style="cursor:pointer;">€${v.value} coupon (coût ${v.points} pts)</label></div>`;}else{html+=`<div style="margin-bottom:8px;color:#aaa;">€${v.value} coupon (min. ${v.min}€ - coût ${v.points} pts) <em>Inapplicable</em></div>`;}}});if(!html) html='<p>Aucun coupon disponible.</p>';div.innerHTML=html;addVoucherCheckboxListeners();});}
-    function addVoucherCheckboxListeners(){const cbs=document.querySelectorAll('input.voucher-checkbox');cbs.forEach(cb=>cb.addEventListener('click',function(){if(this.checked){cbs.forEach(o=>o!==this&&(o.checked=false));}else this.checked=false;}));}
+    
+    function updateVoucherOptions(){
+  const div = document.getElementById('voucher-options');
+  if (!auth.currentUser) {
+    div.innerHTML = `<p style="font-style:italic;color:#a00;">
+                       Connectez-vous pour voir vos coupons.
+                     </p>`;
+    return;
+  }
+
+  getUserPoints().then(points => {
+    // 1️⃣ On récupère les trois composants du total
+    const sub      = parseFloat(document.getElementById('subTotal').innerText.replace('€','')) || 0;
+    const shipping = parseFloat(document.getElementById('shipping').innerText.replace('€','')) || 0;
+    const tax      = parseFloat(document.getElementById('tax').innerText.replace('€','')) || 0;
+
+    // 2️⃣ On calcule le vrai total du panier
+    const total = sub + shipping + tax;
+
+    const vouchers = [
+      { points: 500,  value: 5,  min: 30  },
+      { points: 1000, value: 10, min: 40 },
+      { points: 2000, value: 20, min: 80 },
+      { points: 2500, value: 30, min: 100 },
+    ];
+
+    let html = '';
+    vouchers.forEach(v => {
+      if (points >= v.points) {
+        if (total >= v.min) {
+          html += `
+            <div style="margin-bottom:8px;">
+              <input
+                type="checkbox"
+                class="voucher-checkbox"
+                id="v${v.value}"
+                value="${v.value}"
+                data-points="${v.points}"
+              >
+              <label for="v${v.value}" style="cursor:pointer;">
+                €${v.value} coupon (coût ${v.points} pts)
+              </label>
+            </div>`;
+        } else {
+          html += `
+            <div style="margin-bottom:8px;color:#aaa;">
+              €${v.value} coupon (min. ${v.min}€ – coût ${v.points} pts)
+              <em>Inapplicable</em>
+            </div>`;
+        }
+      }
+    });
+
+    if (!html) html = '<p>Aucun coupon disponible.</p>';
+    div.innerHTML = html;
+    addVoucherCheckboxListeners();
+  });
+}
+
+    
+    function addVoucherCheckboxListeners(){
+      const cbs = document.querySelectorAll('input.voucher-checkbox');
+      cbs.forEach(cb => cb.addEventListener('click', function(){
+        if (this.checked){
+          cbs.forEach(o => o!==this && (o.checked = false));
+        } else {
+          this.checked = false;
+        }
+    +   // **nouveau** : rafraîchir immédiatement le calcul des points
+    +   updateLoyaltyPoints();
+      }));
+    }
 
     // --- Total & TVA ---
     function updateTotal(){const items=JSON.parse(localStorage.getItem('cartItems'))||[];const sum=items.reduce((a,i)=>a+i.price*i.quantity,0);document.getElementById('subTotal').innerText=sum.toFixed(2)+'€';document.getElementById('tax').innerText=(sum*0.2).toFixed(2)+'€';document.getElementById('shipping').innerText='A déterminer au paiement';document.getElementById('total').innerText=(sum*1.2).toFixed(2)+'€';updateVoucherOptions();}
     function resetButton(){const b=document.getElementById('checkout-btn');const t=document.getElementById('checkout-btn-text');const l=document.getElementById('loader');const c=document.getElementById('card-icon');b.disabled=false;t.style.display='inline';l.style.display='none';c.style.display='inline-block';}
 
     // --- Checkout Stripe ---
-    async function handleCheckout(){const b=document.getElementById('checkout-btn'),t=document.getElementById('checkout-btn-text'),l=document.getElementById('loader'),c=document.getElementById('card-icon');b.disabled=true;t.style.display='none';l.style.display='inline-block';c.style.display='none';const sel=document.querySelector('input.voucher-checkbox:checked');let voucher=null;if(sel){voucher={value:sel.value,points:sel.getAttribute('data-points')};localStorage.setItem('appliedVoucher',JSON.stringify(voucher));}else localStorage.removeItem('appliedVoucher');try{const items=JSON.parse(localStorage.getItem('cartItems'))||[];if(!items.length){alert('Votre panier est vide !');resetButton();return;}const res=await fetch('https://burban-stripe-service.onrender.com/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items,voucher})});const d=await res.json();if(d.error){alert(d.error);resetButton();return;}resetButton();const stripe=Stripe('pk_live_51Q9ORzRwel3656rYkt2acyiz7KoCl1mJA6ru04LPlGQmt5Iw9BcTQa16qv5O0Ozte9bMCtutah1qh4r6yds3l2p000MPG83KmB');stripe.redirectToCheckout({sessionId:d.sessionId});}catch(e){console.error(e);alert('Erreur, réessayez');resetButton();}}
+    async function handleCheckout(){const b=document.getElementById('checkout-btn'),t=document.getElementById('checkout-btn-text'),l=document.getElementById('loader'),c=document.getElementById('card-icon');b.disabled=true;t.style.display='none';l.style.display='inline-block';c.style.display='none';const selectedVoucher = document.querySelector('input.voucher-checkbox:checked');
+      let voucherData = null;
+      if (selectedVoucher) {
+        const voucherValue = selectedVoucher.value;
+        const voucherPoints = selectedVoucher.getAttribute('data-points');
+        voucherData = { voucherValue, voucherPoints };
+        localStorage.setItem('appliedVoucher', JSON.stringify(voucherData));
+      } else {
+        localStorage.removeItem('appliedVoucher');
+      }
+    
+      try {
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        if (cartItems.length === 0) {
+          alert("Your cart is empty!");
+          resetButton();
+          return;
+        }
+        // Inclure le voucher (s'il existe) dans la requête envoyée au serveur
+        const response = await fetch('https://burban-stripe-service.onrender.com/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: cartItems, voucher: voucherData })
+        });
+        const data = await response.json();
+        if (data.error) {
+          alert(data.error);
+          resetButton();
+          return;
+        }
+        resetButton();
+        const stripe = Stripe('pk_live_51Q9ORzRwel3656rYkt2acyiz7KoCl1mJA6ru04LPlGQmt5Iw9BcTQa16qv5O0Ozte9bMCtutah1qh4r6yds3l2p000MPG83KmB');
+        stripe.redirectToCheckout({ sessionId: data.sessionId });
+      } catch (error) {
+        console.error(error);
+        alert("An error has occurred. Please try again.");
+        resetButton();
+      }
+    }
 
     // --- Auth & Init ---
     auth.onAuthStateChanged(()=>updateVoucherOptions());
@@ -433,7 +543,70 @@
 <script>
   // Shipping logic (copié du server)
   const shippingRates = {
-    category1: { us:{unique:4.49, additional:2.10}, europe:{unique:4.29, additional:1.25}, /*...*/ worldwide:{unique:10.59, additional:5.30} },
+    category1: { // T-shirts, débardeurs, T-shirts manches 3/4, t-shirts manches longues, polos, crop-tops
+    us:        { unique: 4.49, additional: 2.10 },
+    europe:    { unique: 4.29, additional: 1.25 },
+    uk:        { unique: 4.19, additional: 1.25 },
+    efta:      { unique: 8.99, additional: 1.00 },
+    canada:    { unique: 7.69, additional: 1.70 },
+    australia: { unique: 6.19, additional: 1.15 },
+    japan:     { unique: 3.99, additional: 1.25 },
+    brazil:    { unique: 4.09, additional: 2.25 },
+    worldwide: { unique: 10.59, additional: 5.30 }
+  },
+  category2: { // Sweats à capuche, sweats, pulls, vestes, pantalons de sport et de survêtement
+    us:        { unique: 8.09, additional: 2.20 },
+    europe:    { unique: 6.29, additional: 2.00 },
+    uk:        { unique: 5.99, additional: 2.00 },
+    efta:      { unique: 9.99, additional: 2.00 },
+    canada:    { unique: 9.49, additional: 2.05 },
+    australia: { unique: 9.79, additional: 1.80 },
+    japan:     { unique: 5.99, additional: 2.00 },
+    brazil:    { unique: 5.39, additional: 2.70 },
+    worldwide: { unique: 6.29, additional: 2.00 }
+  },
+  category3: { // Troisième grille tarifaire (par défaut)
+    us:        { unique: 9.79, additional: 4.90 },
+    europe:    { unique: 10.19, additional: 5.10 },
+    uk:        { unique: 9.79, additional: 4.90 },
+    efta:      { unique: 15.79, additional: 8.35 },
+    canada:    { unique: 9.79, additional: 4.90 },
+    australia: { unique: 9.79, additional: 4.90 },
+    japan:     { unique: 9.79, additional: 4.90 },
+    worldwide: { unique: 12.49, additional: 5.80 }
+  },
+  category4: { // Hoodies, sweatshirts, jackets, pants, joggers
+    us:        { unique: 7.09, additional: 2.20 },
+    europe:    { unique: 5.99, additional: 2.00 },
+    uk:        { unique: 5.99, additional: 2.00 },
+    efta:      { unique: 9.99, additional: 2.00 },
+    canada:    { unique: 8.19, additional: 2.05 },
+    australia: { unique: 9.79, additional: 1.80 },
+    japan:     { unique: 5.99, additional: 2.00 },
+    brazil:    { unique: 5.39, additional: 2.70 },
+    worldwide: { unique: 14.99, additional: 7.05 }
+  },
+  category5: { // Coupe-vent all over, pantalons de survêtement all over, pyjama all over
+    us:        { unique: 7.09, additional: 7.09 },
+    europe:    { unique: 7.99, additional: 7.99 },
+    uk:        { unique: 7.99, additional: 7.99 },
+    efta:      { unique: 7.99, additional: 7.99 },
+    canada:    { unique: 7.09, additional: 7.09 },
+    australia: { unique: 7.09, additional: 7.09 },
+    japan:     { unique: 7.09, additional: 7.09 },
+    worldwide: { unique: 7.99, additional: 7.99 }
+  },
+  category6: { // Casquettes, casquettes de baseball, casquettes snapback, casquettes en maille, bonnets, bobs, visières, bonnets all over
+    us:        { unique: 3.59, additional: 1.80 },
+    europe:    { unique: 3.99, additional: 1.25 },
+    uk:        { unique: 3.69, additional: 1.25 },
+    efta:      { unique: 8.99, additional: 1.00 },
+    canada:    { unique: 6.09, additional: 1.70 },
+    australia: { unique: 6.19, additional: 1.15 },
+    japan:     { unique: 3.99, additional: 1.25 },
+    brazil:    { unique: 4.09, additional: 2.25 },
+    worldwide: { unique: 10.59, additional: 5.30 }
+  }
     /* autres catégories identiques à server.js */
   };
   const countryToRegion = { us:'us', ca:'canada', gb:'uk', uk:'uk', jp:'japan', au:'australia', br:'brazil' };
@@ -483,26 +656,74 @@
 async function updateTotal() {
   const items   = JSON.parse(localStorage.getItem('cartItems')) || [];
   const sub     = items.reduce((a,i) => a + i.price * i.quantity, 0);
-
-  const region  = await detectRegion();
+  const region   = await detectRegion();
   const shipping = getCombinedShippingCost(items, region);
 
-  // TVA calculée sur (sous-total + Livraison)
-  const taxBase = sub + shipping;
-  const tax = taxBase * 0.2;
+  // **nouvelle** lecture du discount
+  const sel      = document.querySelector('input.voucher-checkbox:checked');
+  const discount = sel ? Number(sel.value) : 0;
 
-  document.getElementById('subTotal').innerText  = sub.toFixed(2) + '€';
+  // ancienne base et totaux
+  const oldBase  = sub + shipping;
+  const oldTax   = oldBase * 0.2;
+  const oldTotal = oldBase + oldTax;
+
+  // nouvelle base et totaux
+  const newBase  = Math.max(0, oldBase - discount);
+  const newTax   = newBase * 0.2;
+  const newTotal = newBase + newTax;
+
+  // affichage
+  document.getElementById('subTotal').innerText = sub.toFixed(2) + '€';
   document.getElementById('shipping').innerText = shipping.toFixed(2) + '€';
-  document.getElementById('tax').innerText      = tax.toFixed(2) + '€';
-  document.getElementById('total').innerText    = (sub + tax + shipping).toFixed(2) + '€';
+  document.getElementById('tax').innerText      = newTax.toFixed(2) + '€';
+
+  const totalEl = document.getElementById('total');
+  if (discount > 0) {
+    totalEl.innerHTML = `
+      <span style="text-decoration: line-through; color: #a00;">
+        ${oldTotal.toFixed(2)}€
+      </span>
+      &nbsp;${newTotal.toFixed(2)}€
+    `;
+  } else {
+    totalEl.textContent = oldTotal.toFixed(2) + '€';
+  }
 
   updateVoucherOptions();
+  updateLoyaltyPoints();
 }
 
   // Load cart and bind remove/quantity logic as before, then call updateTotal()
   document.addEventListener('DOMContentLoaded', ()=>{
     loadCart();
   });
+</script>
+
+<script>
+ function updateLoyaltyPoints() {
+  const row = document.getElementById('loyalty-points-row');
+  const pointsSpan = document.getElementById('loyalty-points');
+
+  // Récupère le montant total TTC + livraison
+  const total = parseFloat(
+    document.getElementById('total').innerText.replace('€','')
+  ) || 0;
+
+  // Vérifie si un coupon est sélectionné
+  const hasVoucher = !!document.querySelector('input.voucher-checkbox:checked');
+
+  if (hasVoucher) {
+    // Cache la ligne si un coupon est appliqué
+    row.style.display = 'none';
+  } else {
+    // Calcule les points : 1€ dépensé = 10 points
+    const points = Math.floor(total * 10);
+    pointsSpan.innerText = `${points} point${points > 1 ? 's' : ''}`;
+    row.style.display = 'flex'; // ou 'block' selon votre CSS
+  }
+}
+
 </script>
 </body>
 </html>
