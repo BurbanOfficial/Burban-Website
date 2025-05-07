@@ -14,7 +14,7 @@
   <!-- CSS global -->
   <link rel="stylesheet" href="https://burbanofficial.github.io/Burban-Website/style.css" />
   <!-- CSS produit -->
-  <link rel="stylesheet" href="https://burbanofficial.github.io/Burban-Website/public/product.css" />
+  <link rel="stylesheet" href="F://Burban Website/public/product.css" />
 </head>
 <body>
 
@@ -200,6 +200,20 @@
       &copy; 2024 - <span id="year"></span> Burban. Tous Droits Réservés.
     </div>
   </footer>
+
+  <!-- Modal "Article ajouté au panier" -->
+<div id="cartModal" class="cart-modal hidden">
+  <div class="cart-modal-backdrop" onclick="closeCartModal()"></div>
+  <div class="cart-modal-content">
+    <!-- <button class="modal-close" aria-label="Fermer" onclick="closeCartModal()">&times;</button> -->
+    <div class="modal-icon"><i class="fa-regular fa-circle-check"></i></div>
+    <h2>Article ajouté au panier</h2>
+    <div class="modal-buttons">
+      <a href="index.html" class="btn btn-view-cart">Voir le panier</a>
+      <button class="btn btn-continue" onclick="closeCartModal()">Continuer mes achats</button>
+    </div>
+  </div>
+</div>
 
   <script src="products-script.js" defer></script>
 </body>

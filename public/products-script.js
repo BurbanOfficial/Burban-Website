@@ -32,6 +32,18 @@ document.querySelectorAll('.size-swatch').forEach(s => {
   });
 });
 
+// ----- Fonctions d'ouverture/fermeture du modal -----
+function showCartModal() {
+  const modal = document.getElementById('cartModal');
+  modal.classList.remove('hidden');
+}
+
+function closeCartModal() {
+  const modal = document.getElementById('cartModal');
+  // on enlève l'animation si besoin, puis on cache
+  modal.classList.add('hidden');
+}
+
 // Ajouter au panier + localStorage sous key 'cartItems'
 document.getElementById('addToCart').addEventListener('click', () => {
   const sizeEl = document.querySelector('.size-swatch.active');
@@ -54,9 +66,10 @@ document.getElementById('addToCart').addEventListener('click', () => {
   );
   if (exist) exist.quantity += 1;
   else cart.push({ id, name, price, color, size, image, quantity: 1 });
-
   localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
-  alert(`Ajouté : ${name} (${color}, ${size})`);
+  
+  // Affichage du modal
+  showCartModal();
 });
 
 document.querySelectorAll(".accordion-toggle").forEach(button => {

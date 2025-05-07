@@ -315,5 +315,147 @@
   height: 0;
   margin-top: -30px;
 }
+
+/* ===== Glassmorphism Modal ===== */
+.cart-modal {
+  position: fixed;
+  inset: 0; /* top/right/bottom/left = 0 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  overflow: hidden;
+}
+
+/* Backdrop flou + fondu */
+.cart-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  animation: fadeInBackdrop 0.4s forwards ease-out;
+}
+
+/* Conteneur glass */
+.cart-modal-content {
+  position: relative;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 410px;
+  padding: 32px 24px;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  color: #fff;
+  transform: translateY(-20px) scale(0.9);
+  opacity: 0;
+  animation: popIn 0.4s 0.1s forwards ease-out;
+}
+
+/* Bouton fermer */
+.modal-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.modal-close:hover {
+  color: #fff;
+}
+
+/* Icône */
+.modal-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  color: #19b626; /* un vert punchy */
+  text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* Titre */
+.cart-modal-content h2 {
+  margin: 0 0 20px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+}
+
+/* Boutons groupés */
+.modal-buttons {
+  display: flex;
+  gap: 14px;
+}
+
+/* Boutons : style commun */
+.modal-buttons .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* clé pour shrink correctement */
+  flex: 1;
+  min-width: 0;
+
+  /* padding un peu réduit si nécessaire */
+  padding: 0.6rem 1rem;  /* était 0.75rem 1.5rem */
+
+  white-space: nowrap;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1;
+
+  background: rgba(255, 255, 255, 0.20);
+  border: 1.5px solid rgba(255, 255, 255, 0.65);
+  border-radius: 8px;
+  color: #fff;
+
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+ }
+
+/* Voir le panier : solide */
+.btn-view-cart {
+  background: transparent;
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.9);
+  font-weight: 400;            /* moins gras */
+}
+.btn-view-cart:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+/* Continuer : outline */
+.btn-continue {
+  background: transparent;
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.9);
+}
+.btn-continue:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+/* Animations */
+@keyframes fadeInBackdrop {
+  to { opacity: 1; }
+}
+@keyframes popIn {
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Utilitaire */
+.hidden { display: none !important; }
+
   
   
