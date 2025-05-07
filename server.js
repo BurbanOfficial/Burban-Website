@@ -6,6 +6,14 @@ const geoip = require('geoip-lite');
 // La clé Stripe doit être définie dans Render via une variable d'environnement (STRIPE_SECRET_KEY)
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+const admin  = require('firebase-admin');
+const serviceAccount = require('./burban-fidelity-firebase-adminsdk-fbsvc-27edea8ee2.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+const db = admin.firestore();
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -122,14 +130,6 @@ function getCategory(item) {
   return "category3"; // Par défaut
 }
 
-function getShippingLabel(option) {
-  switch(option) {
-    case 'eco':     return "Livraison avec compensation CO₂";
-    case 'express': return "Livraison Express";
-    default:        return "Livraison Standard";
-  }
-}
-
 /**
  * Calcule le coût de livraison pour un article, en fonction de sa catégorie, de sa quantité et de la région.
  * Méthode standard utilisée lorsque tous les articles appartiennent à la même catégorie.
@@ -224,9 +224,58 @@ const euCountries = [
   'ie','it','lv','lt','lu','mt','nl','pl','pt','ro','sk','si','es','se'
 ];
 
+// Pour recevoir le body brut nécessaire à la vérification de signature
+app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET  // à configurer dans Render
+    );
+  } catch (err) {
+    console.error('⚠️ Webhook signature failed:', err.message);
+    return res.sendStatus(400);
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+
+    // 1€ dépensé = 10 points
+    // On prend session.amount_subtotal (en centimes) et on ignore les paiements avec discount
+    if (!session.total_details.amount_discount) {
+      const euros = Math.floor(session.amount_subtotal / 100);
+      const pointsToAdd = euros * 10;
+      const email = session.customer_email;
+
+      if (email) {
+        // cherche l'utilisateur par email
+        db.collection('users').where('email', '==', email).get()
+          .then(snapshot => {
+            if (!snapshot.empty) {
+              snapshot.forEach(doc => {
+                const ref = db.collection('users').doc(doc.id);
+                // Incrémente le champ points
+                return ref.update({
+                  points: admin.firestore.FieldValue.increment(pointsToAdd)
+                });
+              });
+            } else {
+              console.log(`Pas d’utilisateur Firebase trouvé pour ${email}`);
+            }
+          })
+          .catch(console.error);
+      }
+    }
+  }
+
+  res.sendStatus(200);
+});
+
 app.post('/create-checkout-session', async (req, res) => {
   try {
-    const { items, voucher } = req.body;
+    const { items, voucher, email } = req.body;
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: "Aucun article dans le panier." });
     }
@@ -294,7 +343,17 @@ app.post('/create-checkout-session', async (req, res) => {
 
     // Création de la session Checkout (sans default_tax_rates, les taxes sont appliquées par line_item)
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
+      payment_method_types: [
+    'card',            // Cartes & Cartes bancaires (Apple Pay & Google Pay inclus si activés)
+    'link',            // Link
+    'revolut_pay',     // Revolut
+    'bancontact',      // Bancontact
+    'blik',            // Blik
+    'eps',             // EPS
+    'ideal',           // iDEAL
+    'billie',          // Billie
+    'klarna'           // Klarna
+  ],
       billing_address_collection: 'required',
       shipping_address_collection: {
         allowed_countries: [ 
@@ -302,6 +361,8 @@ app.post('/create-checkout-session', async (req, res) => {
         ],
       },
       line_items: lineItems,
+      // si l'email a été transmis, on le pré‑remplit
+      ...(email ? { customer_email: email } : {}),
       // Si un voucher a été envoyé, on ajoute les discounts,
       // sinon, on autorise l'utilisation de promotion_codes directement dans Stripe.
       ...(discounts.length > 0 ? { discounts } : { allow_promotion_codes: true }),
