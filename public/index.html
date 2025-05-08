@@ -161,6 +161,44 @@
         display: none;
       }
     }
+
+    /* Style du sélecteur de langue */
+.lang-switcher select,
+.mobile-lang select {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  background: white;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lang-switcher select:hover,
+.mobile-lang select:hover {
+  border-color: #000;
+}
+
+/* Positionnement dans le header */
+.desktop-lang {
+  display: inline-block;
+}
+
+/* Masquer la version desktop sur mobile */
+@media (max-width: 768px) {
+  .desktop-lang {
+    display: none;
+  }
+}
+
+/* Masquer la version mobile sur desktop */
+@media (min-width: 769px) {
+  .mobile-lang {
+    display: none;
+  }
+}
   </style>
 
   <!-- Firebase SDK -->
@@ -206,6 +244,13 @@
         <span class="bar"></span>
         <span class="bar"></span>
       </button>
+
+      <div class="lang-switcher desktop-lang">
+        <select id="languageSelector" aria-label="Changer de langue">
+          <option value="EN">EN</option>
+          <option value="FR">FR</option>
+        </select>
+      </div>
     </div>
   </header>
 
@@ -217,6 +262,13 @@
       <li><a href="shop.html">Shop</a></li>
       <li><a href="about.html">À propos</a></li>
       <li><a href="contact.html">Contact</a></li>
+      <li class="mobile-lang">
+        <label for="languageSelectorMobile">Langue :</label>
+        <select id="languageSelectorMobile" aria-label="Changer de langue">
+          <option value="EN">EN</option>
+          <option value="FR">FR</option>
+        </select>
+      </li>
     </ul>
   </div>
 
@@ -250,7 +302,7 @@
         <div class="summary-row" id="loyalty-points-row">
           <span>Fidélité : points à recevoir</span><span id="loyalty-points">0 points</span>
         </div>
-        <h5>Unqiuement pour les clients fidélisés.<br><br><a href="https://burbanofficial.com/signup.html" style="display:inline-block;padding:8px 16px;background:#000;color:#fff;text-decoration:none;border-radius:4px;font-weight:500;">Créer un compte ou se connecter</a></h5>
+        <h5>Uniquement pour les clients fidélisés.<br><br><a href="https://burbanofficial.com/signup.html" style="display:inline-block;padding:8px 16px;background:#000;color:#fff;text-decoration:none;border-radius:4px;font-weight:500;">Créer un compte ou se connecter</a></h5>
 
         <!-- Section Bons de réduction -->
         <div id="voucher-section">
@@ -723,7 +775,25 @@ async function updateTotal() {
     row.style.display = 'flex'; // ou 'block' selon votre CSS
   }
 }
-
 </script>
+
+<script>
+  function handleLanguageChange(value) {
+    if (value === 'EN') {
+      window.location.href = 'https://burbanofficial.com/';
+    } else if (value === 'FR') {
+      window.location.href = 'https://burbanofficial.com/FR-fr/';
+    }
+  }
+
+  document.getElementById('languageSelector').addEventListener('change', function () {
+    handleLanguageChange(this.value);
+  });
+
+  document.getElementById('languageSelectorMobile').addEventListener('change', function () {
+    handleLanguageChange(this.value);
+  });
+</script>
+
 </body>
 </html>
