@@ -569,18 +569,3 @@ body {
 .badge.europe i {
   color: #003399;
 }
-
-a:hover {
-  color: #2E7D32;      /* couleur de ton choix */
-  transition: color 0.2s ease-in-out;
-}
-
-/* 2. Personnaliser la couleur de fond et de texte lors de la sélection */
-::-moz-selection {     /* pour Firefox */
-  background-color: #2E7D32;
-  color: #fff;
-}
-::selection {          /* pour les autres navigateurs */
-  background-color: #2E7D32;
-  color: #fff;
-}
