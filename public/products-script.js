@@ -142,3 +142,19 @@ document.querySelectorAll(".accordion-toggle").forEach(button => {
       updateMainImage();
     }
   });
+
+  function handleLanguageChange(value) {
+    if (value === 'EN') {
+      window.location.href = 'https://burbanofficial.com/';
+    } else if (value === 'FR') {
+      window.location.href = 'https://burbanofficial.com/FR-fr/';
+    }
+  }
+
+  document.getElementById('languageSelector').addEventListener('change', function () {
+    handleLanguageChange(this.value);
+  });
+
+  document.getElementById('languageSelectorMobile').addEventListener('change', function () {
+    handleLanguageChange(this.value);
+  });
