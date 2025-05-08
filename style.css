@@ -569,3 +569,41 @@ body {
 .badge.europe i {
   color: #003399;
 }
+
+/* Style du sélecteur de langue */
+.lang-switcher select,
+.mobile-lang select {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  background: white;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lang-switcher select:hover,
+.mobile-lang select:hover {
+  border-color: #000;
+}
+
+/* Positionnement dans le header */
+.desktop-lang {
+  display: inline-block;
+}
+
+/* Masquer la version desktop sur mobile */
+@media (max-width: 768px) {
+  .desktop-lang {
+    display: none;
+  }
+}
+
+/* Masquer la version mobile sur desktop */
+@media (min-width: 769px) {
+  .mobile-lang {
+    display: none;
+  }
+}
