@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BURBAN | Metamorphosis (`Pastel Pink)</title>
+
+  <!-- Police Poppins & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <!-- CSS global -->
+  <link rel="stylesheet" href="https://burbanofficial.github.io/Burban-Website/style.css" />
+  <!-- CSS produit -->
+  <link rel="stylesheet" href="https://burbanofficial.github.io/Burban-Website/public/product.css" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://i.imgur.com/CCC34mn.png" type="image/png">
+  <link rel="apple-touch-icon" href="https://i.imgur.com/CCC34mn.png">
+  <!-- Favicon pour les navigateurs modernes -->
+  <link rel="icon" href="https://i.imgur.com/CCC34mn.png" sizes="16x16" />
+  <link rel="icon" href="https://i.imgur.com/CCC34mn.png" sizes="32x32" />
+  <link rel="icon" href="https://i.imgur.com/CCC34mn.png" sizes="48x48" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <!-- Logo -->
+    <a href="index.html" class="logo-link">
+      <img src="https://i.imgur.com/Kl9kTBg.png" alt="Burban Logo" class="logo-img">
+    </a>
+  
+    <!-- Nav desktop -->
+    <nav class="nav">
+      <a href="index.html" class="nav-item">Home</a>
+      <a href="shop.html" class="nav-item active">Shop</a>
+      <a href="about.html" class="nav-item">About Burban</a>
+      <a href="contact.html" class="nav-item">Contact Us</a>
+    </nav>
+  
+    <!-- Icônes + hamburger -->
+    <div class="actions">
+      <a href="account.html" class="account-btn" aria-label="Mon compte"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="cart.html" class="cart-btn" aria-label="Mon panier"><i class="fa-solid fa-bag-shopping"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <button class="hamburger" aria-label="Ouvrir le menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+
+      <div class="lang-switcher desktop-lang">
+        <select id="languageSelector" aria-label="Changer de langue">
+          <option value="EN">EN</option>
+          <option value="FR">FR</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Overlay menu mobile -->
+  <div class="overlay-menu" id="overlayMenu">
+    <button class="close-btn" aria-label="Fermer le menu">&times;</button>
+    <ul class="overlay-nav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="about.html">About Burban</a></li>
+      <li><a href="contact.html">Contact Us</a></li>
+      <li class="mobile-lang">
+        <label for="languageSelectorMobile">Language:</label>
+        <select id="languageSelectorMobile" aria-label="Changer de langue">
+          <option value="EN">EN</option>
+          <option value="FR">FR</option>
+        </select>
+      </li>      
+    </ul>
+  </div>
+
+  <main class="product-page"
+        data-product-id="metamorphosis-t-shirt-pastel-pink"
+        data-product-name="Metamorphosis - T-Shirt (Pastel Pink)"
+        data-product-price="20.99">
+    <!-- Gallery -->
+    <div class="gallery">
+      <div class="gallery-main">
+        <img id="mainImage" src="https://imgur.com/HKaRX8P.jpeg" alt="Nom du produit">
+      </div>
+      <div class="gallery-thumbs">
+        <img src="https://i.imgur.com/HKaRX8P.jpeg" data-src="https://i.imgur.com/HKaRX8P.jpeg" class="active">
+        <img src="https://i.imgur.com/0dnXLh4.jpeg"    data-src="https://i.imgur.com/0dnXLh4.jpeg">
+        <img src="https://i.imgur.com/EeFiPqs.jpeg"     data-src="https://i.imgur.com/EeFiPqs.jpeg">
+        <img src="https://i.imgur.com/PPUzMjA.jpeg"    data-src="https://i.imgur.com/PPUzMjA.jpeg">
+        <img src="https://i.imgur.com/0xNMgLy.jpeg"    data-src="https://i.imgur.com/0xNMgLy.jpeg">
+        <img src="https://i.imgur.com/YAIT1pC.jpeg"    data-src="https://i.imgur.com/YAIT1pC.jpeg">
+        <img src="https://i.imgur.com/5FRXxl9.jpeg"    data-src="https://i.imgur.com/5FRXxl9.jpeg">
+      </div>
+    </div>
+
+    <!-- Info produit -->
+    <div class="product-info">
+      <h1>Metamorphosis</h1>
+      <div class="price">20.99€</div>
+
+      <button class="accordion-toggle" data-target="accordion1">
+        Description
+      </button>
+
+      <div class="accordion-wrapper">
+        <div class="accordion-content" id="accordion1">
+          <p>
+            The soul of Burban takes flight with Metamorphosis 🦋, a t-shirt where the butterfly weaves through the letters as a symbol of transformation, freedom, and inner strength.
+    
+            <br><br>Designed for those who wear stories, Metamorphosis blends raw style, premium comfort, and a strong commitment to sustainability. Made from 100% combed organic cotton, it offers a soft, high-end texture that’s gentle on your skin—and kind to the planet.
+    
+            <br><br>With its classic fit, sturdy ribbed collar, and hand-drawn graphic, this tee becomes a staple in your streetwear wardrobe—bold, minimal, and meaningful all at once.
+          </p>
+        </div>
+      </div>
+
+      <button class="accordion-toggle" data-target="accordion2">
+        Composition
+      </button>
+      
+      <div class="accordion-wrapper">
+        <div class="accordion-content" id="accordion2">
+          <p>
+                <i class="fa-regular fa-circle-check"></i>&nbsp;100% Organic cotton 🌿<br>
+                <i class="fa-regular fa-circle-check"></i>&nbsp;Contains 0% hazardous substances<br>
+                <i class="fa-regular fa-circle-check"></i>&nbsp;DTG Printing<br>
+                <i class="fa-regular fa-circle-check"></i>&nbsp;Classic unisex fit<br>
+                <i class="fa-regular fa-circle-check"></i>&nbsp;Country of origin: Bangladesh
+          </p>
+        </div>
+      </div>
+
+      <!-- Couleurs -->
+      <div class="option-group">
+        <label>Colors</label>
+        <div class="color-options">
+          <!-- Chaque <a> englobe le swatch, avec href vers la bonne URL -->
+          <a class="color-swatch"
+             data-color-name="White"
+             href="https://burbanofficial.com/public/metamorphosis-ar00050.html"
+             style="background:#ffffff"
+             title="White"></a>
+
+          <a class="color-swatch"
+             data-color-name="Lavender"
+             href="https://burbanofficial.com/public/metamorphosis-ar00051.html"
+             style="background:#B497BD"
+             title="Lavender"></a>
+
+          <a class="color-swatch active"
+             data-color-name="Pastel Pink"
+             href="https://burbanofficial.com/public/metamorphosis-ar00052.html"
+             style="background:#ffe9eb"
+             title="Pastel Pink"></a>
+        </div>
+      </div>
+
+      <!-- Tailles -->
+      <div class="option-group">
+        <label>Size</label>
+        <div class="size-options">
+          <span class="size-swatch" data-size="S">S</span>
+          <span class="size-swatch" data-size="M">M</span>
+          <span class="size-swatch" data-size="L">L</span>
+          <span class="size-swatch" data-size="XL">XL</span>
+          <span class="size-swatch" data-size="2XL">2XL</span>
+          <span class="size-swatch" data-size="3XL">3XL</span>
+        </div>
+        <div id="sizeError" class="error-message hidden">Please select a size.</div>
+      </div>
+
+      <!-- Bouton Guide des tailles -->
+      <div class="option-group">
+        <a href="/public/size-guide-t-shirt-4.html" target="_blank" class="size-guide-btn">
+          <i class="fa-solid fa-ruler"></i> Size Guide
+        </a>
+      </div>
+
+      <!-- Buttons -->
+      <div class="btn-row">
+        <button class="btn btn-back" onclick="window.location.href='https://burbanofficial.github.io/Burban-Website/shop.html'"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <button id="addToCart" class="btn btn-add"></i> Add to cart</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <img src="https://i.imgur.com/Nup8sfC.png" alt="Burban Logo">
+        <p>More than a brand, an identity.</p>
+      </div>
+      <div class="footer-links">
+        <div>
+          <h4>Navigation</h4>
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="about.html">About Burban</a>
+          <a href="contact.html">Contact Us</a>
+        </div>
+        <div>
+          <h4>Support</h4>
+          <a href="#">FAQ</a>
+          <a href="#">Livraison</a>
+          <a href="#">Retour</a>
+          <a href="#">CGV</a>
+        </div>
+        <div>
+          <h4>Follow us</h4>
+          <a href="#">Instagram</a>
+          <a href="#">Facebook</a>
+          <a href="#">TikTok</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2024 - <span id="year"></span> Burban. All Rights Reserved.
+    </div>
+  </footer>
+
+  <!-- Modal "Article ajouté au panier" -->
+<div id="cartModal" class="cart-modal hidden">
+  <div class="cart-modal-backdrop" onclick="closeCartModal()"></div>
+  <div class="cart-modal-content">
+    <!-- <button class="modal-close" aria-label="Fermer" onclick="closeCartModal()">&times;</button> -->
+    <div class="modal-icon"><i class="fa-regular fa-circle-check"></i></div>
+    <h2>Item added to cart</h2>
+    <div class="modal-buttons">
+      <a href="index.html" class="btn btn-view-cart">View Cart</a>
+      <button class="btn btn-continue" onclick="closeCartModal()">Continue Shopping</button>
+    </div>
+  </div>
+</div>
+
+  <script src="products-script.js" defer></script>
+</body>
+</html>
