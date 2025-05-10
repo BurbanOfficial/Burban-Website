@@ -186,6 +186,29 @@
       from { transform: translateY(0); }
       to   { transform: translateY(-100%); }
     }
+
+    /* Tablettes (paysage) et petits ordinateurs portables (largeur entre 769px et 1024px) */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    width: 90%;        /* s’adapte à presque toute la largeur */
+  }
+}
+
+/* Petites tablettes et grands téléphones (portrait, largeur entre 481px et 768px) */
+@media screen and (min-width: 481px) and (max-width: 768px) {
+  .container {
+    width: 90%;        /* quasi pleine largeur */
+    max-width: 500px;
+  }
+}
+
+/* Ordinateurs standards (largeur entre 1025px et 1440px) */
+@media screen and (min-width: 1025px) and (max-width: 1440px) {
+  .container {
+    max-width: 600px;  /* limite plus large pour ordinateurs */
+  }
+}
+
   </style>
 </head>
 <body>
