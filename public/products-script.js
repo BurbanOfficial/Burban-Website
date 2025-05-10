@@ -158,3 +158,56 @@ document.querySelectorAll(".accordion-toggle").forEach(button => {
   document.getElementById('languageSelectorMobile').addEventListener('change', function () {
     handleLanguageChange(this.value);
   });
+
+  document.querySelectorAll('.delivery-carbon-box').forEach(box => {
+    const value     = parseFloat(box.dataset.carbon);
+    const label     = box.querySelector('.carbon-label');
+    const indicator = box.querySelector('.carbon-indicator');
+    const valueText = box.querySelector('.carbon-value');
+    const leafIcon  = box.querySelector('.carbon-info i');
+  
+    let text = '', dots = '', color = '';
+  
+    if (value <= 2) {
+      text  = " Very low";
+      dots  = '<i class="fa-solid fa-circle"></i> ' +
+              '<i class="fa-regular fa-circle"></i> ' +
+              '<i class="fa-regular fa-circle"></i>';
+      color = "#4CAF50";
+    } else if (value <= 4) {
+      text  = "Low";
+      dots  = '<i class="fa-solid fa-circle"></i> ' +
+              '<i class="fa-solid fa-circle"></i> ' +
+              '<i class="fa-regular fa-circle"></i>';
+      color = "#8BC34A";
+    } else if (value <= 6) {
+      text  = "Medium";
+      dots  = '<i class="fa-solid fa-circle"></i> ' +
+              '<i class="fa-solid fa-circle"></i> ' +
+              '<i class="fa-solid fa-circle"></i>';
+      color = "#FFC107";
+    } else if (value <= 8) {
+      text  = "High";
+      dots  = '<i class="fa-solid fa-circle"></i> ' +
+              '<i class="fa-solid fa-circle"></i> ' +
+              '<i class="fa-solid fa-circle"></i>';
+      color = "#FF5722";
+    } else {
+      text  = "Very high";
+      dots  = '<i class="fa-solid fa-circle"></i> ' +
+              '<i class="fa-solid fa-circle"></i> ' +
+              '<i class="fa-solid fa-circle"></i>';
+      color = "#F44336";
+    }
+  
+    // Set text and value
+    label.textContent            = text;
+    valueText.textContent        = `(${value.toFixed(1)} kg CO₂)`;
+  
+    // Render the icons as HTML
+    indicator.innerHTML          = dots;
+    indicator.style.color        = color;
+  
+    // Colour the info icon
+    leafIcon.style.color         = color;
+  });

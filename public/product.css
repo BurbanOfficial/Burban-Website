@@ -495,6 +495,84 @@
   }
 }
 
+.delivery-carbon-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 20px;
+  background-color: #f9f9f9;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: #333;
+}
+
+.delivery-info,
+.carbon-info {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.95rem;
+  color: #333;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+}
+
+.carbon-indicator {
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+.carbon-value {
+  margin-left: 6px;
+  color: #888;
+  font-size: 13px;
+}
+
+/* Base container */
+#delivery-estimate {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.95rem;
+  color: #333;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+}
+
+/* Flag icon—square SVG */
+#delivery-estimate .flag-icon {
+  width: 32px;
+  height: 24px;
+  border-radius: 4px;
+  margin: 0 0.5rem 0 0.25rem;
+  margin-left: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  object-fit: cover;
+}
+
+/* Text wrapper to allow fine-tuning */
+#delivery-estimate .estimate-text {
+  display: inline-block;
+  line-height: 1.3;
+  font-weight: 500;
+}
+
+/* Loading state */
+#delivery-estimate.loading {
+  color: #777;
+}
+
 
   
   
