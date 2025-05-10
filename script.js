@@ -9,14 +9,14 @@ const products = [
     price: 20.99,
     type: 'T-Shirt',
     colors: [
-      { name: 'Blanc', code: '#fff', img: 'https://i.imgur.com/3OueieQ.jpeg', hover: 'https://i.imgur.com/ol3tK3L.jpeg', url: '/Burban-Website/public/metamorphosis-ar00050.html' },
-      { name: 'Lavande', code: '#f7ecff', img: 'https://i.imgur.com/ITx8c7r.jpeg', hover: 'https://i.imgur.com/yeYYPqa.jpeg', url: '/Burban-Website/public/metamorphosis-ar00051.html' },
-      { name: 'Rose Pastel', code: '#ffe9eb', img: 'https://i.imgur.com/0dnXLh4.jpeg', hover: 'https://i.imgur.com/HKaRX8P.jpeg', url: '/Burban-Website/public/metamorphosis-ar00052.html' },
+      { name: 'White', code: '#fff', img: 'https://i.imgur.com/3OueieQ.jpeg', hover: 'https://i.imgur.com/ol3tK3L.jpeg', url: 'https://burbanofficial.com/public/metamorphosis-ar00050.html' },
+      { name: 'Lavender', code: '#f7ecff', img: 'https://i.imgur.com/ITx8c7r.jpeg', hover: 'https://i.imgur.com/yeYYPqa.jpeg', url: 'https://burbanofficial.com/public/metamorphosis-ar00051.html' },
+      { name: 'Pastel Pink', code: '#ffe9eb', img: 'https://i.imgur.com/0dnXLh4.jpeg', hover: 'https://i.imgur.com/HKaRX8P.jpeg', url: 'https://burbanofficial.com/public/metamorphosis-ar00052.html' },
       // …
     ],
     sizes: ['S','M','L','XL','2XL','3XL'],
-    cut: 'Droite',
-    gender: 'Unisexe',
+    cut: 'Straight',
+    gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
   },
@@ -30,12 +30,12 @@ const products = [
     price: 15.99,
     type: 'T-Shirt',
     colors: [
-      { name: 'Blanc', code: '#fffefa', img: 'https://i.imgur.com/zZ2tww6.jpeg', hover: 'https://i.imgur.com/3TRibcn.jpeg', url: '/public/celestial-b-ar00049.html' },
+      { name: 'White', code: '#fffefa', img: 'https://i.imgur.com/zZ2tww6.jpeg', hover: 'https://i.imgur.com/3TRibcn.jpeg', url: 'https://burbanofficial.com/public/celestial-b-ar00049.html' },
       // …
     ],
     sizes: ['S','M','L','XL','2XL','3XL'],
-    cut: 'Droite',
-    gender: 'Unisexe',
+    cut: 'Straight',
+    gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
   },
@@ -47,14 +47,14 @@ const products = [
     id: 'urban-crest',
     name: 'Urban Crest',
     price: 21.99,
-    type: 'Casquette',
+    type: 'Cap',
     colors: [
-      { name: 'Noir', code: '#000', img: 'https://i.imgur.com/asPiEue.jpeg', hover: 'https://i.imgur.com/U0oUcsA.jpeg', url: '/public/urban-crest-ar00046.html' },
+      { name: 'Black', code: '#000', img: 'https://i.imgur.com/asPiEue.jpeg', hover: 'https://i.imgur.com/U0oUcsA.jpeg', url: '/public/urban-crest-ar00046.html' },
       // …
     ],
     sizes: ['Unique'],
-    cut: 'Autre',
-    gender: 'Unisexe',
+    cut: 'Other',
+    gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
   },
@@ -66,14 +66,14 @@ const products = [
     id: 'colorful-burst',
     name: 'Colorful Burst',
     price: 34.99,
-    type: 'Sweat sans capuche',
+    type: 'Sweatshirt',
     colors: [
-      { name: 'Bleu Foncé', code: '#171f2c', img: 'https://i.imgur.com/50AGnb5.jpeg', hover: 'https://i.imgur.com/WZgnZhx.jpeg', url: '/public/colorful-burst-ar00045.html' },
+      { name: 'Dark Blue', code: '#171f2c', img: 'https://i.imgur.com/50AGnb5.jpeg', hover: 'https://i.imgur.com/WZgnZhx.jpeg', url: '/public/colorful-burst-ar00045.html' },
       // …
     ],
     sizes: ['S','M','L','XL','2XL','3XL'],
-    cut: 'Autre',
-    gender: 'Unisexe',
+    cut: 'Other',
+    gender: 'Unisex',
     badge_eco: false,
     badge_europe: false
   },
@@ -84,16 +84,16 @@ const products = [
     id: 'urban-hibiscus',
     name: 'Urban Hibiscus',
     price: 23.99,
-    type: 'Sweat sans capuche',
+    type: 'Sweatshirt',
     colors: [
-      { name: 'Vert Foncé', code: '#1a3626', img: 'https://i.imgur.com/ltGJ2UA.jpeg', hover: 'https://i.imgur.com/uVeTzOQ.jpeg', url: '/public/urban-hibiscus-ar00044.html' },
-      { name: 'Bleu Indigo', code: '#395d82', img: 'https://i.imgur.com/4j5IjyP.jpeg', hover: 'https://i.imgur.com/8a0UYy0.jpeg', url: '/public/urban-hibiscus-ar00048.html' },
-      { name: 'Sauge', code: '#7e8560', img: 'https://i.imgur.com/62dxFU2.jpeg', hover: 'https://i.imgur.com/pMVsAJC.jpeg', url: '/public/urban-hibiscus-ar00047.html' },
+      { name: 'Dark Green', code: '#1a3626', img: 'https://i.imgur.com/ltGJ2UA.jpeg', hover: 'https://i.imgur.com/uVeTzOQ.jpeg', url: '/public/urban-hibiscus-ar00044.html' },
+      { name: 'Indigo Blue', code: '#395d82', img: 'https://i.imgur.com/4j5IjyP.jpeg', hover: 'https://i.imgur.com/8a0UYy0.jpeg', url: '/public/urban-hibiscus-ar00048.html' },
+      { name: 'Sage Green', code: '#7e8560', img: 'https://i.imgur.com/62dxFU2.jpeg', hover: 'https://i.imgur.com/pMVsAJC.jpeg', url: '/public/urban-hibiscus-ar00047.html' },
       // …
     ],
     sizes: ['S','M','L','XL','2XL','3XL'],
-    cut: 'Autre',
-    gender: 'Unisexe',
+    cut: 'Other',
+    gender: 'Unisex',
     badge_eco: false,
     badge_europe: false
   },
@@ -104,14 +104,14 @@ const products = [
     id: 'universal-love',
     name: 'Universal Love',
     price: 44.99,
-    type: 'Sweat à capuche',
+    type: 'Hoodie',
     colors: [
-      { name: 'Blanc', code: '#fff', img: 'https://i.imgur.com/ZP4zVSK.jpeg', hover: 'https://i.imgur.com/r9HQUCq.jpeg', url: '/public/universal-love-ar00043.html' },
+      { name: 'White', code: '#fff', img: 'https://i.imgur.com/ZP4zVSK.jpeg', hover: 'https://i.imgur.com/r9HQUCq.jpeg', url: '/public/universal-love-ar00043.html' },
       // …
     ],
     sizes: ['S','M','L','XL','2XL'],
-    cut: 'Autre',
-    gender: 'Unisexe',
+    cut: 'Other',
+    gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
   },
@@ -122,14 +122,14 @@ const products = [
     id: 'natural-glow',
     name: 'Natural Glow',
     price: 44.99,
-    type: 'Sweat à capuche',
+    type: 'Hoodie',
     colors: [
-      { name: 'Blanc', code: '#fff', img: 'https://i.imgur.com/m2tkvTm.jpeg', hover: 'https://i.imgur.com/EcjqfHS.jpeg', url: '/public/natural-glow-ar00042.html' },
+      { name: 'White', code: '#fff', img: 'https://i.imgur.com/m2tkvTm.jpeg', hover: 'https://i.imgur.com/EcjqfHS.jpeg', url: '/public/natural-glow-ar00042.html' },
       // …
     ],
     sizes: ['S','M','L','XL','2XL'],
-    cut: 'Autre',
-    gender: 'Unisexe',
+    cut: 'Other',
+    gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
   },
@@ -140,15 +140,15 @@ const products = [
     id: 'mad-in-love',
     name: 'Mad In Love',
     price: 54.99,
-    type: 'Sweat à capuche',
+    type: 'Hoodie',
     colors: [
-      { name: 'Noir', code: '#000', img: 'https://i.imgur.com/7zR8liE.jpeg', hover: 'https://i.imgur.com/8GZ52nM.jpeg', url: '/public/mad-in-love-ar00041.html' },
-      { name: 'Bleu Foncé', code: '#132e57', img: 'https://i.imgur.com/a3O4ESv.jpeg', hover: 'https://i.imgur.com/Seortkg.jpeg', url: '/public/mad-in-love-ar00040.html' },
+      { name: 'Black', code: '#000', img: 'https://i.imgur.com/7zR8liE.jpeg', hover: 'https://i.imgur.com/8GZ52nM.jpeg', url: '/public/mad-in-love-ar00041.html' },
+      { name: 'Dark Blue', code: '#132e57', img: 'https://i.imgur.com/a3O4ESv.jpeg', hover: 'https://i.imgur.com/Seortkg.jpeg', url: '/public/mad-in-love-ar00040.html' },
       // …
     ],
     sizes: ['S','M','L','XL','2XL'],
-    cut: 'Autre',
-    gender: 'Unisexe',
+    cut: 'Other',
+    gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
   },
@@ -230,7 +230,7 @@ document.querySelectorAll('#filterForm input').forEach(input => {
     const group = input.closest('.filter-group').querySelector('summary').textContent.trim();
     const val   = input.value;
     if (input.type === 'checkbox') {
-      const map = { 'Couleurs':'colors','Tailles':'sizes','Coupes':'cuts','Sexe':'genders','Types':'types' };
+      const map = { 'Colors':'colors','Sizes':'sizes','Fits':'cuts','Genders':'genders','Types':'types' };
       input.checked ? state[map[group]].add(val) : state[map[group]].delete(val);
     } else if (input.id==='priceMin') {
       state.priceMin = input.value?Number(input.value):null;

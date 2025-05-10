@@ -2,13 +2,38 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BURBAN | Boutique Officielle</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Métadonnées -->
+  <meta name="description" content="Burban is much more than a streetwear brand; it is a true identity, a vision of urban style that combines boldness, creativity, and authenticity. Inspired by the raw energy of major metropolises, Burban creates unique pieces where every detail reflects the essence of the street. Our collections are designed for those who see fashion as an extension of their personality, blending comfort, quality, and aesthetics. At Burban, we believe that streetwear is a form of expression—a language that transcends trends and sets its own pace. Our clothing is crafted for those who dare, who defy established codes, and who seek a connection between style and lifestyle. From modern cuts to carefully selected materials, every piece is created to mirror urban culture in all its diversity. Wearing Burban means becoming part of a movement, a community that celebrates freedom, originality, and self-affirmation. Join us and redefine your style with apparel that tells a story—your story. Because the street never sleeps, and neither does style.">
+  <meta name="robots" content="index, follow">
+  <meta name="keywords" content="Burban, streetwear, marque de vêtements, tendance, sweat, casquette, t-shirt, bonnet, collection jeune, Burban, burban, urban">
+  <meta name="author" content="Burban">
+
+  <title>BURBAN | Official Store</title>
+
+  <meta property="og:title" content="Burban | Official Store">
+  <meta property="og:description" content="Découvrez notre collection unique de vêtements Burban.">
+  <meta property="og:url" content="https://www.burbanofficial.com">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://burbanofficial.com/favicon.png">
+
+  <!-- Divers -->
+  <link rel="canonical" href="https://www.burbanofficial.com/">
+
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://burbanofficial.com/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="https://burbanofficial.com/favicon.png">
+  <!-- Favicon pour les navigateurs modernes -->
+  <link rel="icon" href="https://burbanofficial.com/favicon.png" sizes="16x16" />
+  <link rel="icon" href="https://burbanofficial.com/favicon.png" sizes="32x32" />
+  <link rel="icon" href="https://burbanofficial.com/favicon.png" sizes="48x48" />
+
 </head>
 <body>
 
@@ -21,10 +46,10 @@
   
     <!-- Nav desktop -->
     <nav class="nav">
-      <a href="index.html" class="nav-item active">Accueil</a>
+      <a href="index.html" class="nav-item active">Home</a>
       <a href="shop.html" class="nav-item">Shop</a>
-      <a href="about.html" class="nav-item">À propos</a>
-      <a href="contact.html" class="nav-item">Contact</a>
+      <a href="about.html" class="nav-item">About Burban</a>
+      <a href="contact.html" class="nav-item">Contact Us</a>
     </nav>
   
     <!-- Icônes + hamburger -->
@@ -36,6 +61,13 @@
         <span class="bar"></span>
         <span class="bar"></span>
       </button>
+
+      <div class="lang-switcher desktop-lang">
+        <select id="languageSelector" aria-label="Changer de langue">
+          <option value="EN">EN</option>
+          <option value="FR">FR</option>
+        </select>
+      </div>      
     </div>
   </header>
 
@@ -43,30 +75,37 @@
   <div class="overlay-menu" id="overlayMenu">
     <button class="close-btn" aria-label="Fermer le menu">&times;</button>
     <ul class="overlay-nav">
-      <li><a href="index.html">Accueil</a></li>
+      <li><a href="index.html">Home</a></li>
       <li><a href="shop.html">Shop</a></li>
-      <li><a href="about.html">À propos</a></li>
-      <li><a href="contact.html">Contact</a></li>
+      <li><a href="about.html">About Burban</a></li>
+      <li><a href="contact.html">Contact Us</a></li>
+      <li class="mobile-lang">
+        <label for="languageSelectorMobile">Language:</label>
+        <select id="languageSelectorMobile" aria-label="Changer de langue">
+          <option value="EN">EN</option>
+          <option value="FR">FR</option>
+        </select>
+      </li>      
     </ul>
   </div>
 
   <!-- Hero Banners -->
   <section class="hero-banners">
-    <a href="#" class="banner">
-      <img src="https://i.imgur.com/zJtk62t.jpeg" alt="Nouvelle Collection 2025">
+    <a href="index.html" class="banner">
+      <img src="https://i.imgur.com/wr4smWB.jpeg" alt="Nouvelle Collection 2025">
     </a>
     <a href="promo-printemps.html" class="banner">
-      <img src="https://i.imgur.com/Wtxgqa5.jpeg" alt="Promotion Printemps">
+      <img src="https://i.imgur.com/GF1Fu2D.jpeg" alt="Promotion Printemps">
     </a>
   </section>
 
   <!-- Dernières Nouveautés -->
   <section class="section">
-    <h2 class="section-title">Dernières Nouveautés</h2>
+    <h2 class="section-title">New Arrivals</h2>
     <div class="product-grid">
       <a href="product-eclat-lavande.html" class="product-card">
         <img src="https://i.imgur.com/3OueieQ.jpeg" alt="Éclat de Lavande">
-        <h3>Metamorphosis (3 couleurs)</h3>
+        <h3>Metamorphosis (3 colors)</h3>
         <p>20.99€</p>
       </a>
       <a href="product-noir-absolu.html" class="product-card">
@@ -76,7 +115,7 @@
       </a>
       <a href="product-creme-pure.html" class="product-card">
         <img src="https://i.imgur.com/ltGJ2UA.jpeg" alt="Crème Pure">
-        <h3>Urban Hibiscus (3 couleurs)</h3>
+        <h3>Urban Hibiscus (3 colors)</h3>
         <p>23.99€</p>
       </a>
     </div>
@@ -84,7 +123,7 @@
 
   <!-- Best-sellers -->
   <section class="section alt-bg">
-    <h2 class="section-title">Meilleures Ventes</h2>
+    <h2 class="section-title">Best Sellers</h2>
     <div class="product-grid">
       <a href="product-shadow.html" class="product-card">
         <img src="https://i.imgur.com/uVeTzOQ.jpeg" alt="Urban Hibiscus (Forest)">
@@ -109,25 +148,25 @@
     <div class="footer-container">
       <div class="footer-brand">
         <img src="https://i.imgur.com/Nup8sfC.png" alt="Burban Logo">
-        <p>Plus qu'une marque, une identité.</p>
+        <p>More than a brand, an identity.</p>
       </div>
       <div class="footer-links">
         <div>
           <h4>Navigation</h4>
-          <a href="index.html">Accueil</a>
+          <a href="index.html">Home</a>
           <a href="shop.html">Shop</a>
-          <a href="about.html">À propos</a>
-          <a href="contact.html">Contact</a>
+          <a href="about.html">About Burban</a>
+          <a href="contact.html">Contact Us</a>
         </div>
         <div>
-          <h4>Assistance</h4>
+          <h4>Support</h4>
           <a href="#">FAQ</a>
           <a href="#">Livraison</a>
           <a href="#">Retour</a>
           <a href="#">CGV</a>
         </div>
         <div>
-          <h4>Suivez-nous</h4>
+          <h4>Follow us</h4>
           <a href="#">Instagram</a>
           <a href="#">Facebook</a>
           <a href="#">TikTok</a>
@@ -135,7 +174,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-        &copy; 2024 - <span id="year"></span> Burban. Tous Droits Réservés.
+        &copy; 2024 - <span id="year"></span> Burban. All Rights Reserved.
     </div>
   </footer>
 
@@ -155,6 +194,24 @@
     closeBtn.addEventListener('click', () => {
       overlay.classList.remove('open');
     });
+</script>
+
+<script>
+  function handleLanguageChange(value) {
+    if (value === 'EN') {
+      window.location.href = 'https://burbanofficial.com/';
+    } else if (value === 'FR') {
+      window.location.href = 'https://burbanofficial.com/FR-fr/';
+    }
+  }
+
+  document.getElementById('languageSelector').addEventListener('change', function () {
+    handleLanguageChange(this.value);
+  });
+
+  document.getElementById('languageSelectorMobile').addEventListener('change', function () {
+    handleLanguageChange(this.value);
+  });
 </script>
 
 </body>

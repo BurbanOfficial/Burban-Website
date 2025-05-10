@@ -3,11 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BURBAN | Boutique Officielle</title>
+  <title>BURBAN | Official Store</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://burbanofficial.com/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="https://burbanofficial.com/favicon.png">
+  <!-- Favicon pour les navigateurs modernes -->
+  <link rel="icon" href="https://burbanofficial.com/favicon.png" sizes="16x16" />
+  <link rel="icon" href="https://burbanofficial.com/favicon.png" sizes="32x32" />
+  <link rel="icon" href="https://burbanofficial.com/favicon.png" sizes="48x48" />
+  
 </head>
 <body>
 
@@ -17,58 +26,72 @@
       <img src="https://i.imgur.com/Kl9kTBg.png" alt="Burban Logo" class="logo-img">
     </a>
     <nav class="nav">
-      <a href="index.html" class="nav-item">Accueil</a>
+      <a href="index.html" class="nav-item">Home</a>
       <a href="shop.html" class="nav-item active">Shop</a>
-      <a href="about.html" class="nav-item">À propos</a>
-      <a href="contact.html" class="nav-item">Contact</a>
+      <a href="about.html" class="nav-item">About Burban</a>
+      <a href="contact.html" class="nav-item">Contact Us</a>
     </nav>
     <div class="actions">
       <a href="account.html" class="account-btn"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
       <a href="cart.html"    class="cart-btn"><i class="fa-solid fa-bag-shopping"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
       <button class="hamburger"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+
+      <div class="lang-switcher desktop-lang">
+        <select id="languageSelector" aria-label="Changer de langue">
+          <option value="EN">EN</option>
+          <option value="FR">FR</option>
+        </select>
+      </div>
     </div>
   </header>
 
   <!-- Overlay menu mobile -->
   <div class="overlay-menu" id="overlayMenu">
-    <button class="close-btn">&times;</button>
+    <button class="close-btn" aria-label="Fermer le menu">&times;</button>
     <ul class="overlay-nav">
-      <li><a href="index.html">Accueil</a></li>
+      <li><a href="index.html">Home</a></li>
       <li><a href="shop.html">Shop</a></li>
-      <li><a href="about.html">À propos</a></li>
-      <li><a href="contact.html">Contact</a></li>
+      <li><a href="about.html">About Burban</a></li>
+      <li><a href="contact.html">Contact Us</a></li>
+      <li class="mobile-lang">
+        <label for="languageSelectorMobile">Language:</label>
+        <select id="languageSelectorMobile" aria-label="Changer de langue">
+          <option value="EN">EN</option>
+          <option value="FR">FR</option>
+        </select>
+      </li>      
     </ul>
   </div>
 
   <!-- Header Shop sticky -->
   <div class="shop-header-sticky" id="shopHeader">
-    <h1>Boutique</h1>
+    <h1>Shop</h1>
     <div class="controls">
       <button id="openFilters" class="btn-filter">
-        Filtres <i class="fa-solid fa-filter"></i>
+        Filters <i class="fa-solid fa-filter"></i>
       </button>
-      <span id="resultCount" class="result-count">0 articles</span>
+      <span id="resultCount" class="result-count">0 items</span>
     </div>
-    <button id="clearAll" class="clear-all-btn">↺ Supprimer les filtres</button>
+    <button id="clearAll" class="clear-all-btn">↺ Remove filters</button>
   </div>
 
   <!-- Grille produits -->
   <main class="shop-main">
     <div id="productGrid" class="product-grid"></div>
     <div id="noResults" class="no-results hidden">
-      <p>Aucun article ne correspond à vos filtres</p>
+      <p>No items match your filters</p>
     </div>
   </main>
 
   <!-- Modal filtres -->
   <aside id="filterModal" class="filter-modal">
     <div class="filter-header">
-      <h2>Filtres</h2>
+      <h2>Filters</h2>
       <button id="closeFilters" class="close-btn">&times;</button>
     </div>
     <form id="filterForm" class="filter-form">
       <details open class="filter-group">
-        <summary>Couleurs</summary>
+        <summary>Colors</summary>
         <div id="filterColors" class="options"></div>
       </details>
       <details open class="filter-group">
@@ -76,19 +99,19 @@
         <div id="filterTypes" class="options"></div>
       </details>
       <details open class="filter-group">
-        <summary>Tailles</summary>
+        <summary>Sizes</summary>
         <div id="filterSizes" class="options"></div>
       </details>
       <details open class="filter-group">
-        <summary>Coupes</summary>
+        <summary>Fits</summary>
         <div id="filterCuts" class="options"></div>
       </details>
       <details open class="filter-group">
-        <summary>Sexe</summary>
+        <summary>Genders</summary>
         <div id="filterGenders" class="options"></div>
       </details>
       <details open class="filter-group">
-        <summary>Prix (€)</summary>
+        <summary>Price (€)</summary>
         <div class="price-inputs">
           <input type="number" id="priceMin" placeholder="Min" min="0">
           <span>–</span>
@@ -96,7 +119,7 @@
         </div>
       </details>
       <button type="button" id="applyFilters" class="btn-apply">
-        Afficher tous les résultats (<span id="applyCount">0</span>)
+        Show all results (<span id="applyCount">0</span>)
       </button>
     </form>
   </aside>
@@ -106,25 +129,25 @@
     <div class="footer-container">
       <div class="footer-brand">
         <img src="https://i.imgur.com/Nup8sfC.png" alt="Burban Logo">
-        <p>Plus qu'une marque, une identité.</p>
+        <p>More than a brand, an identity.</p>
       </div>
       <div class="footer-links">
         <div>
           <h4>Navigation</h4>
-          <a href="index.html">Accueil</a>
+          <a href="index.html">Home</a>
           <a href="shop.html">Shop</a>
-          <a href="about.html">À propos</a>
-          <a href="contact.html">Contact</a>
+          <a href="about.html">About Burban</a>
+          <a href="contact.html">Contact Us</a>
         </div>
         <div>
-          <h4>Assistance</h4>
+          <h4>Support</h4>
           <a href="#">FAQ</a>
           <a href="#">Livraison</a>
           <a href="#">Retour</a>
           <a href="#">CGV</a>
         </div>
         <div>
-          <h4>Suivez-nous</h4>
+          <h4>Follow us</h4>
           <a href="#">Instagram</a>
           <a href="#">Facebook</a>
           <a href="#">TikTok</a>
@@ -132,7 +155,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      &copy; 2024 - <span id="year"></span> Burban. Tous Droits Réservés.
+      &copy; 2024 - <span id="year"></span> Burban. All Rights Reserved.
     </div>
   </footer>
 
@@ -147,6 +170,24 @@
     hamburger.addEventListener('click',   () => overlay.classList.add('open'));
     closeOv.addEventListener('click',     () => overlay.classList.remove('open'));
   </script>
+
+<script>
+  function handleLanguageChange(value) {
+    if (value === 'EN') {
+      window.location.href = 'https://burbanofficial.com/';
+    } else if (value === 'FR') {
+      window.location.href = 'https://burbanofficial.com/FR-fr/';
+    }
+  }
+
+  document.getElementById('languageSelector').addEventListener('change', function () {
+    handleLanguageChange(this.value);
+  });
+
+  document.getElementById('languageSelectorMobile').addEventListener('change', function () {
+    handleLanguageChange(this.value);
+  });
+</script>
 
   <script src="script.js"></script>
 </body>
