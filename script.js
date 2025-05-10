@@ -9,9 +9,9 @@ const products = [
     price: 20.99,
     type: 'T-Shirt',
     colors: [
-      { name: 'White', code: '#fff', img: 'https://i.imgur.com/3OueieQ.jpeg', hover: 'https://i.imgur.com/ol3tK3L.jpeg', url: 'https://burbanofficial.com/public/metamorphosis-ar00050.html' },
-      { name: 'Lavender', code: '#f7ecff', img: 'https://i.imgur.com/ITx8c7r.jpeg', hover: 'https://i.imgur.com/yeYYPqa.jpeg', url: 'https://burbanofficial.com/public/metamorphosis-ar00051.html' },
-      { name: 'Pastel Pink', code: '#ffe9eb', img: 'https://i.imgur.com/0dnXLh4.jpeg', hover: 'https://i.imgur.com/HKaRX8P.jpeg', url: 'https://burbanofficial.com/public/metamorphosis-ar00052.html' },
+      { name: 'White', code: '#fff', img: 'https://i.imgur.com/3OueieQ.jpeg', hover: 'https://i.imgur.com/ol3tK3L.jpeg', url: '/Burban-Website/public/metamorphosis-ar00050.html' },
+      { name: 'Lavender', code: '#f7ecff', img: 'https://i.imgur.com/ITx8c7r.jpeg', hover: 'https://i.imgur.com/yeYYPqa.jpeg', url: '/Burban-Website/public/metamorphosis-ar00051.html' },
+      { name: 'Pastel Pink', code: '#ffe9eb', img: 'https://i.imgur.com/0dnXLh4.jpeg', hover: 'https://i.imgur.com/HKaRX8P.jpeg', url: '/Burban-Website/public/metamorphosis-ar00052.html' },
       // …
     ],
     sizes: ['S','M','L','XL','2XL','3XL'],
@@ -30,7 +30,7 @@ const products = [
     price: 15.99,
     type: 'T-Shirt',
     colors: [
-      { name: 'White', code: '#fffefa', img: 'https://i.imgur.com/zZ2tww6.jpeg', hover: 'https://i.imgur.com/3TRibcn.jpeg', url: 'https://burbanofficial.com/public/celestial-b-ar00049.html' },
+      { name: 'White', code: '#fffefa', img: 'https://i.imgur.com/zZ2tww6.jpeg', hover: 'https://i.imgur.com/3TRibcn.jpeg', url: '/Burban-Website/public/celestial-b-ar00049.html' },
       // …
     ],
     sizes: ['S','M','L','XL','2XL','3XL'],
