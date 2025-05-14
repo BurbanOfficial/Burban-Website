@@ -572,3 +572,29 @@
 #delivery-estimate.loading {
   color: #777;
 }
+
+@media (max-width: 480px) {
+  .carbon-info {
+    /* passe en colonne et aligne à gauche */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .carbon-info i,
+  .carbon-info .carbon-label {
+    display: inline-block;
+    margin-right: 0.3rem;
+  }
+
+  .carbon-info .carbon-label {
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .carbon-info .carbon-indicator,
+  .carbon-info .carbon-value {
+    display: inline-block;
+    margin-right: 0.3rem;
+  }
+}
