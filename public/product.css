@@ -572,28 +572,3 @@
 #delivery-estimate.loading {
   color: #777;
 }
-
-@media (max-width: 480px) {
-  .carbon-info {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  /* 1) On force le label sur toute la largeur → retour à la ligne juste après */
-  .carbon-info .carbon-label {
-    flex: 1 1 100%;
-    margin-bottom: 0.4rem;  /* espace entre lignes */
-  }
-
-  /* 2) On aligne l’indicateur + la valeur sur la 2e ligne */
-  .carbon-info .carbon-indicator,
-  .carbon-info .carbon-value {
-    margin-right: 0.5rem;
-    /* facultatif : flex: 0 1 auto; */
-  }
-}
-
-
-  
-  
