@@ -518,7 +518,7 @@
   border-radius: 1rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   font-family: 'Segoe UI', Roboto, sans-serif;
-  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  font-size: 0.95rem;
   color: #333;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   position: relative;
@@ -575,26 +575,25 @@
 
 @media (max-width: 480px) {
   .carbon-info {
-    /* passe en colonne et aligne à gauche */
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
   }
 
-  .carbon-info i,
+  /* 1) On force le label sur toute la largeur → retour à la ligne juste après */
   .carbon-info .carbon-label {
-    display: inline-block;
-    margin-right: 0.3rem;
+    flex: 1 1 100%;
+    margin-bottom: 0.4rem;  /* espace entre lignes */
   }
 
-  .carbon-info .carbon-label {
-    display: block;
-    margin-bottom: 0.4rem;
-  }
-
+  /* 2) On aligne l’indicateur + la valeur sur la 2e ligne */
   .carbon-info .carbon-indicator,
   .carbon-info .carbon-value {
-    display: inline-block;
-    margin-right: 0.3rem;
+    margin-right: 0.5rem;
+    /* facultatif : flex: 0 1 auto; */
   }
 }
+
+
+  
+  
