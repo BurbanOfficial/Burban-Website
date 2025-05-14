@@ -518,7 +518,7 @@
   border-radius: 1rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   font-family: 'Segoe UI', Roboto, sans-serif;
-  font-size: 0.95rem;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
   color: #333;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   position: relative;
@@ -572,7 +572,3 @@
 #delivery-estimate.loading {
   color: #777;
 }
-
-
-  
-  
