@@ -206,21 +206,16 @@ button:hover {
     box-shadow: 0 12px 24px rgba(0,0,0,0.3);
   }
   
-  .close-btn {
-    margin-top: 1.5rem;
-    padding: 0.8rem 1.5rem;
-    border: none;
-    border-radius: 0.75rem;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    background: #fff;
-    color: #121212;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    transition: transform 0.2s, box-shadow 0.2s;
+  .close-modal {
     position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
   }
   
-  .close-btn:hover {
+  .close-modal:hover {
     color: #e00;               /* Rouge au survol */
   }

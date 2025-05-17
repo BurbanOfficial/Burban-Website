@@ -35,7 +35,7 @@ function switchForm(form) {
 function openResetModal() {
     document.getElementById('reset-modal').classList.add('show');
 }
-function closeModal() {
+function closeResetModal() {
     document.getElementById('reset-modal').classList.remove('show');
 }
 

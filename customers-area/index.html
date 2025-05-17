@@ -68,6 +68,7 @@
   <!-- Modal Reset Password -->
   <div class="modal" id="reset-modal">
     <div class="modal-content">
+      <span class="close-modal" onclick="closeResetModal()">&times;</span>
       <h3>Réinitialiser votre mot de passe</h3>
       <form onsubmit="sendResetEmail(event)">
         <input type="email" id="reset-email" placeholder="Adresse Email" required />
