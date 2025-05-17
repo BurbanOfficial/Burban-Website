@@ -1,3 +1,4 @@
+/* ===== Reset & Base ===== */
 * {
   margin: 0;
   padding: 0;
@@ -5,48 +6,48 @@
   font-family: "Poppins", sans-serif;
 }
 
-body, html {
+html, body {
   height: 100%;
   background: #111;
   color: #fff;
 }
 
+/* ===== Container ===== */
 .container {
   display: flex;
   height: 100vh;
 }
 
-.form-section, .media-section {
+/* ===== Sections ===== */
+.form-section,
+.media-section {
   width: 50%;
   padding: 60px;
+  transition: all 0.3s ease;
 }
 
+/* ===== Form ===== */
 .form {
   display: none;
   flex-direction: column;
   gap: 15px;
 }
-
 .form.active {
   display: flex;
 }
-
 .subtitle {
   font-size: 14px;
   color: #aaa;
 }
-
 h2 {
   font-size: 28px;
   margin-bottom: 20px;
   font-weight: bold;
 }
-
 .input-group {
   position: relative;
   margin-bottom: 20px;
 }
-
 .input-group input {
   width: 100%;
   padding: 15px;
@@ -57,19 +58,15 @@ h2 {
   font-size: 16px;
   transition: all 0.3s ease;
 }
-
 .input-group input::placeholder {
   color: #666;
 }
-
 .input-group input:focus::placeholder {
   opacity: 0;
 }
-
 .password-group {
   position: relative;
 }
-
 .toggle-password {
   position: absolute;
   right: 15px;
@@ -77,7 +74,6 @@ h2 {
   transform: translateY(-50%);
   cursor: pointer;
 }
-
 button {
   padding: 15px;
   border: none;
@@ -88,134 +84,163 @@ button {
   cursor: pointer;
   transition: 0.3s;
 }
-
 button:hover {
   background: #ccc;
 }
-
-.forgot, .switch-form a {
+.forgot,
+.switch-form a {
   color: #aaa;
   text-decoration: underline;
   cursor: pointer;
 }
-
 .disclaimer {
   font-size: 12px;
   color: #777;
   margin-top: 15px;
 }
-
 .checkbox {
   font-size: 14px;
   margin-bottom: 20px;
 }
 
+/* ===== Media Section ===== */
 .media-section {
   position: relative;
   overflow: hidden;
 }
-
 .media-section video {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* ========== MODALE PREMIUM ========== */
+/* ===== Modal Premium ===== */
 .modal {
-    position: fixed;
-    top: 0; left: 0;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInBg 0.4s ease forwards;
+}
+.modal.show {
+  display: flex;
+}
+@keyframes fadeInBg {
+  from { background: rgba(0,0,0,0); }
+  to   { background: rgba(0,0,0,0.6); }
+}
+.modal-content {
+  background: #121212;
+  padding: 2.5rem 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  transform: translateY(-30px);
+  opacity: 0;
+  animation: slideIn 0.4s ease forwards;
+  position: relative;
+}
+@keyframes slideIn {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.modal-content h3 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #fff;
+}
+.modal-content input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  margin-top: 1rem;
+  border: none;
+  border-radius: 0.75rem;
+  background: #1f1f1f;
+  color: #eee;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.modal-content input:focus {
+  background: #292929;
+  outline: none;
+}
+.modal-content button {
+  margin-top: 1.5rem;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #fff;
+  color: #121212;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.modal-content button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+}
+.close-modal {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+.close-modal:hover {
+  color: #e00;
+}
+
+/* ===== Responsive ===== */
+
+/* Tablettes et petits laptops */
+@media (max-width: 1024px) {
+  .form-section,
+  .media-section {
+    padding: 40px;
+  }
+}
+
+/* Petits écrans : smartphones, < 768px */
+@media (max-width: 768px) {
+  /* Empilement vertical */
+  .container {
+    flex-direction: column;
+    height: auto;
+  }
+  /* Form prend tout l'espace */
+  .form-section {
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);          /* Fond plus doux */
+    padding: 20px;
+  }
+  /* On masque complètement la section média */
+  .media-section {
     display: none;
-    align-items: center;
-    justify-content: center;
-    animation: fadeInBg 0.4s ease forwards;
   }
-  
-  .modal.show {
-    display: flex;
+}
+
+/* Ultra-petits écrans : < 480px */
+@media (max-width: 480px) {
+  .form-section {
+    padding: 15px;
   }
-  
-  @keyframes fadeInBg {
-    from { background: rgba(0,0,0,0); }
-    to   { background: rgba(0,0,0,0.6); }
-  }
-  
-  .modal-content {
-    background: #121212;
-    padding: 2.5rem 2rem;
-    border-radius: 1.5rem;                    /* Angles plus doux */
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);   /* Ombre subtile */
-    max-width: 400px;
-    width: 90%;
-    text-align: center;
-    transform: translateY(-30px);
-    opacity: 0;
-    animation: slideIn 0.4s ease forwards;
-    position: relative; /* Assure que .close-btn se positionne par rapport à cette boîte */
-  }
-  
-  @keyframes slideIn {
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-  
-  .modal-content h3 {
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-    color: #fff;
-  }
-  
-  .modal-content input {
-    width: 100%;
-    padding: 0.8rem 1rem;
-    margin-top: 1rem;
-    border: none;
-    border-radius: 0.75rem;
-    background: #1f1f1f;
-    color: #eee;
-    font-size: 1rem;
-    transition: background 0.2s;
-  }
-  
-  .modal-content input:focus {
-    background: #292929;
-    outline: none;
-  }
-  
-  .modal-content button {
-    margin-top: 1.5rem;
-    padding: 0.8rem 1.5rem;
-    border: none;
-    border-radius: 0.75rem;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    background: #fff;
-    color: #121212;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  
-  .modal-content button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.3);
-  }
-  
-  .close-modal {
-    position: absolute;
-    top: 10px;
-    right: 15px;
+  h2 {
     font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    cursor: pointer;
   }
-  
-  .close-modal:hover {
-    color: #e00;               /* Rouge au survol */
+  .input-group input,
+  button {
+    padding: 12px;
+    font-size: 14px;
   }
+}
