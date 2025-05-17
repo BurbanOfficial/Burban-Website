@@ -65,29 +65,15 @@
     </div>
   </div>
 
-    <!-- Modal 1 : entrer l’email -->
-  <div class="modal" id="modal-reset-email">
+  <!-- Modal Reset Password -->
+  <div class="modal" id="reset-modal">
     <div class="modal-content">
-      <span class="close-modal" onclick="closeModal('reset-email')">&times;</span>
+      <span class="close-modal" onclick="closeResetModal()">&times;</span>
       <h3>Réinitialiser votre mot de passe</h3>
-      <form onsubmit="startPasswordReset(event)">
-        <input type="email" id="reset-email-input" placeholder="Adresse Email" required />
-        <button type="submit">Envoyer le code</button>
+      <form onsubmit="sendResetEmail(event)">
+        <input type="email" id="reset-email" placeholder="Adresse Email" required />
+        <button type="submit">Envoyer le lien</button>
       </form>
-    </div>
-  </div>
-
-  <!-- Modal 2 : saisir le code à 6 chiffres -->
-  <div class="modal" id="modal-reset-code">
-    <div class="modal-content">
-      <span class="close-modal" onclick="closeModal('reset-code')">&times;</span>
-      <h3>Entrez le code reçu par email</h3>
-      <div id="code-inputs" class="code-inputs">
-        <!-- on génère dynamiquement 6 inputs -->
-      </div>
-      <div id="spinner" class="spinner" style="display:none;"></div>
-      <p id="reset-message"></p>
-      <button id="resend-btn" onclick="resendCode()" disabled>Renvoyer le code (<span id="timer">30</span>s)</button>
     </div>
   </div>
 </body>
