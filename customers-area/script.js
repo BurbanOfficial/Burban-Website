@@ -1,114 +1,211 @@
-// Firebase configuration
+// -----------------------------
+// INITIALISATION FIREBASE
+// -----------------------------
 const firebaseConfig = {
-    apiKey: "AIzaSyDb4AOtRT7jGENnLZ2KNwpczaG2Z77G2rc",
-    authDomain: "burban-fidelity.firebaseapp.com",
-    projectId: "burban-fidelity",
-    storageBucket: "burban-fidelity.firebasestorage.app",
-    messagingSenderId: "830299174800",
-    appId: "1:830299174800:web:f50a4ec419e108f7f16515",
-    measurementId: "G-E4QD4PYLM5"
+  apiKey: "AIzaSyDb4AOtRT7jGENnLZ2KNwpczaG2Z77G2rc",
+  authDomain: "burban-fidelity.firebaseapp.com",
+  projectId: "burban-fidelity",
+  storageBucket: "burban-fidelity.firebasestorage.app",
+  messagingSenderId: "830299174800",
+  appId: "1:830299174800:web:f50a4ec419e108f7f16515",
+  measurementId: "G-E4QD4PYLM5"
 };
-
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db = firebase.firestore();
 
-// Toggle password visibility with FontAwesome icons
+// -----------------------------
+// TOGGLE MOT DE PASSE
+// -----------------------------
 function togglePassword(el, inputId) {
-    const input = document.getElementById(inputId);
-    const isPassword = input.getAttribute('type') === 'password';
-    input.setAttribute('type', isPassword ? 'text' : 'password');
-    // Update icon
-    el.innerHTML = isPassword
-      ? '<i class="fa-solid fa-eye"></i>'
-      : '<i class="fa-solid fa-eye-low-vision"></i>';
-  }
+  const input = document.getElementById(inputId);
+  const isPwd = input.type === 'password';
+  input.type = isPwd ? 'text' : 'password';
+  el.innerHTML = isPwd
+    ? '<i class="fa-solid fa-eye"></i>'
+    : '<i class="fa-solid fa-eye-low-vision"></i>';
+}
 
-// Switch between login and register forms
+// -----------------------------
+// SWITCH LOGIN / REGISTER
+// -----------------------------
 function switchForm(form) {
   document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
   document.getElementById(`${form}-form`).classList.add('active');
 }
 
-// Open and close reset modal
-function openResetModal() {
-    document.getElementById('reset-modal').classList.add('show');
+// -----------------------------
+// MODALES GÉNÉRIQUES
+// -----------------------------
+function openModal(idSuffix) {
+  document.getElementById(`modal-${idSuffix}`).classList.add('show');
 }
-function closeResetModal() {
-    document.getElementById('reset-modal').classList.remove('show');
+function closeModal(idSuffix) {
+  document.getElementById(`modal-${idSuffix}`).classList.remove('show');
 }
 
-// Login with Firebase
+// Compatibilité anciennes fonctions
+function openResetModal()  { openModal('reset-email'); }
+function closeResetModal() { closeModal('reset-email'); }
+
+// -----------------------------
+// LOGIN / REGISTER FIREBASE
+// -----------------------------
 function login(event) {
   event.preventDefault();
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-password').value;
   auth.signInWithEmailAndPassword(email, password)
-    .then(userCredential => {
-      if (userCredential.user.emailVerified) {
-        window.location.href = 'client.html';
-      } else {
-        alert('Veuillez vérifier votre adresse email avant de vous connecter.');
-        auth.signOut();
-      }
+    .then(uc => {
+      if (!uc.user.emailVerified) throw new Error('Veuillez vérifier votre email.');
+      window.location.href = 'client.html';
     })
-    .catch(error => {
-      alert(error.message);
-    });
+    .catch(err => alert(err.message));
 }
 
-// Register with Firebase
 function register(event) {
   event.preventDefault();
   const prenom = document.getElementById('prenom').value.trim();
-  const nom = document.getElementById('nom').value.trim();
-  const email = document.getElementById('register-email').value;
-  const password = document.getElementById('register-password').value;
-  const phone = document.getElementById('phone').value;
-  const dob = document.getElementById('dob').value;
-  const newsletter = document.getElementById('newsletter').checked;
+  const nom    = document.getElementById('nom').value.trim();
+  const email  = document.getElementById('register-email').value;
+  const pwd    = document.getElementById('register-password').value;
+  const phone  = document.getElementById('phone').value;
+  const dob    = document.getElementById('dob').value;
+  const news   = document.getElementById('newsletter').checked;
 
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(userCredential => {
-      // Save additional profile info
-      return userCredential.user.updateProfile({
-        displayName: `${prenom} ${nom}`
-      }).then(() => userCredential.user.sendEmailVerification({
-        url: window.location.href
-      }));
-    })
+  auth.createUserWithEmailAndPassword(email, pwd)
+    .then(uc => uc.user.updateProfile({ displayName: `${prenom} ${nom}` })
+      .then(() => uc.user.sendEmailVerification({ url: window.location.href }))
+    )
     .then(() => {
-      // Show confirmation modal
-      alert('Email de confirmation envoyé. Veuillez vérifier votre boîte email (lien valide 15 minutes).');
+      alert('Email de confirmation envoyé. (Lien valide 15 min.)');
       switchForm('login');
     })
-    .catch(error => {
-      alert(error.message);
-    });
+    .catch(err => alert(err.message));
 }
 
-// Send password reset email
-function sendResetEmail(event) {
-  event.preventDefault();
-  const email = document.getElementById('reset-email').value;
-  auth.sendPasswordResetEmail(email, { url: window.location.href })
-    .then(() => {
-      alert('Lien de réinitialisation envoyé. Valable 15 minutes.');
-      closeModal();
-    })
-    .catch(error => {
-      alert(error.message);
+// -----------------------------
+// RÉINITIALISATION MOT DE PASSE EN 2 ÉTAPES (OTP)
+// -----------------------------
+let resetEmail = '';
+let resetTimer = null;
+
+// Étape 1 : envoi du code OTP
+async function startPasswordReset(e) {
+  e.preventDefault();
+  resetEmail = document.getElementById('reset-email-input').value.trim();
+  if (!resetEmail) return alert('Veuillez saisir une adresse email.');
+
+  try {
+    const res = await fetch('https://VOTRE-SERVICE.onrender.com/api/send-reset-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: resetEmail })
     });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'Échec de l’envoi.');
+
+    openModal('reset-code');
+    generateCodeInputs();
+    startResendCountdown();
+  } catch (err) {
+    alert("Impossible d'envoyer le code : " + err.message);
+  }
 }
 
-// Dans login()
-auth.signInWithEmailAndPassword(email, password)
-  .then(uc => {
-    if (!uc.user.emailVerified) throw new Error('Vérifiez votre email');
-    // Redirection ici, uniquement après un login explicite
-    window.location.href = 'client.html';
-  })
-  .catch(err => alert(err.message));
+// Création des 6 cases
+function generateCodeInputs() {
+  const ctn = document.getElementById('code-inputs');
+  ctn.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.inputMode = 'numeric';
+    inp.maxLength = 1;
+    inp.classList.add('code-input');
+    inp.addEventListener('input', onCodeInput);
+    inp.addEventListener('keydown', onCodeKeyDown);
+    ctn.appendChild(inp);
+  }
+  ctn.querySelector('input').focus();
+}
 
-// Et on peut enlever entirely l'onAuthStateChanged
+// Auto‐focus et backspace global
+function onCodeInput(e) {
+  const inp = e.target;
+  if (/^\d$/.test(inp.value) && inp.nextElementSibling) {
+    inp.nextElementSibling.focus();
+  }
+  checkAndSubmitCode();
+}
+function onCodeKeyDown(e) {
+  if (e.key === 'Backspace' && !e.target.value && e.target.previousElementSibling) {
+    e.preventDefault();
+    e.target.previousElementSibling.value = '';
+    e.target.previousElementSibling.focus();
+  }
+}
+
+// Récupérer la saisie complète
+function getCodeValue() {
+  return [...document.querySelectorAll('.code-input')]
+    .map(i => i.value).join('');
+}
+
+// Étape 2 : vérification OTP
+async function checkAndSubmitCode() {
+  const code = getCodeValue();
+  if (code.length === 6) {
+    document.getElementById('spinner').style.display = 'block';
+    try {
+      const res = await fetch('https://server-brevo.onrender.com/api/verify-reset-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: resetEmail, code })
+      });
+      const data = await res.json();
+      onCodeVerified(data.valid);
+    } catch {
+      onCodeVerified(false);
+    }
+  }
+}
+
+// Gestion du résultat
+function onCodeVerified(valid) {
+  document.getElementById('spinner').style.display = 'none';
+  const msg = document.getElementById('reset-message');
+  if (valid) {
+    msg.style.color = 'green';
+    msg.textContent = 'Code validé ! Redirection…';
+    setTimeout(() => window.location.href = 'nouveau-mot-de-passe.html', 2000);
+  } else {
+    msg.style.color = 'red';
+    msg.textContent = 'Code incorrect. Réessayez.';
+    generateCodeInputs();
+  }
+}
+
+// Timer et renvoi du code
+function startResendCountdown() {
+  let t = 30;
+  const timerEl = document.getElementById('timer');
+  const btn     = document.getElementById('resend-btn');
+  btn.disabled = true;
+  timerEl.textContent = t;
+  btn.innerHTML = `Renvoyer le code (<span id="timer">${t}</span>s)`;
+
+  resetTimer = setInterval(() => {
+    t--;
+    timerEl.textContent = t;
+    if (t <= 0) {
+      clearInterval(resetTimer);
+      btn.disabled = false;
+      btn.textContent = 'Renvoyer le code';
+    }
+  }, 1000);
+}
+function resendCode() {
+  startResendCountdown();
+  document.getElementById('reset-message').textContent = '';
+  generateCodeInputs();
+}

@@ -219,3 +219,24 @@ button:hover {
   .close-modal:hover {
     color: #e00;               /* Rouge au survol */
   }
+
+.hidden { display: none; }
+.code-inputs {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 1rem 0;
+}
+.code-box {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.5rem;
+  text-align: center;
+  border-radius: 0.5rem;
+  border: 1px solid #444;
+  background: #1c1c1c;
+  color: #fff;
+}
+.code-footer { text-align: center; }
+#spinner { margin-bottom: 0.5rem; }
+#resend-btn[disabled] { opacity: 0.5; cursor: default; }
