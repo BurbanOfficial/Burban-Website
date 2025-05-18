@@ -58,8 +58,44 @@ h2 {
   font-size: 16px;
   transition: all 0.3s ease;
 }
+.input-group input[type="date"] {
+  width: 100%;
+  padding: 15px;
+  background: #1c1c1c;
+  border: 1px solid #444;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  
+  /* neutraliser l’UI native (iOS, Chrome, Firefox…) */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
 .input-group input::placeholder {
   color: #666;
+}
+.input-group input[type="date"]::placeholder {
+  color: #666;
+}
+/* Safari n’affiche pas le placeholder natif sur type=date… on peut forcer un pseudo-placeholder */
+.input-group input[type="date"]::-webkit-datetime-edit-text,
+.input-group input[type="date"]::-webkit-datetime-edit-month-field,
+.input-group input[type="date"]::-webkit-datetime-edit-day-field,
+.input-group input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #666;
+  opacity: 1;
+}
+/* masquer la petite croix et les spin buttons sur WebKit */
+.input-group input[type="date"]::-webkit-clear-button,
+.input-group input[type="date"]::-webkit-inner-spin-button {
+  display: none;
+}
+/* facultatif : restyler l’icône du picker sur Chrome/Safari */
+.input-group input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(100%) opacity(0.7);
+  cursor: pointer;
 }
 .input-group input:focus::placeholder {
   opacity: 0;
