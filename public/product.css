@@ -572,3 +572,9 @@
 #delivery-estimate.loading {
   color: #777;
 }
+
+@media screen and (max-width: 600px) {
+  .delivery-carbon-box {
+    display: none;
+  }
+}
