@@ -14,6 +14,16 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// Error code => message mapping
+const errorMessages = {
+  'auth/invalid-email': "Adresse email invalide.",
+  'auth/user-disabled': "Ce compte a été désactivé.",
+  'auth/user-not-found': "Aucun compte ne correspond à cette adresse.",
+  'auth/wrong-password': "Erreur dans l'adresse email ou dans le mot de passe.",
+  'auth/email-already-in-use': "Cette adresse email est déjà utilisée.",
+  'auth/weak-password': "Le mot de passe est trop faible (min. 6 caractères)."
+};
+
 // Toggle password visibility with FontAwesome icons
 function togglePassword(el, inputId) {
   const input = document.getElementById(inputId);
@@ -49,19 +59,26 @@ function showError(containerId, message) {
 
 // Login with Firebase
 function login(event) {
-event.preventDefault();
-const email = document.getElementById('login-email').value;
-const password = document.getElementById('login-password').value;
-auth.signInWithEmailAndPassword(email, password)
-  .then(userCredential => {
-    if (userCredential.user.emailVerified) {
+  event.preventDefault();
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then(uc => {
+      if (!uc.user.emailVerified) {
+        auth.signOut();
+        throw { code: 'auth/email-not-verified' };
+      }
       window.location.href = 'client.html';
-    } else {
-      auth.signOut();
-      showError('login-error', 'Veuillez vérifier votre adresse email avant de vous connecter.');
-    }
-  })
-  .catch(error => showError('login-error', error.message));
+    })
+    .catch(err => {
+      const msg = err.code && errorMessages[err.code]
+        ? errorMessages[err.code]
+        : (err.code === 'auth/email-not-verified'
+            ? 'Veuillez vérifier votre adresse email avant de vous connecter.'
+            : err.message);
+      showError('login-error', msg);
+    });
 }
 
 // Register with Firebase + enregistrement Firestore
@@ -76,44 +93,41 @@ function register(event) {
   const newsletter = document.getElementById('newsletter').checked;
 
   auth.createUserWithEmailAndPassword(email, password)
-    .then(({ user }) => {
-      // Mettre à jour le displayName et envoyer email de verification
-      return user.updateProfile({
-        displayName: `${prenom} ${nom}`
-      }).then(() => 
-        user.sendEmailVerification({ url: window.location.href })
-          .then(() => user)
-      );
-    })
-    .then(user => {
-      // Enregistrer les infos supplémentaires dans Firestore
-      return db.collection('users').doc(user.uid).set({
-        prenom,
-        nom,
-        email,
-        phone: phone || null,
-        dob: dob || null,
-        newsletter,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    })
+    .then(({ user }) => user.updateProfile({ displayName: `${prenom} ${nom}` })
+      .then(() => user.sendEmailVerification({ url: window.location.href }))
+      .then(() => user)
+    )
+    .then(user => db.collection('users').doc(user.uid).set({
+      prenom, nom, email,
+      phone: phone || null,
+      dob: dob || null,
+      newsletter,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }))
     .then(() => {
-      showError('register-error', 'Inscription réussie ! Un email de confirmation vous a été envoyé.', 'success');
+      showError('register-error', 'Inscription réussie ! Un email de confirmation vous a été envoyé.');
       switchForm('login');
     })
-    .catch(error => showError('register-error', error.message));
+    .catch(error => {
+      const msg = error.code && errorMessages[error.code] ? errorMessages[error.code] : error.message;
+      showError('register-error', msg);
+    });
 }
 
 // Send password reset email
 function sendResetEmail(event) {
-event.preventDefault();
-const email = document.getElementById('reset-email').value;
-auth.sendPasswordResetEmail(email, { url: window.location.href })
-  .then(() => {
-    showError('reset-error', 'Lien de réinitialisation envoyé. Valable 15 minutes.');
-    closeResetModal();
-  })
-  .catch(error => showError('reset-error', error.message));
+  event.preventDefault();
+  const email = document.getElementById('reset-email').value;
+
+  auth.sendPasswordResetEmail(email, { url: window.location.href })
+    .then(() => {
+      showError('reset-error', 'Lien de réinitialisation envoyé. Valable 15 minutes.');
+      closeResetModal();
+    })
+    .catch(error => {
+      const msg = error.code && errorMessages[error.code] ? errorMessages[error.code] : error.message;
+      showError('reset-error', msg);
+    });
 }
 
 // Dans login()
