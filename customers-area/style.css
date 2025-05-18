@@ -291,9 +291,23 @@ button:hover {
   font-weight: 500;
   animation: fadeIn 0.3s ease forwards;
 }
-.error-message.show {
+
+.success-message {
+  display: none;
+  margin-bottom: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(0, 255, 0, 0.1);
+  color: #38a169;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.error-message.show,
+.success-message.show {
   display: block;
 }
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }
