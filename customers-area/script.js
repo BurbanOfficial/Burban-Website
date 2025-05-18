@@ -58,34 +58,46 @@ auth.signInWithEmailAndPassword(email, password)
   });
 }
 
-// Register with Firebase
+// Register with Firebase + enregistrement Firestore
 function register(event) {
-event.preventDefault();
-const prenom = document.getElementById('prenom').value.trim();
-const nom = document.getElementById('nom').value.trim();
-const email = document.getElementById('register-email').value;
-const password = document.getElementById('register-password').value;
-const phone = document.getElementById('phone').value;
-const dob = document.getElementById('dob').value;
-const newsletter = document.getElementById('newsletter').checked;
+  event.preventDefault();
+  const prenom     = document.getElementById('prenom').value.trim();
+  const nom        = document.getElementById('nom').value.trim();
+  const email      = document.getElementById('register-email').value;
+  const password   = document.getElementById('register-password').value;
+  const phone      = document.getElementById('phone').value;
+  const dob        = document.getElementById('dob').value;
+  const newsletter = document.getElementById('newsletter').checked;
 
-auth.createUserWithEmailAndPassword(email, password)
-  .then(userCredential => {
-    // Save additional profile info
-    return userCredential.user.updateProfile({
-      displayName: `${prenom} ${nom}`
-    }).then(() => userCredential.user.sendEmailVerification({
-      url: window.location.href
-    }));
-  })
-  .then(() => {
-    // Show confirmation modal
-    alert('Email de confirmation envoyé. Veuillez vérifier votre boîte email (lien valide 15 minutes).');
-    switchForm('login');
-  })
-  .catch(error => {
-    alert(error.message);
-  });
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(({ user }) => {
+      // Mettre à jour le displayName et envoyer email de verification
+      return user.updateProfile({
+        displayName: `${prenom} ${nom}`
+      }).then(() => 
+        user.sendEmailVerification({ url: window.location.href })
+          .then(() => user)
+      );
+    })
+    .then(user => {
+      // Enregistrer les infos supplémentaires dans Firestore
+      return db.collection('users').doc(user.uid).set({
+        prenom,
+        nom,
+        email,
+        phone: phone || null,
+        dob: dob || null,
+        newsletter,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    })
+    .then(() => {
+      alert('Inscription réussie ! Un email de confirmation vous a été envoyé.');
+      switchForm('login');
+    })
+    .catch(error => {
+      alert(error.message);
+    });
 }
 
 // Send password reset email
