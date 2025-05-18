@@ -574,7 +574,7 @@
 }
 
 @media screen and (max-width: 600px) {
-  .delivery-carbon-box {
+  .carbon-value {
     display: none;
   }
 }
