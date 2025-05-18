@@ -1,20 +1,19 @@
-// Firebase configuration
+// Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyDb4AOtRT7jGENnLZ2KNwpczaG2Z77G2rc",
-  authDomain: "burban-fidelity.firebaseapp.com",
-  projectId: "burban-fidelity",
-  storageBucket: "burban-fidelity.firebasestorage.app",
-  messagingSenderId: "830299174800",
-  appId: "1:830299174800:web:f50a4ec419e108f7f16515",
-  measurementId: "G-E4QD4PYLM5"
+    apiKey: "AIzaSyDb4AOtRT7jGENnLZ2KNwpczaG2Z77G2rc",
+    authDomain: "burban-fidelity.firebaseapp.com",
+    projectId: "burban-fidelity",
+    storageBucket: "burban-fidelity.firebasestorage.app",
+    messagingSenderId: "830299174800",
+    appId: "1:830299174800:web:f50a4ec419e108f7f16515",
+    measurementId: "G-E4QD4PYLM5"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db = firebase.firestore();
+const db   = firebase.firestore();
 
-// Error code => message mapping
+// Messages d'erreur
 const errorMessages = {
   'auth/invalid-email': "Adresse email invalide.",
   'auth/user-disabled': "Ce compte a été désactivé.",
@@ -25,127 +24,100 @@ const errorMessages = {
   'auth/invalid-login-credentials': "Adresse Email ou mot de passe incorrect."
 };
 
-// Toggle password visibility with FontAwesome icons
-function togglePassword(el, inputId) {
-  const input = document.getElementById(inputId);
-  const isPassword = input.getAttribute('type') === 'password';
-  input.setAttribute('type', isPassword ? 'text' : 'password');
-  // Update icon
-  el.innerHTML = isPassword
+function showMessage(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 5000);
+}
+
+function togglePassword(el,inputId){
+  const inp = document.getElementById(inputId);
+  const isPwd = inp.type==='password';
+  inp.type = isPwd ? 'text' : 'password';
+  el.innerHTML = isPwd
     ? '<i class="fa-solid fa-eye"></i>'
     : '<i class="fa-solid fa-eye-low-vision"></i>';
 }
 
-// Switch between login and register forms
-function switchForm(form) {
-document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
-document.getElementById(`${form}-form`).classList.add('active');
+function switchForm(f){
+  document.querySelectorAll('.form').forEach(x=>x.classList.remove('active'));
+  document.getElementById(f+'-form').classList.add('active');
+}
+function openResetModal(){ document.getElementById('reset-modal').classList.add('show'); }
+function closeResetModal(){ document.getElementById('reset-modal').classList.remove('show'); }
+
+// Auth Actions
+function login(e){
+  e.preventDefault();
+  const mail = document.getElementById('login-email').value;
+  const pwd  = document.getElementById('login-password').value;
+  auth.signInWithEmailAndPassword(mail,pwd)
+    .catch(err=> showMessage('login-error', errorMessages[err.code]||err.message));
 }
 
-// Open and close reset modal
-function openResetModal() {
-  document.getElementById('reset-modal').classList.add('show');
-}
-function closeResetModal() {
-  document.getElementById('reset-modal').classList.remove('show');
-}
+function register(e){
+  e.preventDefault();
+  const p    = document.getElementById('prenom').value.trim();
+  const n    = document.getElementById('nom').value.trim();
+  const mail = document.getElementById('reg-email').value;
+  const pwd  = document.getElementById('reg-pass').value;
+  const ph   = document.getElementById('phone').value;
+  const dob  = document.getElementById('dob').value;
+  const nw   = document.getElementById('newsletter').checked;
 
-/* script.js modifications */
-function showError(containerId, message) {
-  const el = document.getElementById(containerId);
-  el.textContent = message;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 5000);
-}
-
-function showSuccess(containerId, message) {
-  const el = document.getElementById(containerId);
-  el.textContent = message;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 5000);
-}
-
-// Login with Firebase
-function login(event) {
-  event.preventDefault();
-  const email = document.getElementById('login-email').value;
-  const password = document.getElementById('login-password').value;
-
-  auth.signInWithEmailAndPassword(email, password)
-    .then(uc => {
-      if (!uc.user.emailVerified) {
-        auth.signOut();
-        throw { code: 'auth/email-not-verified' };
-      }
-      window.location.href = 'client.html';
+  auth.createUserWithEmailAndPassword(mail,pwd)
+    .then(({user})=> {
+      return user.updateProfile({displayName:`${p} ${n}`})
+        .then(()=> user.sendEmailVerification());
     })
-    .catch(err => {
-      const msg = err.code && errorMessages[err.code]
-        ? errorMessages[err.code]
-        : (err.code === 'auth/email-not-verified'
-            ? 'Veuillez vérifier votre adresse email avant de vous connecter.'
-            : err.message);
-      showError('login-error', msg);
-    });
-}
-
-// Register with Firebase + enregistrement Firestore
-function register(event) {
-  event.preventDefault();
-  const prenom     = document.getElementById('prenom').value.trim();
-  const nom        = document.getElementById('nom').value.trim();
-  const email      = document.getElementById('register-email').value;
-  const password   = document.getElementById('register-password').value;
-  const phone      = document.getElementById('phone').value;
-  const dob        = document.getElementById('dob').value;
-  const newsletter = document.getElementById('newsletter').checked;
-
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(({ user }) => user.updateProfile({ displayName: `${prenom} ${nom}` })
-      .then(() => user.sendEmailVerification({ url: window.location.href }))
-      .then(() => user)
-    )
-    .then(user => db.collection('users').doc(user.uid).set({
-      prenom, nom, email,
-      phone: phone || null,
-      dob: dob || null,
-      newsletter,
+    .then(({user})=> db.collection('users').doc(user.uid).set({
+      prenom: p,
+      nom: n,
+      email: mail,
+      phone: ph || null,
+      dob:   dob|| null,
+      newsletterEmail: nw,
+      newsletterPost:  false,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }))
-    .then(() => {
-      showError('register-error', 'Inscription réussie ! Un email de confirmation vous a été envoyé.');
-      switchForm('login');
-    })
-    .catch(error => {
-      const msg = error.code && errorMessages[error.code] ? errorMessages[error.code] : error.message;
-      showError('register-error', msg);
-    });
+    .then(()=> { showMessage('register-error','Inscription réussie, vérifiez votre email.'); switchForm('login'); })
+    .catch(err=> showMessage('register-error', errorMessages[err.code]||err.message));
 }
 
-// Send password reset email
-function sendResetEmail(event) {
-  event.preventDefault();
-  const email = document.getElementById('reset-email').value;
-
-  auth.sendPasswordResetEmail(email, { url: window.location.href })
-    .then(() => {
-      showSuccess('reset-success', 'Lien de réinitialisation envoyé. Vérifiez votre boîte de réception.');
-      document.getElementById('reset-error').classList.remove('show');
-    })
-    .catch(error => {
-      const msg = error.code && errorMessages[error.code] ? errorMessages[error.code] : error.message;
-      showError('reset-error', msg);
-      document.getElementById('reset-success').classList.remove('show');
-    });
+function sendResetEmail(e){
+  e.preventDefault();
+  const mail = document.getElementById('reset-email').value;
+  auth.sendPasswordResetEmail(mail)
+    .then(()=> showMessage('reset-success','Lien envoyé !'))
+    .catch(err=> showMessage('reset-error', errorMessages[err.code]||err.message));
 }
 
-// Dans login()
-auth.signInWithEmailAndPassword(email, password)
-.then(uc => {
-  if (!uc.user.emailVerified) throw new Error('Vérifiez votre email');
-  // Redirection ici, uniquement après un login explicite
-  window.location.href = 'client.html';
-})
-.catch(err => alert(err.message));
+function logout(){ auth.signOut(); }
 
-// Et on peut enlever entirely l'onAuthStateChanged
+// Observer
+auth.onAuthStateChanged(async user=>{
+  const authSec   = document.getElementById('auth-section');
+  const clientSec = document.getElementById('client-section');
+  if(user && user.emailVerified){
+    authSec.classList.add('hidden');
+    clientSec.classList.remove('hidden');
+    const doc = await db.collection('users').doc(user.uid).get();
+    const d = doc.data()||{};
+    document.getElementById('user-name').textContent = user.displayName||'';
+    ['prenom','nom','email','phone','dob'].forEach(f=>{
+      document.getElementById(`c-${f}`).value = f==='email' ? user.email : (d[f]||'');
+    });
+    ['email','post'].forEach(tp=>{
+      const id = `c-newsletter-${tp}`;
+      document.getElementById(id).checked = !!d[`newsletter${tp.charAt(0).toUpperCase()+tp.slice(1)}`];
+      document.getElementById(id).onchange = async ()=>{
+        await db.collection('users').doc(user.uid)
+          .update({ [`newsletter${tp.charAt(0).toUpperCase()+tp.slice(1)}`]: document.getElementById(id).checked });
+      };
+    });
+  } else {
+    clientSec.classList.add('hidden');
+    authSec.classList.remove('hidden');
+  }
+});
