@@ -84,5 +84,53 @@
       </form>
     </div>
   </div>
+
+  <!-- CLIENT SECTION -->
+  <div id="client-section" class="container hidden">
+    <div class="container" style="max-width:1000px; margin:auto; padding:40px">
+      <h1>Bienvenue, <span id="user-name"></span></h1>
+
+      <!-- MES INFORMATIONS -->
+      <div class="section">
+        <h2>Mes Informations</h2>
+        <div class="info-group"><label>Prénom</label><input type="text" id="c-prenom" disabled></div>
+        <div class="info-group"><label>Nom</label><input type="text" id="c-nom" disabled></div>
+        <div class="info-group"><label>Email</label><input type="email" id="c-email" disabled></div>
+        <div class="info-group"><label>Téléphone</label><input type="tel" id="c-phone" disabled></div>
+        <div class="info-group"><label>Date de naissance</label><input type="date" id="c-dob" disabled></div>
+      </div>
+
+      <!-- MES COMMANDES -->
+      <div class="section">
+        <h2>Mes Commandes</h2>
+        <ul id="orders-list">
+          <!-- À remplacer dynamiquement -->
+        </ul>
+      </div>
+
+      <!-- MES AVANTAGES -->
+      <div class="section">
+        <h2>Mes Avantages</h2>
+        <ul>
+          <li>-10% dès 3 articles</li>
+          <li>1 article offert pour votre anniversaire</li>
+          <li>Accès prioritaire aux nouveautés</li>
+        </ul>
+      </div>
+
+      <!-- MES ABONNEMENTS -->
+      <div class="section">
+        <h2>Mes Abonnements</h2>
+        <label class="checkbox">
+          <input type="checkbox" id="c-newsletter-email" /> Newsletter Email
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" id="c-newsletter-post"  /> Newsletter Voie Postale
+        </label>
+      </div>
+
+      <button class="logout-btn" onclick="logout()">Se déconnecter</button>
+    </div>
+  </div>
 </body>
 </html>
