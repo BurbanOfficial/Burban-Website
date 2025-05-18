@@ -58,6 +58,13 @@ function showError(containerId, message) {
   setTimeout(() => el.classList.remove('show'), 5000);
 }
 
+function showSuccess(containerId, message) {
+  const el = document.getElementById(containerId);
+  el.textContent = message;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 5000);
+}
+
 // Login with Firebase
 function login(event) {
   event.preventDefault();
@@ -122,12 +129,13 @@ function sendResetEmail(event) {
 
   auth.sendPasswordResetEmail(email, { url: window.location.href })
     .then(() => {
-      showError('reset-error', 'Lien de réinitialisation envoyé. Valable 15 minutes.');
-      closeResetModal();
+      showSuccess('reset-success', 'Lien de réinitialisation envoyé. Vérifiez votre boîte de réception.');
+      document.getElementById('reset-error').classList.remove('show');
     })
     .catch(error => {
       const msg = error.code && errorMessages[error.code] ? errorMessages[error.code] : error.message;
       showError('reset-error', msg);
+      document.getElementById('reset-success').classList.remove('show');
     });
 }
 
