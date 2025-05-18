@@ -20,6 +20,8 @@
       <div id="login-form" class="form active">
         <p class="subtitle">Nous sommes ravi de vous revoir</p>
         <h2>Se Connecter à Burban Loyalty</h2>
+        <!-- Error message container -->
+        <div id="login-error" class="error-message"></div>
         <form onsubmit="login(event)">
           <div class="input-group">
             <input type="email" id="login-email" required placeholder="Adresse Email" />
@@ -37,6 +39,7 @@
       <div id="register-form" class="form">
         <p class="subtitle">Devenez Client Burban</p>
         <h2>Inscrivez-vous chez Burban</h2>
+        <div id="register-error" class="error-message"></div>
         <form onsubmit="register(event)">
           <div class="input-group"><input type="text" required id="prenom" placeholder="Prénom *" /></div>
           <div class="input-group"><input type="text" required id="nom" placeholder="Nom *" /></div>
@@ -73,6 +76,7 @@
     <div class="modal-content">
       <span class="close-modal" onclick="closeResetModal()">&times;</span>
       <h3>Réinitialiser votre mot de passe</h3>
+      <div id="reset-error" class="error-message"></div>
       <form onsubmit="sendResetEmail(event)">
         <input type="email" id="reset-email" placeholder="Adresse Email" required />
         <button type="submit">Envoyer le lien</button>

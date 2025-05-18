@@ -39,6 +39,14 @@ function closeResetModal() {
   document.getElementById('reset-modal').classList.remove('show');
 }
 
+/* script.js modifications */
+function showError(containerId, message) {
+  const el = document.getElementById(containerId);
+  el.textContent = message;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 5000);
+}
+
 // Login with Firebase
 function login(event) {
 event.preventDefault();
@@ -49,13 +57,11 @@ auth.signInWithEmailAndPassword(email, password)
     if (userCredential.user.emailVerified) {
       window.location.href = 'client.html';
     } else {
-      alert('Veuillez vérifier votre adresse email avant de vous connecter.');
       auth.signOut();
+      showError('login-error', 'Veuillez vérifier votre adresse email avant de vous connecter.');
     }
   })
-  .catch(error => {
-    alert(error.message);
-  });
+  .catch(error => showError('login-error', error.message));
 }
 
 // Register with Firebase + enregistrement Firestore
@@ -92,12 +98,10 @@ function register(event) {
       });
     })
     .then(() => {
-      alert('Inscription réussie ! Un email de confirmation vous a été envoyé.');
+      showError('register-error', 'Inscription réussie ! Un email de confirmation vous a été envoyé.', 'success');
       switchForm('login');
     })
-    .catch(error => {
-      alert(error.message);
-    });
+    .catch(error => showError('register-error', error.message));
 }
 
 // Send password reset email
@@ -106,12 +110,10 @@ event.preventDefault();
 const email = document.getElementById('reset-email').value;
 auth.sendPasswordResetEmail(email, { url: window.location.href })
   .then(() => {
-    alert('Lien de réinitialisation envoyé. Valable 15 minutes.');
+    showError('reset-error', 'Lien de réinitialisation envoyé. Valable 15 minutes.');
     closeResetModal();
   })
-  .catch(error => {
-    alert(error.message);
-  });
+  .catch(error => showError('reset-error', error.message));
 }
 
 // Dans login()
