@@ -21,7 +21,8 @@ const errorMessages = {
   'auth/user-not-found': "Aucun compte ne correspond à cette adresse.",
   'auth/wrong-password': "Erreur dans l'adresse email ou dans le mot de passe.",
   'auth/email-already-in-use': "Cette adresse email est déjà utilisée.",
-  'auth/weak-password': "Le mot de passe est trop faible (min. 6 caractères)."
+  'auth/weak-password': "Le mot de passe est trop faible (min. 6 caractères).",
+  'auth/invalid-login-credentials': "Adresse Email ou mot de passe incorrect."
 };
 
 // Toggle password visibility with FontAwesome icons
