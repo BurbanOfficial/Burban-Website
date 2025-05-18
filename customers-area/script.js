@@ -107,7 +107,7 @@ const email = document.getElementById('reset-email').value;
 auth.sendPasswordResetEmail(email, { url: window.location.href })
   .then(() => {
     alert('Lien de réinitialisation envoyé. Valable 15 minutes.');
-    closeModal();
+    closeResetModal();
   })
   .catch(error => {
     alert(error.message);
