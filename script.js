@@ -49,7 +49,7 @@ const products = [
     price: 21.99,
     type: 'Cap',
     colors: [
-      { name: 'Black', code: '#000', img: 'https://i.imgur.com/asPiEue.jpeg', hover: 'https://i.imgur.com/U0oUcsA.jpeg', url: '/public/urban-crest-ar00046.html' },
+      { name: 'Black', code: '#000', img: 'https://i.imgur.com/asPiEue.jpeg', hover: 'https://i.imgur.com/U0oUcsA.jpeg', url: '/Burban-Website/public/urban-crest-ar00046.html' },
       // …
     ],
     sizes: ['Unique'],
@@ -68,7 +68,7 @@ const products = [
     price: 34.99,
     type: 'Sweatshirt',
     colors: [
-      { name: 'Dark Blue', code: '#171f2c', img: 'https://i.imgur.com/50AGnb5.jpeg', hover: 'https://i.imgur.com/WZgnZhx.jpeg', url: '/public/colorful-burst-ar00045.html' },
+      { name: 'Dark Blue', code: '#171f2c', img: 'https://i.imgur.com/50AGnb5.jpeg', hover: 'https://i.imgur.com/WZgnZhx.jpeg', url: '/Burban-Website/public/colorful-burst-ar00045.html' },
       // …
     ],
     sizes: ['S','M','L','XL','2XL','3XL'],
@@ -86,15 +86,15 @@ const products = [
     price: 23.99,
     type: 'Sweatshirt',
     colors: [
-      { name: 'Dark Green', code: '#1a3626', img: 'https://i.imgur.com/ltGJ2UA.jpeg', hover: 'https://i.imgur.com/uVeTzOQ.jpeg', url: '/public/urban-hibiscus-ar00044.html' },
-      { name: 'Indigo Blue', code: '#395d82', img: 'https://i.imgur.com/4j5IjyP.jpeg', hover: 'https://i.imgur.com/8a0UYy0.jpeg', url: '/public/urban-hibiscus-ar00048.html' },
-      { name: 'Sage Green', code: '#7e8560', img: 'https://i.imgur.com/62dxFU2.jpeg', hover: 'https://i.imgur.com/pMVsAJC.jpeg', url: '/public/urban-hibiscus-ar00047.html' },
+      { name: 'Dark Green', code: '#1a3626', img: 'https://i.imgur.com/ltGJ2UA.jpeg', hover: 'https://i.imgur.com/uVeTzOQ.jpeg', url: '/Burban-Website/public/urban-hibiscus-ar00044.html' },
+      { name: 'Indigo Blue', code: '#395d82', img: 'https://i.imgur.com/4j5IjyP.jpeg', hover: 'https://i.imgur.com/8a0UYy0.jpeg', url: '/Burban-Website/public/urban-hibiscus-ar00048.html' },
+      { name: 'Sage Green', code: '#7e8560', img: 'https://i.imgur.com/62dxFU2.jpeg', hover: 'https://i.imgur.com/pMVsAJC.jpeg', url: '/Burban-Website/public/urban-hibiscus-ar00047.html' },
       // …
     ],
     sizes: ['S','M','L','XL','2XL','3XL'],
     cut: 'Other',
     gender: 'Unisex',
-    badge_eco: false,
+    badge_eco: true,
     badge_europe: false
   },
 
@@ -106,7 +106,7 @@ const products = [
     price: 44.99,
     type: 'Hoodie',
     colors: [
-      { name: 'White', code: '#fff', img: 'https://i.imgur.com/ZP4zVSK.jpeg', hover: 'https://i.imgur.com/r9HQUCq.jpeg', url: '/public/universal-love-ar00043.html' },
+      { name: 'White', code: '#fff', img: 'https://i.imgur.com/ZP4zVSK.jpeg', hover: 'https://i.imgur.com/r9HQUCq.jpeg', url: '/Burban-Website/public/universal-love-ar00043.html' },
       // …
     ],
     sizes: ['S','M','L','XL','2XL'],
@@ -124,7 +124,7 @@ const products = [
     price: 44.99,
     type: 'Hoodie',
     colors: [
-      { name: 'White', code: '#fff', img: 'https://i.imgur.com/m2tkvTm.jpeg', hover: 'https://i.imgur.com/EcjqfHS.jpeg', url: '/public/natural-glow-ar00042.html' },
+      { name: 'White', code: '#fff', img: 'https://i.imgur.com/m2tkvTm.jpeg', hover: 'https://i.imgur.com/EcjqfHS.jpeg', url: '/Burban-Website/public/natural-glow-ar00042.html' },
       // …
     ],
     sizes: ['S','M','L','XL','2XL'],
@@ -142,8 +142,8 @@ const products = [
     price: 54.99,
     type: 'Hoodie',
     colors: [
-      { name: 'Black', code: '#000', img: 'https://i.imgur.com/7zR8liE.jpeg', hover: 'https://i.imgur.com/8GZ52nM.jpeg', url: '/public/mad-in-love-ar00041.html' },
-      { name: 'Dark Blue', code: '#132e57', img: 'https://i.imgur.com/a3O4ESv.jpeg', hover: 'https://i.imgur.com/Seortkg.jpeg', url: '/public/mad-in-love-ar00040.html' },
+      { name: 'Black', code: '#000', img: 'https://i.imgur.com/7zR8liE.jpeg', hover: 'https://i.imgur.com/8GZ52nM.jpeg', url: '/Burban-Website/public/mad-in-love-ar00041.html' },
+      { name: 'Dark Blue', code: '#132e57', img: 'https://i.imgur.com/a3O4ESv.jpeg', hover: 'https://i.imgur.com/Seortkg.jpeg', url: '/Burban-Website/public/mad-in-love-ar00040.html' },
       // …
     ],
     sizes: ['S','M','L','XL','2XL'],
@@ -293,13 +293,13 @@ function renderProducts() {
     if (p.badge_eco) {
       const ecoBadge = document.createElement('div');
       ecoBadge.className = 'badge eco';
-      ecoBadge.innerHTML = `<i class="fas fa-leaf"></i><span>écologique</span>`;
+      ecoBadge.innerHTML = `<i class="fas fa-leaf"></i><span>ecological</span>`;
       badges.append(ecoBadge);
     }
     if (p.badge_europe) {
       const euroBadge = document.createElement('div');
       euroBadge.className = 'badge europe';
-      euroBadge.innerHTML = `<i class="fa-solid fa-earth-africa"></i><span>Fabriqué&nbsp;en&nbsp;Europe</span>`;
+      euroBadge.innerHTML = `<i class="fa-solid fa-earth-africa"></i><span>Made&nbsp;in&nbsp;Europe</span>`;
       badges.append(euroBadge);
     }
 
