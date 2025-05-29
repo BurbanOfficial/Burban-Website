@@ -27,7 +27,6 @@
   border: 1px solid var(--border-color);
   box-shadow: 0 8px 20px var(--shadow-medium);
   animation: fadeIn 1s ease-out;
-  margin-bottom: 50px;
 }
 
 /* Animation d'apparition */
@@ -37,8 +36,8 @@
 }
 
 /* Titres élégants */
-h2 {
-  font-family: 'Playfair Display', serif;
+h2, h4 {
+  font-family: 'Poppins', sans-serif;
   color: var(--heading-color);
   margin-bottom: 20px;
 }
