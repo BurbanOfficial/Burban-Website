@@ -716,9 +716,10 @@
 async function updateTotal() {
   const items   = JSON.parse(localStorage.getItem('cartItems')) || [];
   const sub     = items.reduce((a,i) => a + i.price * i.quantity, 0);
-  const region   = await detectRegion();
-  const shipping = getCombinedShippingCost(items, region);
+  const region  = await detectRegion();
+  let shipping  = getCombinedShippingCost(items, region);  // ← en let
 
+  // 1️⃣ Livraison gratuite dès 50€
   if (sub >= 50) {
     shipping = 0;
     document.getElementById('shipping').innerText = 'Livraison gratuite';
@@ -726,23 +727,22 @@ async function updateTotal() {
     document.getElementById('shipping').innerText = shipping.toFixed(2) + '€';
   }
 
-  // **nouvelle** lecture du discount
+  // 2️⃣ Lecture du voucher
   const sel      = document.querySelector('input.voucher-checkbox:checked');
   const discount = sel ? Number(sel.value) : 0;
 
-  // ancienne base et totaux
+  // 3️⃣ Calcul des totaux
   const oldBase  = sub + shipping;
   const oldTax   = oldBase * 0.2;
   const oldTotal = oldBase + oldTax;
 
-  // nouvelle base et totaux
   const newBase  = Math.max(0, oldBase - discount);
   const newTax   = newBase * 0.2;
   const newTotal = newBase + newTax;
 
-  // affichage
+  // 4️⃣ Affichage
   document.getElementById('subTotal').innerText = sub.toFixed(2) + '€';
-  document.getElementById('shipping').innerText = shipping.toFixed(2) + '€';
+  // NB : shipping déjà affiché plus haut, on ne le remet pas ici
   document.getElementById('tax').innerText      = newTax.toFixed(2) + '€';
 
   const totalEl = document.getElementById('total');
