@@ -719,6 +719,13 @@ async function updateTotal() {
   const region   = await detectRegion();
   const shipping = getCombinedShippingCost(items, region);
 
+  if (sub >= 50) {
+    shipping = 0;
+    document.getElementById('shipping').innerText = 'Livraison gratuite';
+  } else {
+    document.getElementById('shipping').innerText = shipping.toFixed(2) + '€';
+  }
+
   // **nouvelle** lecture du discount
   const sel      = document.querySelector('input.voucher-checkbox:checked');
   const discount = sel ? Number(sel.value) : 0;
