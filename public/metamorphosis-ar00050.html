@@ -155,19 +155,19 @@
           <!-- Chaque <a> englobe le swatch, avec href vers la bonne URL -->
           <a class="color-swatch active"
              data-color-name="White"
-             href="/Burban-Website/public/metamorphosis-ar00050.html"
+             href="/public/metamorphosis-ar00050.html"
              style="background:#ffffff"
              title="White"></a>
 
           <a class="color-swatch"
              data-color-name="Lavender"
-             href="/Burban-Website/public/metamorphosis-ar00051.html"
+             href="/public/metamorphosis-ar00051.html"
              style="background:#B497BD"
              title="Lavender"></a>
 
           <a class="color-swatch"
              data-color-name="Pastel Pink"
-             href="/Burban-Website/public/metamorphosis-ar00052.html"
+             href="/public/metamorphosis-ar00052.html"
              style="background:#ffe9eb"
              title="Pastel Pink"></a>
         </div>
@@ -569,11 +569,30 @@ fetch('https://ipapi.co/json/')
     const flagUrl = `https://flagicons.lipis.dev/flags/1x1/${countryCode.toLowerCase()}.svg`;
 
     // Mise à jour du bloc d'estimation
-    document.getElementById("delivery-estimate").innerHTML =
-      'Delivery estimate to: ' +
-      '<img src="' + flagUrl + '" class="flag-icon" alt="Flag of ' + countryName + '"> ' +
-      countryName + ' : ' + estimatedRange;
-  })
+    // Ciblage de l'élément
+    const deliveryEstimateElement = document.getElementById("delivery-estimate");
+
+    // Contenu responsive selon la largeur de l'écran
+    let content;
+
+    if (window.innerWidth <= 600) {
+      // Format mobile
+      content =
+        '<img src="' + flagUrl + '" class="flag-icon" alt="Flag of ' + countryName + '">' +
+        '<strong>' + countryName + '</strong> : ' +
+        estimatedRange;
+    } else {
+      // Format desktop
+      content =
+        'Delivery estimate to: ' +
+        '<img src="' + flagUrl + '" class="flag-icon" alt="Flag of ' + countryName + '"> ' +
+        '<strong>' + countryName + '</strong> : ' + estimatedRange;
+    }
+
+    // Mise à jour du contenu
+    deliveryEstimateElement.innerHTML = content;
+    })
+
   .catch(error => {
     console.error("Error while retrieving location:", error);
     document.getElementById("delivery-estimate").innerHTML =

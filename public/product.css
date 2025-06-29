@@ -87,15 +87,19 @@
   /* Couleurs en cercles */
   .color-options {
     display: flex;
-    gap: 12px;
+    flex-wrap: wrap;        /* autorise le passage à la ligne */
+    gap: 12px;              /* espace entre les pastilles */
+    justify-content: flex-start;
   }
   .color-swatch {
-    width: 32px; height: 32px;
+    flex: 0 0 32px;         /* largeur fixe, pas de shrink */
+    height: 32px;
     border-radius: 50%;
     border: 2px solid transparent;
     cursor: pointer;
     transition: border-color .2s, transform .2s;
-    border: 1px solid #000;
+    /* optionally, ajoute un min-width pour être sûr que ça ne rétrécisse pas */
+    min-width: 32px;
   }
   .color-swatch.active {
     border-color: #111;
@@ -578,3 +582,7 @@
     display: none;
   }
 }
+
+
+  
+  
