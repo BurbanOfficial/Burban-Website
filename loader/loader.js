@@ -1,40 +1,45 @@
 const loader = document.getElementById('loader');
-  const path = loader.querySelector('path');
+const path = loader.querySelector('path');
 
-  // Longueur totale du path
-  const length = path.getTotalLength();
+// Désactive le scroll pendant le chargement
+document.body.style.overflow = 'hidden';
 
-  // Stocke dans une variable CSS custom property pour l'animation finale
-  path.style.setProperty('--length', length);
+// Récupère la longueur totale du path SVG
+const length = path.getTotalLength();
 
-  // Initialisation pour animation boucle (loader)
-  path.style.strokeDasharray = 1500;
-  path.style.strokeDashoffset = 0;
-  loader.classList.add('loading'); // classe pour boucle
+// Stocke cette longueur dans une variable CSS custom pour animation finale
+path.style.setProperty('--length', length);
 
-  // Quand la page est complètement chargée
-  window.addEventListener('load', () => {
-    // Stop la boucle
-    loader.classList.remove('loading');
+// Initialise animation boucle
+path.style.strokeDasharray = 1500;
+path.style.strokeDashoffset = 0;
+loader.classList.add('loading'); // classe pour boucle d'animation
 
-    // Prépare l'animation finale
-    path.style.strokeDasharray = length;
-    path.style.strokeDashoffset = length;
+// Dès que la page est complètement chargée
+window.addEventListener('load', () => {
+  // Arrête l'animation boucle
+  loader.classList.remove('loading');
 
-    // Force reflow pour appliquer les styles (important)
-    void path.offsetWidth;
+  // Prépare animation finale complète
+  path.style.strokeDasharray = length;
+  path.style.strokeDashoffset = length;
 
-    // Ajoute la classe 'draw' qui déclenche animation dessin final
-    loader.classList.add('draw');
+  // Force reflow pour appliquer styles immédiatement
+  void path.offsetWidth;
 
-    // Quand animation dessin final terminée (3s), on masque le loader
+  // Ajoute classe 'draw' pour lancer animation dessin final
+  loader.classList.add('draw');
+
+  // Après la fin de l'animation dessin (3s ici), on fait disparaître le loader
+  setTimeout(() => {
+    loader.classList.add('fade-out');
+
+    // Puis on enlève le loader, montre le contenu principal et réactive le scroll
     setTimeout(() => {
-      loader.classList.add('fade-out');
-
-      // Puis on enlève le loader et affiche le contenu
-      setTimeout(() => {
-        loader.remove();
-        document.getElementById('main-content').style.opacity = '1';
-      }, 1000);
-    }, 3000);
-  });
+      loader.remove();
+      document.body.style.overflow = 'auto'; // ✅ scroll réactivé
+      const main = document.getElementById('main-content');
+      if(main) main.style.opacity = '1';
+    }, 1000);
+  }, 3000);
+});
