@@ -818,8 +818,11 @@ async function updateTotal() {
 </script>
 
 <script>
-    const loader = document.getElementById('loader');
+const loader = document.getElementById('loader');
 const path = loader.querySelector('path');
+
+// Désactive le scroll pendant le chargement
+document.body.style.overflow = 'hidden';
 
 // Récupère la longueur totale du path SVG
 const length = path.getTotalLength();
@@ -851,9 +854,10 @@ window.addEventListener('load', () => {
   setTimeout(() => {
     loader.classList.add('fade-out');
 
-    // Puis on enlève le loader et montre le contenu principal
+    // Puis on enlève le loader, montre le contenu principal et réactive le scroll
     setTimeout(() => {
       loader.remove();
+      document.body.style.overflow = 'auto'; // ✅ scroll réactivé
       const main = document.getElementById('main-content');
       if(main) main.style.opacity = '1';
     }, 1000);
