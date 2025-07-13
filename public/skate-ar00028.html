@@ -26,57 +26,7 @@
 </head>
 <body>
 
-  <!-- Header -->
-  <header class="header">
-    <!-- Logo -->
-    <a href="index.html" class="logo-link">
-      <img src="https://i.imgur.com/Kl9kTBg.png" alt="Burban Logo" class="logo-img">
-    </a>
-  
-    <!-- Nav desktop -->
-    <nav class="nav">
-      <a href="index.html" class="nav-item">Home</a>
-      <a href="shop.html" class="nav-item active">Shop</a>
-      <a href="about.html" class="nav-item">About Burban</a>
-      <a href="contact.html" class="nav-item">Contact Us</a>
-    </nav>
-  
-    <!-- Icônes + hamburger -->
-    <div class="actions">
-      <a href="account.html" class="account-btn" aria-label="Mon compte"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="cart.html" class="cart-btn" aria-label="Mon panier"><i class="fa-solid fa-bag-shopping"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
-      <button class="hamburger" aria-label="Ouvrir le menu">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </button>
-
-      <div class="lang-switcher desktop-lang">
-        <select id="languageSelector" aria-label="Changer de langue">
-          <option value="EN">EN</option>
-          <option value="FR">FR</option>
-        </select>
-      </div>
-    </div>
-  </header>
-
-  <!-- Overlay menu mobile -->
-  <div class="overlay-menu" id="overlayMenu">
-    <button class="close-btn" aria-label="Fermer le menu">&times;</button>
-    <ul class="overlay-nav">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="shop.html">Shop</a></li>
-      <li><a href="about.html">About Burban</a></li>
-      <li><a href="contact.html">Contact Us</a></li>
-      <li class="mobile-lang">
-        <label for="languageSelectorMobile">Language:</label>
-        <select id="languageSelectorMobile" aria-label="Changer de langue">
-          <option value="EN">EN</option>
-          <option value="FR">FR</option>
-        </select>
-      </li>      
-    </ul>
-  </div>
+  <script src="/public/includes/header.js"></script>
 
   <main class="product-page"
         data-product-id="skate-t-shirt-black"
@@ -250,41 +200,6 @@
       </div>
     </div>
   </main>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-brand">
-        <img src="https://i.imgur.com/Nup8sfC.png" alt="Burban Logo">
-        <p>More than a brand, an identity.</p>
-      </div>
-      <div class="footer-links">
-        <div>
-          <h4>Navigation</h4>
-          <a href="index.html">Home</a>
-          <a href="shop.html">Shop</a>
-          <a href="about.html">About Burban</a>
-          <a href="contact.html">Contact Us</a>
-        </div>
-        <div>
-          <h4>Support</h4>
-          <a href="#">FAQ</a>
-          <a href="#">Livraison</a>
-          <a href="#">Retour</a>
-          <a href="#">CGV</a>
-        </div>
-        <div>
-          <h4>Follow us</h4>
-          <a href="#">Instagram</a>
-          <a href="#">Facebook</a>
-          <a href="#">TikTok</a>
-        </div>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      &copy; 2024 - <span id="year"></span> Burban. All Rights Reserved.
-    </div>
-  </footer>
 
   <!-- Modal "Article ajouté au panier" -->
 <div id="cartModal" class="cart-modal hidden">
@@ -655,5 +570,6 @@ fetch('https://ipapi.co/json/')
 </script>
 
   <script src="products-script.js" defer></script>
+  <script src="/public/includes/footer.js"></script>
 </body>
 </html>

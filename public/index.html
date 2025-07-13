@@ -240,52 +240,7 @@
   </svg>
 </div>
 
-  <!-- Header (Codage 2) -->
-  <header class="header">
-    <a href="index.html" class="logo-link">
-      <img src="https://i.imgur.com/Kl9kTBg.png" alt="Burban Logo" class="logo-img">
-    </a>
-    <nav class="nav">
-      <a href="index.html" class="nav-item">Home</a>
-      <a href="shop.html" class="nav-item">Shop</a>
-      <a href="about.html" class="nav-item">About Burban</a>
-      <a href="contact.html" class="nav-item">Contact Us</a>
-    </nav>
-    <div class="actions">
-      <a href="account.html" class="account-btn" aria-label="Mon compte"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="cart.html" class="cart-btn" aria-label="Mon panier"><i class="fa-solid fa-bag-shopping"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
-      <button class="hamburger" aria-label="Ouvrir le menu">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </button>
-
-      <!-- <div class="lang-switcher desktop-lang">
-        <select id="languageSelector" aria-label="Changer de langue">
-          <option value="EN">EN</option>
-          <option value="FR">FR</option>
-        </select>
-      </div> -->
-    </div>
-  </header>
-
-  <!-- Overlay menu mobile -->
-  <div class="overlay-menu" id="overlayMenu">
-    <button class="close-btn" aria-label="Fermer le menu">&times;</button>
-    <ul class="overlay-nav">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="shop.html">Shop</a></li>
-      <li><a href="about.html">About Burban</a></li>
-      <li><a href="contact.html">Contact Us</a></li>
-      <!-- <li class="mobile-lang">
-        <label for="languageSelectorMobile">Language:</label>
-        <select id="languageSelectorMobile" aria-label="Changer de langue">
-          <option value="EN">EN</option>
-          <option value="FR">FR</option>
-        </select>
-      </li> -->
-    </ul>
-  </div>
+<script src="/public/includes/header.js"></script>
 
   <!-- Panier -->
   <main class="cart-page">
@@ -293,7 +248,7 @@
 
     <div id="emptyMessage" class="empty-cart hidden">
       <p>Your cart is empty.</p>
-      <a href="shop.html" class="btn btn-back">Back to the shop</a>
+      <a href="https://burbanofficial.com/shop.html" class="btn btn-back">Back to the shop</a>
     </div>
 
     <div id="cartContainer" class="cart-container">
@@ -376,41 +331,6 @@
     <img src="https://images.ctfassets.net/4pxjo1vaz7xk/21WIRpMQF4x4yzTUsDj1qy/691272c0a3cc22306c06f8d5e37da596/DAT-Wordmark_Pink_And_Black.webp"       alt="Klarna"          class="pay-logo">
   </div>
 </div>
-
-  <!-- Footer (Codage 2) -->
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-brand">
-        <img src="https://i.imgur.com/Nup8sfC.png" alt="Burban Logo">
-        <p>More than a brand, an identity.</p>
-      </div>
-      <div class="footer-links">
-        <div>
-          <h4>Navigation</h4>
-          <a href="index.html">Home</a>
-          <a href="shop.html">Shop</a>
-          <a href="about-burban.html">About Burban</a>
-          <a href="contact.html">Contact Us</a>
-        </div>
-        <div>
-          <h4>Support</h4>
-          <a href="FAQ.html">FAQ</a>
-          <a href="/legality/legal-notice.html">Legal Notice</a>
-          <a href="/legality/TGS.html">TGS</a>
-        </div>
-        <div>
-          <h4>Follow us</h4>
-          <a href="https://www.instagram.com/burban.official/" target="_blank" rel="noopener noreferrer">Instagram</a>
-          <a href="https://www.facebook.com/profile.php?id=61566473957609" target="_blank" rel="noopener noreferrer">Facebook</a>
-          <a href="https://www.tiktok.com/@burban.official" target="_blank" rel="noopener noreferrer">TikTok</a>
-          <a href="https://www.whatsapp.com/channel/0029VamoSXlDJ6GxgWLAmz17" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-        </div>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      &copy; 2024 - <span id="year"></span> Burban. All Rights Reserved.
-    </div>
-  </footer>
 
   <!-- Scripts -->
   <script>
@@ -864,6 +784,8 @@ window.addEventListener('load', () => {
   }, 3000);
 });
 </script>
+
+<script src="/public/includes/footer.js"></script>
 
 </body>
 </html>
