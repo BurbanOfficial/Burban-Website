@@ -9,15 +9,15 @@ document.write(`
       <div class="footer-links">
         <div>
           <h4>Navigation</h4>
-          <a href="index.html">Home</a>
-          <a href="shop.html">Shop</a>
-          <a href="about-burban.html">About Burban</a>
-          <a href="contact.html">Contact Us</a>
+          <a href="https://burbanofficial.com/index.html">Home</a>
+          <a href="https://burbanofficial.com/shop.html">Shop</a>
+          <a href="https://burbanofficial.com/about-burban.html">About Burban</a>
+          <a href="https://burbanofficial.com/contact.html">Contact Us</a>
         </div>
         <div>
           <h4>Support</h4>
-          <a href="/legality/legal-notice.html">Legal Notice</a>
-          <a href="/legality/TCS.html">TCS</a>
+          <a href="https://burbanofficial.com/legality/legal-notice.html">Legal Notice</a>
+          <a href="https://burbanofficial.com/legality/TCS.html">TCS</a>
         </div>
         <div>
           <h4>Follow us</h4>
