@@ -9,10 +9,10 @@ document.write(`
     
       <!-- Nav desktop -->
       <nav class="nav">
-        <a href="index.html" class="nav-item active">Home</a>
-        <a href="shop.html" class="nav-item">Shop</a>
-        <a href="about-burban.html" class="nav-item">About Burban</a>
-        <a href="contact.html" class="nav-item">Contact Us</a>
+        <a href="https://burbanofficial.com/index.html" class="nav-item">Home</a>
+        <a href="https://burbanofficial.com/shop.html" class="nav-item active">Shop</a>
+        <a href="https://burbanofficial.com/about-burban.html" class="nav-item">About Burban</a>
+        <a href="https://burbanofficial.com/contact.html" class="nav-item">Contact Us</a>
       </nav>
     
       <!-- Icônes + hamburger -->
