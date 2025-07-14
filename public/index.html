@@ -86,7 +86,7 @@
     }
     
     /* Loader animation */
-    .loader {
+    .loader2 {
       --ballcolor: #f2f2f2;
       --shadow: 0px 0 #ffffff00;
       --shadowcolor: #ffffff00;
@@ -331,7 +331,7 @@
 
         <button id="checkout-btn" class="btn btn-add" onclick="handleCheckout()">
           <span id="checkout-btn-text">Proceed to checkout</span>
-          <div class="loader" id="loader" style="display:none;"></div>
+          <div class="loader2" id="loader2" style="display:none;"></div>
           <span id="card-icon"><i class="fa-solid fa-credit-card"></i></span>
         </button>
       </aside>
@@ -523,10 +523,10 @@
 
     // --- Total & TVA ---
     function updateTotal(){const items=JSON.parse(localStorage.getItem('cartItems'))||[];const sum=items.reduce((a,i)=>a+i.price*i.quantity,0);document.getElementById('subTotal').innerText=sum.toFixed(2)+'€';document.getElementById('tax').innerText=(sum*0.2).toFixed(2)+'€';document.getElementById('shipping').innerText='To be determined at checkout';document.getElementById('total').innerText=(sum*1.2).toFixed(2)+'€';updateVoucherOptions();}
-    function resetButton(){const b=document.getElementById('checkout-btn');const t=document.getElementById('checkout-btn-text');const l=document.getElementById('loader');const c=document.getElementById('card-icon');b.disabled=false;t.style.display='inline';l.style.display='none';c.style.display='inline-block';}
+    function resetButton(){const b=document.getElementById('checkout-btn');const t=document.getElementById('checkout-btn-text');const l=document.getElementById('loader2');const c=document.getElementById('card-icon');b.disabled=false;t.style.display='inline';l.style.display='none';c.style.display='inline-block';}
 
     // --- Checkout Stripe ---
-    async function handleCheckout(){const b=document.getElementById('checkout-btn'),t=document.getElementById('checkout-btn-text'),l=document.getElementById('loader'),c=document.getElementById('card-icon');b.disabled=true;t.style.display='none';l.style.display='inline-block';c.style.display='none';const selectedVoucher = document.querySelector('input.voucher-checkbox:checked');
+    async function handleCheckout(){const b=document.getElementById('checkout-btn'),t=document.getElementById('checkout-btn-text'),l=document.getElementById('loader2'),c=document.getElementById('card-icon');b.disabled=true;t.style.display='none';l.style.display='inline-block';c.style.display='none';const selectedVoucher = document.querySelector('input.voucher-checkbox:checked');
       let voucherData = null;
       if (selectedVoucher) {
         const voucherValue = selectedVoucher.value;
@@ -568,7 +568,7 @@
 
     // --- Auth & Init ---
     auth.onAuthStateChanged(()=>updateVoucherOptions());
-    document.addEventListener('DOMContentLoaded',()=>{document.getElementById('loader').style.display='none';loadCart();
+    document.addEventListener('DOMContentLoaded',()=>{document.getElementById('loader2').style.display='none';loadCart();
       // Modal handlers
       const modal=document.getElementById('shippingModal');const close=modal.querySelector('.close');close.onclick=()=>modal.style.display='none';window.onclick=e=>{if(e.target===modal)modal.style.display='none';};document.getElementById('shippingForm').addEventListener('submit',e=>{e.preventDefault();modal.style.display='none';handleCheckout();});
       // Year
