@@ -95,12 +95,13 @@
     flex: 0 0 32px;         /* largeur fixe, pas de shrink */
     height: 32px;
     border-radius: 50%;
-    border: 2px solid transparent;
+    border: 0.2px solid black;
     cursor: pointer;
     transition: border-color .2s, transform .2s;
     /* optionally, ajoute un min-width pour être sûr que ça ne rétrécisse pas */
     min-width: 32px;
   }
+  
   .color-swatch.active {
     border-color: #111;
     transform: scale(1.1);
