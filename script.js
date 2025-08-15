@@ -6,6 +6,8 @@ const products = [
   {
     id: 'metamorphosis',
     name: 'Metamorphosis',
+    // Prix initial (non modifié) et prix de vente (modifiable pour promotions)
+    originalPrice: 20.99,
     price: 20.99,
     type: 'T-Shirt',
     colors: [
@@ -27,6 +29,7 @@ const products = [
   {
     id: 'celestial-b',
     name: 'Celestial B',
+    originalPrice: 15.99,
     price: 15.99,
     type: 'T-Shirt',
     colors: [
@@ -46,6 +49,7 @@ const products = [
   {
     id: 'urban-crest',
     name: 'Urban Crest',
+    originalPrice: 21.99,
     price: 21.99,
     type: 'Cap',
     colors: [
@@ -65,6 +69,7 @@ const products = [
   {
     id: 'colorful-burst',
     name: 'Colorful Burst',
+    originalPrice: 34.99,
     price: 34.99,
     type: 'Sweatshirt',
     colors: [
@@ -83,6 +88,7 @@ const products = [
   {
     id: 'urban-hibiscus',
     name: 'Urban Hibiscus',
+    originalPrice: 23.99,
     price: 23.99,
     type: 'Sweatshirt',
     colors: [
@@ -103,6 +109,7 @@ const products = [
   {
     id: 'universal-love',
     name: 'Universal Love',
+    originalPrice: 44.99,
     price: 44.99,
     type: 'Hoodie',
     colors: [
@@ -121,6 +128,7 @@ const products = [
   {
     id: 'natural-glow',
     name: 'Natural Glow',
+    originalPrice: 44.99,
     price: 44.99,
     type: 'Hoodie',
     colors: [
@@ -139,6 +147,7 @@ const products = [
   {
     id: 'mad-in-love',
     name: 'Mad In Love',
+    originalPrice: 54.99,
     price: 54.99,
     type: 'Hoodie',
     colors: [
@@ -158,6 +167,7 @@ const products = [
   {
     id: 'morning-sweets',
     name: 'Morning Sweets',
+    originalPrice: 23.99,
     price: 23.99,
     type: 'T-Shirt',
     colors: [
@@ -176,6 +186,7 @@ const products = [
   {
     id: 'skate',
     name: 'Skate',
+    originalPrice: 16.99,
     price: 16.99,
     type: 'T-Shirt',
     colors: [
@@ -205,6 +216,7 @@ const products = [
   {
     id: 'starry',
     name: 'Starry',
+    originalPrice: 23.99,
     price: 23.99,
     type: 'Beanie',
     colors: [
@@ -223,6 +235,7 @@ const products = [
   {
     id: 'cartoon',
     name: 'Cartoon',
+    originalPrice: 47.99,
     price: 47.99,
     type: 'Hoodie',
     colors: [
@@ -241,6 +254,7 @@ const products = [
   {
     id: 'white-shine',
     name: 'White Shine',
+    originalPrice: 23.99,
     price: 23.99,
     type: 'Beanie',
     colors: [
@@ -259,6 +273,7 @@ const products = [
   {
     id: 'stay-cool',
     name: 'Stay Cool',
+    originalPrice: 51.99,
     price: 51.99,
     type: 'Hoodie',
     colors: [
@@ -277,6 +292,7 @@ const products = [
   {
     id: 'elegance',
     name: 'Elegance',
+    originalPrice: 19.99,
     price: 19.99,
     type: 'Beanie',
     colors: [
@@ -296,6 +312,7 @@ const products = [
   {
     id: 'emerald',
     name: 'Emerald',
+    originalPrice: 47.99,
     price: 47.99,
     type: 'Hoodie',
     colors: [
@@ -314,6 +331,7 @@ const products = [
   {
     id: 'lavender-glow',
     name: 'Lavender Glow',
+    originalPrice: 53.99,
     price: 53.99,
     type: 'Hoodie',
     colors: [
@@ -332,6 +350,7 @@ const products = [
   {
     id: 'harmony',
     name: 'Harmony',
+    originalPrice: 53.99,
     price: 53.99,
     type: 'Hoodie',
     colors: [
@@ -350,6 +369,7 @@ const products = [
   {
     id: 'bunny-chic',
     name: 'Bunny Chic',
+    originalPrice: 47.99,
     price: 47.99,
     type: 'Hoodie',
     colors: [
@@ -367,6 +387,14 @@ const products = [
   },
   // … autres produits, toujours avec badge_eco et badge_europe
 ];
+
+// --- si vous ajoutez un prix promotionnel dans les données produit, gardez originalPrice à l'ancien prix ---
+// (pour tout produit où originalPrice n'est pas défini, on le complète automatiquement)
+products.forEach(p => {
+  if (typeof p.originalPrice !== 'number') {
+    p.originalPrice = p.price;
+  }
+});
 
 let filtered = [...products];
 const state = {
@@ -488,6 +516,20 @@ function renderProducts() {
     const dc = p.colors[0];
     card.href = `${dc.url}?color=${encodeURIComponent(dc.name)}`;
 
+    // Calcul du HTML pour le prix et réduction si applicable
+    let priceHTML;
+    if (p.price < p.originalPrice) {
+      const discount = Math.round((p.originalPrice - p.price) / p.originalPrice * 100);
+      priceHTML = `
+        <p class="price">
+          <span class="original">${p.originalPrice}€</span>
+          <span class="sale">${p.price}€</span>
+          <span class="discount">-${discount}%</span>
+        </p>`;
+    } else {
+      priceHTML = `<p>${p.price}€</p>`;
+    }
+
     // Contenu de la carte
     card.innerHTML = `
       <div class="img-wrap">
@@ -495,7 +537,7 @@ function renderProducts() {
       </div>
       <div class="info">
         <h3>${p.name}</h3>
-        <p>${p.price}€</p>
+        ${priceHTML}
         <div class="swatches"></div>
       </div>`;
 
