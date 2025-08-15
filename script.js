@@ -21,6 +21,7 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    releaseDateTime: '2025-08-15T16:47:00' // format ISO YYYY-MM-DDTHH:MM:SS
   },
 
 
@@ -508,7 +509,13 @@ function renderProducts() {
   countSpan.textContent  = `${filtered.length} article${filtered.length>1?'s':''}`;
   applyCount.textContent = filtered.length;
 
-  filtered.forEach(p => {
+  const now = new Date();
+  const visibleProducts = filtered.filter(p => {
+    if (!p.releaseDateTime) return true; // pas de date = visible tout de suite
+    return new Date(p.releaseDateTime) <= now;
+  });
+
+  visibleProducts.forEach(p => {
     const card = document.createElement('a');
     card.className = 'product-card';
 
@@ -608,3 +615,7 @@ btnClose.addEventListener('click', () => modal.classList.remove('open'));
 // Initialisation
 renderProducts();
 applyCount.textContent = products.length;
+
+setInterval(() => {
+  renderProducts(); // la fonction doit utiliser visibleProducts
+}, 60000); // toutes les 60 secondes
