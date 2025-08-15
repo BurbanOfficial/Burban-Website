@@ -8,7 +8,7 @@ const products = [
     name: 'Metamorphosis',
     // Prix initial (non modifié) et prix de vente (modifiable pour promotions)
     originalPrice: 20.99,
-    price: 20.99,
+    price: 18.99,
     type: 'T-Shirt',
     colors: [
       { name: 'White', code: '#fff', img: 'https://i.imgur.com/3OueieQ.jpeg', hover: 'https://i.imgur.com/ol3tK3L.jpeg', url: '/public/metamorphosis-ar00050.html' },
@@ -608,3 +608,4 @@ btnClose.addEventListener('click', () => modal.classList.remove('open'));
 // Initialisation
 renderProducts();
 applyCount.textContent = products.length;
+
