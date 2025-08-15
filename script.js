@@ -21,6 +21,7 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    releaseDateTime: '2025-09-01T09:00:00'  // ← date et heure de mise en ligne
   },
 
 
@@ -499,16 +500,20 @@ applyBtn.addEventListener('click', () => {
 
 function renderProducts() {
   grid.innerHTML = '';
-  if (!filtered.length) {
+  const now = new Date();
+  const visibleProducts = filtered.filter(p => !p.releaseDateTime || new Date(p.releaseDateTime) <= now);
+
+  if (!visibleProducts.length) {
     noRes.classList.remove('hidden');
     countSpan.textContent = '0 articles';
     return;
   }
+  
   noRes.classList.add('hidden');
-  countSpan.textContent  = `${filtered.length} article${filtered.length>1?'s':''}`;
-  applyCount.textContent = filtered.length;
+  countSpan.textContent  = `${visibleProducts.length} article${visibleProducts.length>1?'s':''}`;
+  applyCount.textContent = visibleProducts.length;
 
-  filtered.forEach(p => {
+  visibleProducts.forEach(p => {
     const card = document.createElement('a');
     card.className = 'product-card';
 
@@ -608,3 +613,7 @@ btnClose.addEventListener('click', () => modal.classList.remove('open'));
 // Initialisation
 renderProducts();
 applyCount.textContent = products.length;
+
+setInterval(() => {
+  renderProducts();
+}, 60000); // vérifie toutes les 60 secondes
