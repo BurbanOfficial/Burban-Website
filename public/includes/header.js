@@ -3,7 +3,7 @@ document.write(`
     <!-- Header -->
     <header class="header">
       <!-- Logo -->
-      <a href="index.html" class="logo-link">
+      <a href="https://burbanofficial.com/index.html" class="logo-link">
         <img src="https://i.imgur.com/Kl9kTBg.png" alt="Burban Logo" class="logo-img">
       </a>
     
@@ -51,4 +51,5 @@ document.write(`
       </ul>
     </div>
   `);
+
   
