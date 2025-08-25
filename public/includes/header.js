@@ -37,10 +37,10 @@ document.write(`
     <div class="overlay-menu" id="overlayMenu">
       <button class="close-btn" aria-label="Fermer le menu">&times;</button>
       <ul class="overlay-nav">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="shop.html">Shop</a></li>
-        <li><a href="about-burban.html">About Burban</a></li>
-        <li><a href="contact.html">Contact Us</a></li>
+        <li><a href="https://burbanofficial.com/index.html">Home</a></li>
+        <li><a href="https://burbanofficial.com/shop.html">Shop</a></li>
+        <li><a href="https://burbanofficial.com/about-burban.html">About Burban</a></li>
+        <li><a href="https://burbanofficial.com/contact.html">Contact Us</a></li>
         <li class="mobile-lang">
           <label for="languageSelectorMobile">Language:</label>
           <select id="languageSelectorMobile" aria-label="Changer de langue">
@@ -53,3 +53,4 @@ document.write(`
   `);
 
   
+
