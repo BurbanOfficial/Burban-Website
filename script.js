@@ -2,6 +2,9 @@
 
 // --- EXEMPLE DE DONNÉES PRODUITS ---
 // Ajoutez pour chaque produit badge_eco et badge_europe à true ou false
+// Vous pouvez aussi ajouter ces nouveaux champs facultatifs aux objets produits :
+// availableFrom: '2025-08-26T15:30:00+02:00'  (ISO 8601, avec fuseau si vous voulez)
+// availableUntil: '2025-09-01T23:59:59+02:00'
 const products = [
   {
     id: 'metamorphosis',
@@ -21,6 +24,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -41,6 +47,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -61,6 +70,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -81,6 +93,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: false,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -102,6 +117,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -121,6 +139,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -140,6 +161,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -160,6 +184,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -179,6 +206,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -209,6 +239,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: false,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -228,6 +261,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -247,6 +283,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -266,6 +305,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -285,6 +327,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -305,6 +350,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -324,6 +372,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -343,6 +394,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -362,6 +416,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
 
@@ -384,6 +441,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // OPTIONAL: demonstrate future product (example)
+    // availableFrom: '2025-08-26T18:00:00+02:00',
+    // availableUntil: '2025-08-28T23:59:59+02:00'
   },
   // … autres produits, toujours avec badge_eco et badge_europe
 ];
@@ -453,7 +513,28 @@ renderFilterOptions('filterCuts',    [...new Set(products.map(p=>p.cut))]);
 renderFilterOptions('filterGenders', [...new Set(products.map(p=>p.gender))]);
 renderFilterOptions('filterTypes',   [...new Set(products.map(p=>p.type))]);
 
-function previewCount() {
+// ------------------ NOUVELLES FONCTIONS DATE / VISIBILITÉ ------------------
+
+// Parse une date ISO en timestamp ms. Si invalide, retourne null.
+function parseDateOrNull(dateStr) {
+  if (!dateStr) return null;
+  const t = Date.parse(dateStr);
+  return Number.isFinite(t) ? t : null;
+}
+
+// Test si le produit est actif maintenant (précision seconde possible).
+// Si availableFrom absent => visible immédiatement.
+// Si availableUntil absent => pas de fin (visible indéfiniment).
+function isProductActive(product, nowMs = Date.now()) {
+  const from = parseDateOrNull(product.availableFrom);
+  const until = parseDateOrNull(product.availableUntil);
+  if (from !== null && nowMs < from) return false;   // pas encore publié
+  if (until !== null && nowMs > until) return false; // déjà expiré
+  return true;
+}
+
+// Retourne la liste de produits qui respecte l'état des filtres (sans tenir compte des dates)
+function getFilteredByState() {
   return products.filter(p => {
     if (state.colors.size && ![...state.colors].some(c=>p.colors.some(pc=>pc.name===c))) return false;
     if (state.sizes.size  && ![...state.sizes].some(s=>p.sizes.includes(s)))         return false;
@@ -463,7 +544,18 @@ function previewCount() {
     if (state.priceMin!==null && p.price < state.priceMin)                              return false;
     if (state.priceMax!==null && p.price > state.priceMax)                              return false;
     return true;
-  }).length;
+  });
+}
+
+// Retourne la liste finale visible (filtres + contrainte de date)
+function getVisibleProducts(nowMs = Date.now()) {
+  const base = getFilteredByState();
+  return base.filter(p => isProductActive(p, nowMs));
+}
+
+// Nouvelle previewCount qui prend en compte également les dates (au moment présent)
+function previewCount() {
+  return getVisibleProducts().length;
 }
 
 document.querySelectorAll('#filterForm input').forEach(input => {
@@ -608,5 +700,3 @@ btnClose.addEventListener('click', () => modal.classList.remove('open'));
 // Initialisation
 renderProducts();
 applyCount.textContent = products.length;
-
-
