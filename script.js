@@ -22,7 +22,7 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
-    // optional: availableFrom: '2025-08-26T18:00:00+02:00',
+    availableFrom: '2025-08-26T13:38:00+02:00',
     // optional: availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
@@ -630,3 +630,4 @@ setInterval(() => {
     renderProducts();
   }
 }, 1000);
+
