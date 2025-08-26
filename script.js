@@ -2,6 +2,7 @@
 
 // --- EXEMPLE DE DONNÉES PRODUITS ---
 // Ajoutez pour chaque produit badge_eco et badge_europe à true ou false
+// Vous pouvez optionnellement ajouter : availableFrom et/ou availableUntil (ISO 8601)
 const products = [
   {
     id: 'metamorphosis',
@@ -21,10 +22,9 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
+    // optional: availableFrom: '2025-08-26T18:00:00+02:00',
+    // optional: availableUntil: '2025-08-28T23:59:59+02:00'
   },
-
-
-
 
   {
     id: 'celestial-b',
@@ -43,9 +43,6 @@ const products = [
     badge_europe: false
   },
 
-
-
-  
   {
     id: 'urban-crest',
     name: 'Urban Crest',
@@ -63,9 +60,6 @@ const products = [
     badge_europe: false
   },
 
-
-
-
   {
     id: 'colorful-burst',
     name: 'Colorful Burst',
@@ -82,8 +76,6 @@ const products = [
     badge_eco: false,
     badge_europe: false
   },
-
-
 
   {
     id: 'urban-hibiscus',
@@ -104,8 +96,6 @@ const products = [
     badge_europe: false
   },
 
-
-
   {
     id: 'universal-love',
     name: 'Universal Love',
@@ -123,8 +113,6 @@ const products = [
     badge_europe: false
   },
 
-
-
   {
     id: 'natural-glow',
     name: 'Natural Glow',
@@ -141,8 +129,6 @@ const products = [
     badge_eco: true,
     badge_europe: false
   },
-
-
 
   {
     id: 'mad-in-love',
@@ -162,8 +148,6 @@ const products = [
     badge_europe: false
   },
 
-
-
   {
     id: 'morning-sweets',
     name: 'Morning Sweets',
@@ -180,8 +164,6 @@ const products = [
     badge_eco: true,
     badge_europe: false
   },
-
-
 
   {
     id: 'skate',
@@ -211,8 +193,6 @@ const products = [
     badge_europe: false
   },
 
-
-
   {
     id: 'starry',
     name: 'Starry',
@@ -229,8 +209,6 @@ const products = [
     badge_eco: true,
     badge_europe: false
   },
-
-
 
   {
     id: 'cartoon',
@@ -249,8 +227,6 @@ const products = [
     badge_europe: false
   },
 
-
-
   {
     id: 'white-shine',
     name: 'White Shine',
@@ -268,8 +244,6 @@ const products = [
     badge_europe: false
   },
 
-
-
   {
     id: 'stay-cool',
     name: 'Stay Cool',
@@ -286,8 +260,6 @@ const products = [
     badge_eco: true,
     badge_europe: false
   },
-
-
 
   {
     id: 'elegance',
@@ -307,8 +279,6 @@ const products = [
     badge_europe: false
   },
 
-
-
   {
     id: 'emerald',
     name: 'Emerald',
@@ -325,8 +295,6 @@ const products = [
     badge_eco: true,
     badge_europe: false
   },
-
-
 
   {
     id: 'lavender-glow',
@@ -345,8 +313,6 @@ const products = [
     badge_europe: false
   },
 
-
-
   {
     id: 'harmony',
     name: 'Harmony',
@@ -363,8 +329,6 @@ const products = [
     badge_eco: true,
     badge_europe: false
   },
-
-
 
   {
     id: 'bunny-chic',
@@ -435,6 +399,7 @@ function compareSizes(a, b) {
 // Rend l’UI de chaque groupe de filtres
 function renderFilterOptions(id, items) {
   const container = document.getElementById(id);
+  if (!container) return; // sécurité si élément absent
   if (id === 'filterSizes') {
     items.sort(compareSizes);
   } else {
@@ -453,7 +418,28 @@ renderFilterOptions('filterCuts',    [...new Set(products.map(p=>p.cut))]);
 renderFilterOptions('filterGenders', [...new Set(products.map(p=>p.gender))]);
 renderFilterOptions('filterTypes',   [...new Set(products.map(p=>p.type))]);
 
-function previewCount() {
+// ------------------ FONCTIONS DATE / VISIBILITÉ ------------------
+
+// Parse une date ISO en timestamp ms. Si invalide, retourne null.
+function parseDateOrNull(dateStr) {
+  if (!dateStr) return null;
+  const t = Date.parse(dateStr);
+  return Number.isFinite(t) ? t : null;
+}
+
+// Test si le produit est actif maintenant (précision seconde possible).
+// Si availableFrom absent => visible immédiatement.
+// Si availableUntil absent => pas de fin (visible indéfiniment).
+function isProductActive(product, nowMs = Date.now()) {
+  const from = parseDateOrNull(product.availableFrom);
+  const until = parseDateOrNull(product.availableUntil);
+  if (from !== null && nowMs < from) return false;   // pas encore publié
+  if (until !== null && nowMs > until) return false; // déjà expiré
+  return true;
+}
+
+// Retourne la liste de produits qui respecte l'état des filtres (sans tenir compte des dates)
+function getFilteredByState() {
   return products.filter(p => {
     if (state.colors.size && ![...state.colors].some(c=>p.colors.some(pc=>pc.name===c))) return false;
     if (state.sizes.size  && ![...state.sizes].some(s=>p.sizes.includes(s)))         return false;
@@ -463,16 +449,33 @@ function previewCount() {
     if (state.priceMin!==null && p.price < state.priceMin)                              return false;
     if (state.priceMax!==null && p.price > state.priceMax)                              return false;
     return true;
-  }).length;
+  });
 }
+
+// Retourne la liste finale visible (filtres + contrainte de date)
+function getVisibleProducts(nowMs = Date.now()) {
+  const base = getFilteredByState();
+  return base.filter(p => isProductActive(p, nowMs));
+}
+
+// Nouvelle previewCount qui prend en compte également les dates (au moment présent)
+function previewCount() {
+  return getVisibleProducts().length;
+}
+
+// ------------------ LOGIQUE DES FILTRES ------------------
 
 document.querySelectorAll('#filterForm input').forEach(input => {
   input.addEventListener('change', () => {
-    const group = input.closest('.filter-group').querySelector('summary').textContent.trim();
+    const groupEl = input.closest('.filter-group') && input.closest('.filter-group').querySelector('summary');
+    const group = groupEl ? groupEl.textContent.trim() : null;
     const val   = input.value;
-    if (input.type === 'checkbox') {
+    if (input.type === 'checkbox' && group) {
       const map = { 'Colors':'colors','Sizes':'sizes','Fits':'cuts','Genders':'genders','Types':'types' };
-      input.checked ? state[map[group]].add(val) : state[map[group]].delete(val);
+      const key = map[group];
+      if (key) {
+        input.checked ? state[key].add(val) : state[key].delete(val);
+      }
     } else if (input.id==='priceMin') {
       state.priceMin = input.value?Number(input.value):null;
     } else if (input.id==='priceMax') {
@@ -483,32 +486,27 @@ document.querySelectorAll('#filterForm input').forEach(input => {
 });
 
 applyBtn.addEventListener('click', () => {
-  filtered = products.filter(p => {
-    if (state.colors.size && ![...state.colors].some(c=>p.colors.some(pc=>pc.name===c))) return false;
-    if (state.sizes.size  && ![...state.sizes].some(s=>p.sizes.includes(s)))         return false;
-    if (state.cuts.size   && !state.cuts.has(p.cut))                                    return false;
-    if (state.genders.size&& !state.genders.has(p.gender))                               return false;
-    if (state.types.size  && !state.types.has(p.type))                                  return false;
-    if (state.priceMin!==null && p.price < state.priceMin)                              return false;
-    if (state.priceMax!==null && p.price > state.priceMax)                              return false;
-    return true;
-  });
+  filtered = getFilteredByState();
   renderProducts();
   modal.classList.remove('open');
 });
 
+// ------------------ RENDER PRODUCTS (utilise getVisibleProducts) ------------------
+
 function renderProducts() {
+  const visible = getVisibleProducts();
   grid.innerHTML = '';
-  if (!filtered.length) {
-    noRes.classList.remove('hidden');
-    countSpan.textContent = '0 articles';
+  if (!visible.length) {
+    if (noRes) noRes.classList.remove('hidden');
+    if (countSpan) countSpan.textContent = '0 articles';
+    if (applyCount) applyCount.textContent = '0';
     return;
   }
-  noRes.classList.add('hidden');
-  countSpan.textContent  = `${filtered.length} article${filtered.length>1?'s':''}`;
-  applyCount.textContent = filtered.length;
+  if (noRes) noRes.classList.add('hidden');
+  if (countSpan) countSpan.textContent  = `${visible.length} article${visible.length>1?'s':''}`;
+  if (applyCount) applyCount.textContent = visible.length;
 
-  filtered.forEach(p => {
+  visible.forEach(p => {
     const card = document.createElement('a');
     card.className = 'product-card';
 
@@ -533,7 +531,7 @@ function renderProducts() {
     // Contenu de la carte
     card.innerHTML = `
       <div class="img-wrap">
-        <img src="${dc.img}" data-hover="${dc.hover}" alt="${p.name}">
+        <img src="${dc.img}" data-hover="${dc.hover}" alt="${(p.name || '')}">
       </div>
       <div class="info">
         <h3>${p.name}</h3>
@@ -566,28 +564,34 @@ function renderProducts() {
 
     // Swatches et hover images
     const sw = card.querySelector('.swatches');
-    p.colors.slice(0,6).forEach(c => {
-      const a = document.createElement('a');
-      a.className = 'swatch';
-      a.style.backgroundColor = c.code;
-      a.title = c.name;
-      a.href = `${c.url}?color=${encodeURIComponent(c.name)}`;
-      sw.append(a);
-    });
-    if (p.colors.length > 6) {
-      const more = document.createElement('span');
-      more.className = 'swatch more';
-      more.textContent = `+${p.colors.length-6}`;
-      sw.append(more);
+    if (sw && p.colors && p.colors.length) {
+      p.colors.slice(0,6).forEach(c => {
+        const a = document.createElement('a');
+        a.className = 'swatch';
+        a.style.backgroundColor = c.code;
+        a.title = c.name;
+        a.href = `${c.url}?color=${encodeURIComponent(c.name)}`;
+        sw.append(a);
+      });
+      if (p.colors.length > 6) {
+        const more = document.createElement('span');
+        more.className = 'swatch more';
+        more.textContent = `+${p.colors.length-6}`;
+        sw.append(more);
+      }
     }
 
     const prodImg = card.querySelector('.img-wrap img');
-    prodImg.addEventListener('mouseenter', () => prodImg.src = prodImg.dataset.hover);
-    prodImg.addEventListener('mouseleave', () => prodImg.src = dc.img);
+    if (prodImg) {
+      prodImg.addEventListener('mouseenter', () => { if (prodImg.dataset && prodImg.dataset.hover) prodImg.src = prodImg.dataset.hover; });
+      prodImg.addEventListener('mouseleave', () => { if (dc && dc.img) prodImg.src = dc.img; });
+    }
 
     grid.append(card);
   });
 }
+
+// ------------------ CLEAR / MODAL / INIT ------------------
 
 clearAll.addEventListener('click', () => {
   ['colors','sizes','cuts','genders','types'].forEach(k => state[k].clear());
@@ -598,13 +602,31 @@ clearAll.addEventListener('click', () => {
   });
   filtered = [...products];
   renderProducts();
-  applyCount.textContent = products.length;
-  countSpan.textContent  = `${products.length} article${products.length>1?'s':''}`;
+  const visibleCount = getVisibleProducts().length;
+  if (applyCount) applyCount.textContent = visibleCount;
+  if (countSpan) countSpan.textContent  = `${visibleCount} article${visibleCount>1?'s':''}`;
 });
 
-btnFilter.addEventListener('click', () => modal.classList.add('open'));
-btnClose.addEventListener('click', () => modal.classList.remove('open'));
+if (btnFilter) btnFilter.addEventListener('click', () => modal && modal.classList.add('open'));
+if (btnClose) btnClose.addEventListener('click', () => modal && modal.classList.remove('open'));
 
 // Initialisation
+filtered = getFilteredByState();
 renderProducts();
-applyCount.textContent = products.length;
+if (applyCount) applyCount.textContent = getVisibleProducts().length;
+
+// ------------------ MISE À JOUR AUTOMATIQUE CHAQUE SECONDE (précision à la seconde) ------------------
+
+// On surveille si la liste visible change (par ex. un produit atteint sa date de mise en ligne / d'expiration).
+let lastVisibleKey = null;
+setInterval(() => {
+  const now = Date.now();
+  const visible = getVisibleProducts(now);
+  // clé simple = ids concaténés + count (pour détection de changement)
+  const key = visible.map(p => p.id).join(',') + '|' + visible.length;
+  if (key !== lastVisibleKey) {
+    lastVisibleKey = key;
+    // mettre à jour le DOM / compte
+    renderProducts();
+  }
+}, 1000);
