@@ -24,8 +24,7 @@ const products = [
     gender: 'Unisex',
     badge_eco: true,
     badge_europe: false
-    // OPTIONAL: demonstrate future product (example)
-    // availableFrom: '2025-08-26T18:00:00+02:00',
+    availableFrom: '2025-08-26T13:31:00+02:00',
     // availableUntil: '2025-08-28T23:59:59+02:00'
   },
 
