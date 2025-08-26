@@ -1,4 +1,4 @@
-
+// script.js
 (function () {
   'use strict';
 
@@ -655,4 +655,3 @@
   }); // end DOMContentLoaded
 
 })(); // end IIFE
-
