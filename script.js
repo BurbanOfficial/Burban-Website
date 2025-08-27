@@ -24,9 +24,13 @@
         gender: 'Unisex',
         badge_eco: true,
         badge_europe: false,
-        availableFrom: '27/08/2025 20:20:00',
-        availableUntil: '27/08/2025 20:20:40'
+        // availableFrom: '27/08/2025 20:20:00',
+        // availableUntil: '27/08/2025 20:20:40'
       },
+
+
+
+
       {
         id: 'celestial-b',
         name: 'Celestial B',
@@ -42,6 +46,10 @@
         badge_eco: true,
         badge_europe: false
       },
+
+
+
+
       {
         id: 'urban-crest',
         name: 'Urban Crest',
@@ -57,6 +65,10 @@
         badge_eco: true,
         badge_europe: false
       },
+
+
+
+
       {
         id: 'colorful-burst',
         name: 'Colorful Burst',
@@ -72,6 +84,10 @@
         badge_eco: false,
         badge_europe: false
       },
+
+
+
+
       {
         id: 'urban-hibiscus',
         name: 'Urban Hibiscus',
@@ -89,6 +105,10 @@
         badge_eco: true,
         badge_europe: false
       },
+
+
+
+
       {
         id: 'universal-love',
         name: 'Universal Love',
@@ -104,7 +124,274 @@
         badge_eco: true,
         badge_europe: false
       },
-      // ... (ajoutez le reste de votre liste complète ici)
+
+
+
+      
+      {
+        id: 'natural-glow',
+        name: 'Natural Glow',
+        originalPrice: 44.99,
+        price: 44.99,
+        type: 'Hoodie',
+        colors: [
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/m2tkvTm.jpeg', hover: 'https://i.imgur.com/EcjqfHS.jpeg', url: '/public/natural-glow-ar00042.html' },
+          // …
+        ],
+        sizes: ['S','M','L','XL','2XL'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false
+      },
+
+
+
+      {
+        id: 'mad-in-love',
+        name: 'Mad In Love',
+        originalPrice: 54.99,
+        price: 54.99,
+        type: 'Hoodie',
+        colors: [
+          { name: 'Black', code: '#000', img: 'https://i.imgur.com/7zR8liE.jpeg', hover: 'https://i.imgur.com/8GZ52nM.jpeg', url: '/public/mad-in-love-ar00041.html' },
+          { name: 'Dark Blue', code: '#132e57', img: 'https://i.imgur.com/a3O4ESv.jpeg', hover: 'https://i.imgur.com/Seortkg.jpeg', url: '/public/mad-in-love-ar00040.html' },
+          // …
+        ],
+        sizes: ['S','M','L','XL','2XL'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false
+      },
+
+
+
+
+      {
+        id: 'morning-sweets',
+        name: 'Morning Sweets',
+        originalPrice: 23.99,
+        price: 23.99,
+        type: 'T-Shirt',
+        colors: [
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/morning-sweets-ar00039.html' },
+          // …
+        ],
+        sizes: ['XS','S','M','L','XL','2XL','3XL'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false
+      },
+
+
+
+
+      {
+        id: 'skate',
+        name: 'Skate',
+        originalPrice: 16.99,
+        price: 16.99,
+        type: 'T-Shirt',
+        colors: [
+          { name: 'Light Blue', code: '#c7d7ef', img: 'https://i.imgur.com/YTtg0ah.jpeg', hover: 'https://i.imgur.com/CHxj3Cs.jpeg', url: '/public/skate-ar00033.html' },
+          { name: 'Pastel Pink', code: '#ffd8e1', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00034.html' },
+          { name: 'Silver', code: '#e3e3dd', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00035.html' },
+          { name: 'Natural', code: '#fef1d1', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00036.html' },
+          { name: 'Lemon', code: '#f7fee5', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00037.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00038.html' },
+          { name: 'Dark Green', code: '#223e25', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00027.html' },
+          { name: 'Black', code: '#000', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00028.html' },
+          { name: 'Oxblood Black', code: '#2c1013', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00029.html' },
+          { name: 'Team Purple', code: '#230f46', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00030.html' },
+          { name: 'Maroon', code: '#721d37', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00031.html' },
+          { name: 'Heather Blue', code: '#536ba7', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00032.html' },
+          // …
+        ],
+        sizes: ['XS','S','M','L','XL','2XL','3XL'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: false,
+        badge_europe: false
+      },
+
+
+
+
+      {
+        id: 'starry',
+        name: 'Starry',
+        originalPrice: 23.99,
+        price: 23.99,
+        type: 'Beanie',
+        colors: [
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/lArV95v.jpeg', hover: 'https://i.imgur.com/QIM5Xl4.jpeg', url: '/public/starry-ar00026.html' },
+          // …
+        ],
+        sizes: ['Unique'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false
+      },
+
+
+
+      {
+        id: 'cartoon',
+        name: 'Cartoon',
+        originalPrice: 47.99,
+        price: 47.99,
+        type: 'Hoodie',
+        colors: [
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/2kJ87qf.jpeg', hover: 'https://i.imgur.com/3A3fP9Z.jpeg', url: '/public/cartoon-ar00025.html' },
+          // …
+        ],
+        sizes: ['S','M','L','XL','2XL','3XL'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false
+      },
+    
+    
+    
+      {
+        id: 'white-shine',
+        name: 'White Shine',
+        originalPrice: 23.99,
+        price: 23.99,
+        type: 'Beanie',
+        colors: [
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/2kJ87qf.jpeg', hover: 'https://i.imgur.com/3A3fP9Z.jpeg', url: '/public/white-shine-ar00024.html' },
+          // …
+        ],
+        sizes: ['Unique'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false
+      },
+    
+    
+    
+      {
+        id: 'stay-cool',
+        name: 'Stay Cool',
+        originalPrice: 51.99,
+        price: 51.99,
+        type: 'Hoodie',
+        colors: [
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/ReqYkdu.jpeg', hover: 'https://i.imgur.com/wyMnPJT.jpeg', url: '/public/stay-cool-ar00023.html' },
+          // …
+        ],
+        sizes: ['S','M','L','XL','2XL','3XL'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false
+      },
+    
+    
+    
+      {
+        id: 'elegance',
+        name: 'Elegance',
+        originalPrice: 19.99,
+        price: 19.99,
+        type: 'Beanie',
+        colors: [
+          { name: 'Black', code: '#000', img: 'https://i.imgur.com/H5rlHBh.jpeg', hover: 'https://i.imgur.com/HEiFUHq.jpeg', url: '/public/elegance-ar00022.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/uQugDr8.jpeg', hover: 'https://i.imgur.com/JmKvvP8.jpeg', url: '/public/elegance-ar00021.html' },
+          // …
+        ],
+        sizes: ['Unique'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false
+      },
+    
+    
+    
+      {
+        id: 'emerald',
+        name: 'Emerald',
+        originalPrice: 47.99,
+        price: 47.99,
+        type: 'Hoodie',
+        colors: [
+          { name: 'Black', code: '#000', img: 'https://i.imgur.com/5Ya85o8.jpeg', hover: 'https://i.imgur.com/pB50o1O.jpeg', url: '/public/emerald-ar00002.html' },
+          // …
+        ],
+        sizes: ['S','M','L','XL','2XL','3XL'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false
+      },
+    
+    
+    
+      {
+        id: 'lavender-glow',
+        name: 'Lavender Glow',
+        originalPrice: 53.99,
+        price: 53.99,
+        type: 'Hoodie',
+        colors: [
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/letVpMU.jpeg', hover: 'https://i.imgur.com/70YG2tk.jpeg', url: '/public/lavender-glow-ar00003.html' },
+          // …
+        ],
+        sizes: ['S','M','L','XL','2XL','3XL'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false
+      },
+    
+    
+    
+      {
+        id: 'harmony',
+        name: 'Harmony',
+        originalPrice: 53.99,
+        price: 53.99,
+        type: 'Hoodie',
+        colors: [
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/70hCMZv.jpeg', hover: 'https://i.imgur.com/4u6mGvR.jpeg', url: '/public/harmony-ar00004.html' },
+          // …
+        ],
+        sizes: ['S','M','L','XL','2XL','3XL'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false
+      },
+    
+    
+    
+      {
+        id: 'bunny-chic',
+        name: 'Bunny Chic',
+        originalPrice: 47.99,
+        price: 47.99,
+        type: 'Hoodie',
+        colors: [
+          { name: 'Black', code: '#000', img: 'https://i.imgur.com/WML7UGN.jpeg', hover: 'https://i.imgur.com/AX4e0vt.jpeg', url: '/public/bunny-chic-ar00015.html' },
+          { name: 'Beige', code: '#f5e8ce', img: 'https://i.imgur.com/UBqXkLv.jpeg', hover: 'https://i.imgur.com/AGHE9LR.jpeg', url: '/public/bunny-chic-ar00014.html' },
+          { name: 'Light Blue', code: '#d6edf7', img: 'https://i.imgur.com/hPiCIAc.jpeg', hover: 'https://i.imgur.com/20rKL01.jpeg', url: '/public/bunny-chic-ar00013.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/pziI0qx.jpeg', hover: 'https://i.imgur.com/qP7p6N0.jpeg', url: '/public/bunny-chic-ar00016.html' },
+          // …
+        ],
+        sizes: ['S','M','L','XL','2XL','3XL'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false
+      },
+      // Ajout d'articles ici
     ];
 
     // --- compléter originalPrice si nécessaire ---
@@ -410,4 +697,5 @@
   }); // end DOMContentLoaded
 
 })(); // end IIFE
+
 
