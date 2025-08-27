@@ -264,7 +264,7 @@
         price: 23.99,
         type: 'Beanie',
         colors: [
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/2kJ87qf.jpeg', hover: 'https://i.imgur.com/3A3fP9Z.jpeg', url: '/public/white-shine-ar00024.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/3Tf7X89.jpeg', hover: 'https://i.imgur.com/h6QYpXG.jpeg', url: '/public/white-shine-ar00024.html' },
           // …
         ],
         sizes: ['Unique'],
@@ -697,5 +697,3 @@
   }); // end DOMContentLoaded
 
 })(); // end IIFE
-
-
