@@ -23,7 +23,9 @@
         cut: 'Straight',
         gender: 'Unisex',
         badge_eco: true,
-        badge_europe: false
+        badge_europe: false,
+        availableFrom: '27/08/2025 20:20:00',
+        availableUntil: '27/08/2025 20:20:40'
       },
       {
         id: 'celestial-b',
@@ -408,3 +410,4 @@
   }); // end DOMContentLoaded
 
 })(); // end IIFE
+
