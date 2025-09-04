@@ -11,11 +11,17 @@ const firebaseConfig = {
   measurementId: "G-E4QD4PYLM5"
 };
 
-firebase.initializeApp(firebaseConfig);
+// Guard pour éviter double-initialization
+if (!firebase.apps || firebase.apps.length === 0) {
+  firebase.initializeApp(firebaseConfig);
+} else {
+  firebase.app();
+}
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// 2. Références aux éléments DOM
+// Récupérations DOM (avec guards)
 const authSection = document.getElementById('auth-section');
 const clientSection = document.getElementById('client-section');
 const userFirstnameDisplay = document.getElementById('user-firstname-display');
@@ -28,8 +34,12 @@ const profileForm = document.getElementById('profile-form');
 const passwordForm = document.getElementById('password-form');
 const logoutBtn = document.getElementById('logout-btn');
 
-// Fonction pour afficher une notification personnalisée
+// Simple notification helper
 function showNotification(title, message, duration = 4000) {
+  if (!notificationEl) {
+    alert(title + '\n' + message);
+    return;
+  }
   notificationEl.innerHTML = `<h4>${title}</h4><p>${message}</p>`;
   notificationEl.style.display = 'block';
   setTimeout(() => {
@@ -38,74 +48,115 @@ function showNotification(title, message, duration = 4000) {
 }
 
 // 3. Inscription
-registerForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
+if (registerForm) {
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-  const firstname   = document.getElementById('reg-firstname').value.trim();
-  const lastname    = document.getElementById('reg-lastname').value.trim();
-  const email       = document.getElementById('reg-email').value.trim();
-  const password    = document.getElementById('reg-password').value;
-  const country     = document.getElementById('reg-country').value;
-  const phone       = document.getElementById('reg-phone').value.trim();
-  const birthday    = document.getElementById('reg-birthday').value;
-  const newsletter  = document.getElementById('reg-newsletter').checked;
+    const firstname   = document.getElementById('reg-firstname')?.value.trim() || "";
+    const lastname    = document.getElementById('reg-lastname')?.value.trim() || "";
+    const email       = document.getElementById('reg-email')?.value.trim() || "";
+    const password    = document.getElementById('reg-password')?.value || "";
+    const country     = document.getElementById('reg-country')?.value || "";
+    const phone       = document.getElementById('reg-phone')?.value.trim() || "";
+    const birthday    = document.getElementById('reg-birthday')?.value || "";
+    const newsletter  = !!document.getElementById('reg-newsletter')?.checked;
 
-  try {
-    const cred = await auth.createUserWithEmailAndPassword(email, password);
-    console.log('User created:', cred.user.uid);
+    try {
+      const cred = await auth.createUserWithEmailAndPassword(email, password);
+      console.log('User created:', cred.user.uid);
 
-    await cred.user.sendEmailVerification();
-    console.log('Verification email sent');
+      await cred.user.sendEmailVerification();
+      console.log('Verification email sent');
 
-    const payload = {
-      firstname,
-      lastname,
-      email,
-      phone: phone ? (country + phone) : "",
-      birthday: birthday || "",
-      newsletter,
-      favorites: [],
-      points: 200
-    };
+      const payload = {
+        firstname,
+        lastname,
+        email,
+        phone: phone ? (country + phone) : "",
+        birthday: birthday || "",
+        newsletter,
+        favorites: [],
+        points: 200
+      };
 
-    // write Firestore — on logue la promesse
-    await db.collection('users').doc(cred.user.uid).set(payload);
-    console.log('User doc written to Firestore');
+      try {
+        await db.collection('users').doc(cred.user.uid).set(payload);
+        console.log('User doc written to Firestore');
+        registerForm.reset();
+        await auth.signOut();
+        showNotification("Inscription", "Compte créé et email de vérification envoyé. Vérifiez votre boîte.", 6000);
+      } catch (err) {
+        console.error('Firestore set error:', err);
+        // Si permission-denied -> message clair
+        if (err && err.code === 'permission-denied') {
+          showNotification("Erreur", "Impossible d'enregistrer le profil côté client (permissions). Vérifie les règles Firestore.", 8000);
+        } else {
+          showNotification("Erreur", err.message || 'Erreur inconnue lors de l\'enregistrement', 7000);
+        }
+      }
 
-    registerForm.reset();
-    await auth.signOut();
-    showNotification("Inscription", "Email de confirmation envoyé — vérifiez votre boîte.", 5000);
-  } catch (err) {
-    console.error('Register error:', err.code, err.message);
-    showNotification("Erreur", `${err.code} — ${err.message}`, 7000);
-  }
-});
+    } catch (err) {
+      console.error('Register error:', err);
+      showNotification("Erreur", err.code + ' — ' + (err.message || ''), 7000);
+    }
+  });
+}
 
 // 4. Connexion
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
+if (loginForm) {
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email')?.value.trim() || "";
+    const password = document.getElementById('login-password')?.value || "";
 
-  console.log('Tentative de login pour', email);
-
-  try {
-    const cred = await auth.signInWithEmailAndPassword(email, password);
-    console.log('Login réussi', cred.user.uid, 'emailVerified=', cred.user.emailVerified);
-
-    if (!cred.user.emailVerified) {
-      showNotification("Email not verified", "Please verify your email before logging in.");
-      await auth.signOut();
-      return;
+    try {
+      const cred = await auth.signInWithEmailAndPassword(email, password);
+      console.log('Login ok', cred.user.uid, 'emailVerified=', cred.user.emailVerified);
+      if (!cred.user.emailVerified) {
+        showNotification("Email not verified", "Please verify your email before logging in.");
+        await auth.signOut();
+        return;
+      }
+      // onAuthStateChanged gère l'affichage
+    } catch (err) {
+      console.error('Login error', err);
+      showNotification("Erreur", err.code + ' — ' + (err.message || ''), 6000);
     }
+  });
+}
 
-    // login ok — l'onAuthStateChanged prendra le relais (si tu l'utilises)
-  } catch (err) {
-    console.error('Erreur login', err.code, err.message);
-    // afficher le code pour diagnostic
-    showNotification("Erreur", `${err.code} — ${err.message}`, 6000);
-  }
-});
+// Example safe use of favCount in loadUserFavorites:
+function loadUserFavorites(user) {
+  if (!user) return;
+  db.collection('users').doc(user.uid).get()
+    .then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        const favorites = data.favorites || [];
+        if (favCount) favCount.textContent = favorites.length;
+        const favList = document.getElementById('favorites-list');
+        if (favList) {
+          favList.innerHTML = "";
+          if (favorites.length === 0) {
+            favList.innerHTML = "<li class='list-group-item'>Aucun article favori</li>";
+          } else {
+            favorites.forEach(article => {
+              const li = document.createElement('li');
+              li.className = 'list-group-item';
+              li.textContent = article;
+              favList.appendChild(li);
+            });
+          }
+        }
+      }
+    })
+    .catch(err => console.error(err));
+}
+
+// logout guard
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', () => auth.signOut());
+}
 
 // 5. Réinitialisation du mot de passe
 document.getElementById('forgot-password').addEventListener('click', (e) => {
@@ -131,15 +182,14 @@ auth.onAuthStateChanged(user => {
       auth.signOut();
       return;
     }
-    // Afficher l'espace client
-    authSection.style.display = 'none';
-    clientSection.style.display = 'block';
+    if (authSection) authSection.style.display = 'none';
+    if (clientSection) clientSection.style.display = 'block';
     loadUserProfile(user);
     loadUserFavorites(user);
-    loadUserAdvantages(user); // Mise à jour de la barre de progression et des coins
+    loadUserAdvantages(user);
   } else {
-    authSection.style.display = 'block';
-    clientSection.style.display = 'none';
+    if (authSection) authSection.style.display = 'block';
+    if (clientSection) clientSection.style.display = 'none';
   }
 });
 
