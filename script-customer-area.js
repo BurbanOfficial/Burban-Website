@@ -38,7 +38,7 @@ function showNotification(title, message, duration = 4000) {
 }
 
 // 3. Inscription
-registerForm.addEventListener('submit', (e) => {
+registerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   // Récupération des valeurs
@@ -51,33 +51,45 @@ registerForm.addEventListener('submit', (e) => {
   const birthday    = document.getElementById('reg-birthday').value;
   const newsletter  = document.getElementById('reg-newsletter').checked;
 
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(cred => {
-      // Envoyer l'email de vérification
-      cred.user.sendEmailVerification().then(() => {
-        showNotification("Confirmation email sent", "Please check your inbox and verify your email to access your account.");
+  try {
+    // Création compte
+    const cred = await auth.createUserWithEmailAndPassword(email, password);
+
+    // IMPORTANT : attendre que l'état auth soit bien appliqué,
+    // sinon Firestore n'a pas request.auth.uid et renvoie permission-denied.
+    await new Promise((resolve) => {
+      const unsub = auth.onAuthStateChanged((u) => {
+        if (u) { unsub(); resolve(); }
       });
-      // Stocker les données complémentaires dans Firestore, en créant les champs favorites et points
-      return db.collection('users').doc(cred.user.uid).set({
-        firstname,
-        lastname,
-        email,
-        phone: phone ? (country + phone) : "",
-        birthday: birthday || "",
-        newsletter,
-        favorites: [],  // Création du tableau favoris vide
-        points: 200       // Initialisation des points de fidélité à 0
-      });
-    })
-    .then(() => {
-      registerForm.reset();
-      // L'utilisateur ne pourra pas accéder à son compte tant que l'email n'est pas vérifié.
-      auth.signOut();
-    })
-    .catch(err => {
-      console.error(err);
-      showNotification("Erreur", err.message, 6000);
     });
+
+      // Écrire le profil dans Firestore maintenant que l'auth est active
+    await db.collection('users').doc(auth.currentUser.uid).set({
+      firstname,
+      lastname,
+      email,
+      phone: phone ? (country + phone) : "",
+      birthday: birthday || "",
+      newsletter,
+      favorites: [],
+      points: 200
+    });
+
+    // Envoyer l'email de vérification (géré en try/catch séparé pour éviter de casser le flux)
+    try {
+      await cred.user.sendEmailVerification();
+      showNotification("Confirmation email sent", "Please check your inbox and verify your email to access your account.");
+    } catch (verifErr) {
+      console.warn("sendEmailVerification error:", verifErr);
+    }
+
+    // Nettoyage & déconnexion (compte non accessible tant que l'email n'est pas vérifié)
+    registerForm.reset();
+    await auth.signOut();
+  } catch (err) {
+    console.error("Register error:", err);
+    showNotification("Erreur", err.message, 6000);
+  }
 });
 
 // 4. Connexion
