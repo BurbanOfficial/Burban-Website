@@ -38,10 +38,9 @@ function showNotification(title, message, duration = 4000) {
 }
 
 // 3. Inscription
-registerForm.addEventListener('submit', (e) => {
+registerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  // Récupération des valeurs
   const firstname   = document.getElementById('reg-firstname').value.trim();
   const lastname    = document.getElementById('reg-lastname').value.trim();
   const email       = document.getElementById('reg-email').value.trim();
@@ -51,52 +50,61 @@ registerForm.addEventListener('submit', (e) => {
   const birthday    = document.getElementById('reg-birthday').value;
   const newsletter  = document.getElementById('reg-newsletter').checked;
 
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(cred => {
-      // Envoyer l'email de vérification
-      cred.user.sendEmailVerification().then(() => {
-        showNotification("Confirmation email sent", "Please check your inbox and verify your email to access your account.");
-      });
-      // Stocker les données complémentaires dans Firestore, en créant les champs favorites et points
-      return db.collection('users').doc(cred.user.uid).set({
-        firstname,
-        lastname,
-        email,
-        phone: phone ? (country + phone) : "",
-        birthday: birthday || "",
-        newsletter,
-        favorites: [],  // Création du tableau favoris vide
-        points: 200       // Initialisation des points de fidélité à 0
-      });
-    })
-    .then(() => {
-      registerForm.reset();
-      // L'utilisateur ne pourra pas accéder à son compte tant que l'email n'est pas vérifié.
-      auth.signOut();
-    })
-    .catch(err => {
-      console.error(err);
-      showNotification("Erreur", err.message, 6000);
-    });
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, password);
+    console.log('User created:', cred.user.uid);
+
+    await cred.user.sendEmailVerification();
+    console.log('Verification email sent');
+
+    const payload = {
+      firstname,
+      lastname,
+      email,
+      phone: phone ? (country + phone) : "",
+      birthday: birthday || "",
+      newsletter,
+      favorites: [],
+      points: 200
+    };
+
+    // write Firestore — on logue la promesse
+    await db.collection('users').doc(cred.user.uid).set(payload);
+    console.log('User doc written to Firestore');
+
+    registerForm.reset();
+    await auth.signOut();
+    showNotification("Inscription", "Email de confirmation envoyé — vérifiez votre boîte.", 5000);
+  } catch (err) {
+    console.error('Register error:', err.code, err.message);
+    showNotification("Erreur", `${err.code} — ${err.message}`, 7000);
+  }
 });
 
 // 4. Connexion
-loginForm.addEventListener('submit', (e) => {
+loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
 
-  auth.signInWithEmailAndPassword(email, password)
-    .then(cred => {
-      if (!cred.user.emailVerified) {
-        showNotification("Email not verified", "Please verify your email before logging in.");
-        auth.signOut();
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      showNotification("Erreur", err.message, 6000);
-    });
+  console.log('Tentative de login pour', email);
+
+  try {
+    const cred = await auth.signInWithEmailAndPassword(email, password);
+    console.log('Login réussi', cred.user.uid, 'emailVerified=', cred.user.emailVerified);
+
+    if (!cred.user.emailVerified) {
+      showNotification("Email not verified", "Please verify your email before logging in.");
+      await auth.signOut();
+      return;
+    }
+
+    // login ok — l'onAuthStateChanged prendra le relais (si tu l'utilises)
+  } catch (err) {
+    console.error('Erreur login', err.code, err.message);
+    // afficher le code pour diagnostic
+    showNotification("Erreur", `${err.code} — ${err.message}`, 6000);
+  }
 });
 
 // 5. Réinitialisation du mot de passe
