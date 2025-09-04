@@ -12,7 +12,7 @@
         id: 'metamorphosis',
         name: 'Metamorphosis',
         originalPrice: 20.99,
-        price: 20.99,
+        price: 18.99,
         type: 'T-Shirt',
         colors: [
           { name: 'White', code: '#fff', img: 'https://i.imgur.com/3OueieQ.jpeg', hover: 'https://i.imgur.com/ol3tK3L.jpeg', url: '/public/metamorphosis-ar00050.html' },
@@ -697,3 +697,4 @@
   }); // end DOMContentLoaded
 
 })(); // end IIFE
+
