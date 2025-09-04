@@ -38,53 +38,52 @@ function showNotification(title, message, duration = 4000) {
 }
 
 // 3. Inscription
-registerForm.addEventListener('submit', (e) => {
+registerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  // Récupération des valeurs
-  const firstname   = document.getElementById('reg-firstname').value.trim();
-  const lastname    = document.getElementById('reg-lastname').value.trim();
-  const email       = document.getElementById('reg-email').value.trim();
-  const password    = document.getElementById('reg-password').value;
-  const country     = document.getElementById('reg-country').value;
-  const phone       = document.getElementById('reg-phone').value.trim();
-  const birthday    = document.getElementById('reg-birthday').value;
-  const newsletter  = document.getElementById('reg-newsletter').checked;
+  const firstname  = document.getElementById('reg-firstname').value.trim();
+  const lastname   = document.getElementById('reg-lastname').value.trim();
+  const email      = document.getElementById('reg-email').value.trim();
+  const password   = document.getElementById('reg-password').value;
+  const country    = document.getElementById('reg-country').value;
+  const phone      = document.getElementById('reg-phone').value.trim();
+  const birthday   = document.getElementById('reg-birthday').value;
+  const newsletter = document.getElementById('reg-newsletter').checked;
 
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(async cred => {
-      console.log("UID créé:", cred.user.uid);
+  try {
+    // 1️⃣ Créer l’utilisateur Auth
+    const cred = await auth.createUserWithEmailAndPassword(email, password);
+    console.log("UID créé:", cred.user.uid);
 
-      // ⚡ On force un refresh du token pour que Firestore reconnaisse l’utilisateur
-      await cred.user.getIdToken(true);
+    // 2️⃣ Envoyer email de vérification
+    await cred.user.sendEmailVerification();
+    showNotification("Confirmation email sent", "Please check your inbox and verify your email.");
 
-      // Envoyer l'email de vérification
-      cred.user.sendEmailVerification().then(() => {
-        showNotification("Confirmation email sent", "Please check your inbox and verify your email to access your account.");
-      });
-      // Stocker les données complémentaires dans Firestore, en créant les champs favorites et points
-      return db.collection('users').doc(cred.user.uid).set({
-        firstname,
-        lastname,
-        email,
-        phone: phone ? (country + phone) : "",
-        birthday: birthday || "",
-        newsletter,
-        favorites: [],  // Création du tableau favoris vide
-        points: 200       // Initialisation des points de fidélité à 0
-      });
-    })
-    .then(() => {
-      console.log("✅ Document créé en base Firestore");
-      registerForm.reset();
-      // L'utilisateur ne pourra pas accéder à son compte tant que l'email n'est pas vérifié.
-      auth.signOut();
-    })
-    .catch(err => {
-      console.error(err);
-      console.error("❌ Firestore set error:", err);
-      showNotification("Erreur", err.message, 6000);
+    // 3️⃣ Forcer refresh du token pour Firestore
+    await cred.user.getIdToken(true);
+
+    // 4️⃣ Créer le document Firestore
+    await db.collection('users').doc(cred.user.uid).set({
+      firstname,
+      lastname,
+      email,
+      phone: phone ? (country + phone) : "",
+      birthday: birthday || "",
+      newsletter,
+      favorites: [],
+      points: 200
     });
+
+    console.log("✅ Document créé en Firestore");
+
+    // 5️⃣ Déconnexion (l'utilisateur doit vérifier l'email)
+    registerForm.reset();
+    await auth.signOut();
+
+  } catch (err) {
+    console.error("❌ Firestore set error:", err);
+    showNotification("Erreur", err.message, 6000);
+  }
 });
 
 // 4. Connexion
@@ -299,4 +298,5 @@ function loadUserAdvantages(user) {
     })
     .catch(err => console.error(err));
 }
+
 
