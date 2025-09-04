@@ -38,52 +38,49 @@ function showNotification(title, message, duration = 4000) {
 }
 
 // 3. Inscription
-registerForm.addEventListener('submit', async (e) => {
+registerForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  const firstname  = document.getElementById('reg-firstname').value.trim();
-  const lastname   = document.getElementById('reg-lastname').value.trim();
-  const email      = document.getElementById('reg-email').value.trim();
-  const password   = document.getElementById('reg-password').value;
-  const country    = document.getElementById('reg-country').value;
-  const phone      = document.getElementById('reg-phone').value.trim();
-  const birthday   = document.getElementById('reg-birthday').value;
-  const newsletter = document.getElementById('reg-newsletter').checked;
+  const firstname   = document.getElementById('reg-firstname').value.trim();
+  const lastname    = document.getElementById('reg-lastname').value.trim();
+  const email       = document.getElementById('reg-email').value.trim();
+  const password    = document.getElementById('reg-password').value;
+  const country     = document.getElementById('reg-country').value;
+  const phone       = document.getElementById('reg-phone').value.trim();
+  const birthday    = document.getElementById('reg-birthday').value;
+  const newsletter  = document.getElementById('reg-newsletter').checked;
 
-  try {
-    // 1️⃣ Créer l’utilisateur Auth
-    const cred = await auth.createUserWithEmailAndPassword(email, password);
-    console.log("UID créé:", cred.user.uid);
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(async cred => {
+      console.log("UID créé:", cred.user.uid);
 
-    // 2️⃣ Envoyer email de vérification
-    await cred.user.sendEmailVerification();
-    showNotification("Confirmation email sent", "Please check your inbox and verify your email.");
+      await cred.user.getIdToken(true); // refresh token
 
-    // 3️⃣ Forcer refresh du token pour Firestore
-    await cred.user.getIdToken(true);
+      // Envoi email de vérification
+      await cred.user.sendEmailVerification();
+      showNotification("Confirmation email sent", "Please check your inbox and verify your email to access your account.");
 
-    // 4️⃣ Créer le document Firestore
-    await db.collection('users').doc(cred.user.uid).set({
-      firstname,
-      lastname,
-      email,
-      phone: phone ? (country + phone) : "",
-      birthday: birthday || "",
-      newsletter,
-      favorites: [],
-      points: 200
+      // Création du document Firestore
+      return db.collection('users').doc(cred.user.uid).set({
+        firstname,
+        lastname,
+        email,
+        phone: phone ? (country + phone) : "",
+        birthday: birthday || "",
+        newsletter,
+        favorites: [],
+        points: 200
+      });
+    })
+    .then(() => {
+      console.log("✅ Document créé en base Firestore");
+      registerForm.reset();
+      auth.signOut(); // utilisateur doit vérifier email avant connexion
+    })
+    .catch(err => {
+      console.error("❌ Firestore set error:", err);
+      showNotification("Erreur", err.message, 6000);
     });
-
-    console.log("✅ Document créé en Firestore");
-
-    // 5️⃣ Déconnexion (l'utilisateur doit vérifier l'email)
-    registerForm.reset();
-    await auth.signOut();
-
-  } catch (err) {
-    console.error("❌ Firestore set error:", err);
-    showNotification("Erreur", err.message, 6000);
-  }
 });
 
 // 4. Connexion
@@ -111,9 +108,7 @@ document.getElementById('forgot-password').addEventListener('click', (e) => {
   const email = prompt("Please enter your email address to reset your password:");
   if (email) {
     auth.sendPasswordResetEmail(email)
-      .then(() => {
-        showNotification("Password reset", "An email has been sent to you to reset your password.");
-      })
+      .then(() => showNotification("Password reset", "An email has been sent to reset your password."))
       .catch(err => {
         console.error(err);
         showNotification("Erreur", err.message, 6000);
@@ -129,19 +124,18 @@ auth.onAuthStateChanged(user => {
       auth.signOut();
       return;
     }
-    // Afficher l'espace client
     authSection.style.display = 'none';
     clientSection.style.display = 'block';
     loadUserProfile(user);
     loadUserFavorites(user);
-    loadUserAdvantages(user); // Mise à jour de la barre de progression et des coins
+    loadUserAdvantages(user);
   } else {
     authSection.style.display = 'block';
     clientSection.style.display = 'none';
   }
 });
 
-// 7. Chargement des données utilisateur
+// 7. Chargement profil
 function loadUserProfile(user) {
   db.collection('users').doc(user.uid).get()
     .then(doc => {
@@ -168,42 +162,32 @@ profileForm.addEventListener('submit', async (e) => {
   const newEmail     = document.getElementById('profile-email').value.trim();
 
   try {
-    // Mettre à jour le prénom et le nom immédiatement
     await db.collection('users').doc(user.uid).update({
       firstname: newFirstname,
       lastname: newLastname,
       email: newEmail
     });
 
-    // Vérifier si l'email a changé
     if (newEmail !== user.email) {
-      // Envoyer un email de confirmation
       await user.verifyBeforeUpdateEmail(newEmail);
       showNotification("Verification Email Sent", "Please check your new email and confirm the change.");
-
-      // Écouter les changements d'authentification pour mettre à jour Firestore après vérification
       const unsubscribe = auth.onAuthStateChanged(async (updatedUser) => {
         if (updatedUser && updatedUser.email === newEmail) {
-          await db.collection('users').doc(updatedUser.uid).update({
-            email: newEmail
-          });
+          await db.collection('users').doc(updatedUser.uid).update({ email: newEmail });
           showNotification("Profile updated", "Your email has been updated in the database.");
-          unsubscribe(); // Arrêter l'écoute une fois la mise à jour terminée
+          unsubscribe();
         }
       });
     } else {
       showNotification("Profile updated", "Your profile has been successfully updated.");
     }
 
-    // Mise à jour de l'affichage
     userFirstnameDisplay.textContent = newFirstname;
-  } 
-  catch (err) {
+  } catch (err) {
     console.error(err);
     showNotification("Erreur", err.message, 6000);
   }
 });
-
 
 // 9. Mise à jour du mot de passe
 passwordForm.addEventListener('submit', (e) => {
@@ -217,24 +201,17 @@ passwordForm.addEventListener('submit', (e) => {
   const user = auth.currentUser;
   if (user) {
     user.updatePassword(newPassword)
-      .then(() => {
-        showNotification("Password updated", "Your password has been successfully updated.");
-        passwordForm.reset();
-      })
-      .catch(err => {
-        console.error(err);
-        showNotification("Error", err.message, 6000);
-      });
+      .then(() => { showNotification("Password updated", "Your password has been successfully updated."); passwordForm.reset(); })
+      .catch(err => { console.error(err); showNotification("Error", err.message, 6000); });
   }
 });
 
-// 10. Chargement et affichage des favoris
+// 10. Chargement des favoris
 function loadUserFavorites(user) {
   db.collection('users').doc(user.uid).get()
     .then(doc => {
       if (doc.exists) {
-        const data = doc.data();
-        const favorites = data.favorites || [];
+        const favorites = doc.data().favorites || [];
         favCount.textContent = favorites.length;
         const favList = document.getElementById('favorites-list');
         favList.innerHTML = "";
@@ -254,49 +231,32 @@ function loadUserFavorites(user) {
 }
 
 // 11. Déconnexion
-logoutBtn.addEventListener('click', () => {
-  auth.signOut();
-});
+logoutBtn.addEventListener('click', () => auth.signOut());
 
-// Fonction pour ajouter un favori à l'utilisateur connecté
+// 12. Ajouter favori
 function addFavorite(article) {
   const user = auth.currentUser;
-  if (!user) {
-    showNotification("Erreur", "Vous devez être connecté pour ajouter un favori.", 6000);
-    return;
-  }
+  if (!user) { showNotification("Erreur", "Vous devez être connecté pour ajouter un favori.", 6000); return; }
+
   db.collection('users').doc(user.uid).update({
     favorites: firebase.firestore.FieldValue.arrayUnion(article)
   })
-  .then(() => {
-    showNotification("Favori ajouté", "L'article a été ajouté à vos favoris.");
-    loadUserFavorites(user); // Recharge la liste après mise à jour
-  })
-  .catch(err => {
-    console.error(err);
-    showNotification("Erreur", err.message, 6000);
-  });
+  .then(() => { showNotification("Favori ajouté", "L'article a été ajouté à vos favoris."); loadUserFavorites(user); })
+  .catch(err => { console.error(err); showNotification("Erreur", err.message, 6000); });
 }
 
-/// 12. Chargement et affichage des avantages (points de fidélité)
+// 13. Avantages (points)
 function loadUserAdvantages(user) {
   db.collection('users').doc(user.uid).get()
     .then(doc => {
       if (doc.exists) {
-        const data = doc.data();
-        const points = data.points || 0;
-        // Calcul du pourcentage de progression en fonction d'un maximum de 2500 points
+        const points = doc.data().points || 0;
         let percent = (points / 2800) * 100;
         if (percent > 100) percent = 100;
         document.getElementById('points-progress').style.width = percent + '%';
-        // Affichage du nombre de coins
         const coinsDisplay = document.getElementById('coins-display');
-        if (coinsDisplay) {
-          coinsDisplay.textContent = points + " Coins";
-        }
+        if (coinsDisplay) coinsDisplay.textContent = points + " Coins";
       }
     })
     .catch(err => console.error(err));
 }
-
-
