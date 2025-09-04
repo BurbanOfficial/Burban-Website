@@ -52,7 +52,7 @@ registerForm.addEventListener('submit', (e) => {
   const newsletter  = document.getElementById('reg-newsletter').checked;
 
   auth.createUserWithEmailAndPassword(email, password)
-    .then(cred => {
+    .then(async cred => {
       console.log("UID créé:", cred.user.uid);
 
       // ⚡ On force un refresh du token pour que Firestore reconnaisse l’utilisateur
