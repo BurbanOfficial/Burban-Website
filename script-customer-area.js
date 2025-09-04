@@ -53,6 +53,11 @@ registerForm.addEventListener('submit', (e) => {
 
   auth.createUserWithEmailAndPassword(email, password)
     .then(cred => {
+      console.log("UID créé:", cred.user.uid);
+
+      // ⚡ On force un refresh du token pour que Firestore reconnaisse l’utilisateur
+      await cred.user.getIdToken(true);
+
       // Envoyer l'email de vérification
       cred.user.sendEmailVerification().then(() => {
         showNotification("Confirmation email sent", "Please check your inbox and verify your email to access your account.");
@@ -70,12 +75,14 @@ registerForm.addEventListener('submit', (e) => {
       });
     })
     .then(() => {
+      console.log("✅ Document créé en base Firestore");
       registerForm.reset();
       // L'utilisateur ne pourra pas accéder à son compte tant que l'email n'est pas vérifié.
       auth.signOut();
     })
     .catch(err => {
       console.error(err);
+      console.error("❌ Firestore set error:", err);
       showNotification("Erreur", err.message, 6000);
     });
 });
