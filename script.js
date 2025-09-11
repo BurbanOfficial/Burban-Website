@@ -8,72 +8,6 @@
     // --- EXEMPLE DE DONNÉES PRODUITS ---
     // (conservez votre liste complète; j'ai gardé votre exemple ci-dessous)
     const products = [
-    {
-        id: 'No Fear',
-        name: 'No Fear',
-        originalPrice: 23.99,
-        price: 19.99,
-        type: 'T-Shirt',
-        colors: [
-          { name: 'Black', code: '#000', img: 'https://i.imgur.com/TWzptrk.jpeg', hover: 'https://i.imgur.com/Y6xCRWm.jpeg', url: '/public/no-fear-ar00058.html' }
-        ],
-        sizes: ['XS','S','M','L','XL','2XL'],
-        cut: 'Straight',
-        gender: 'Unisex',
-        badge_eco: true,
-        badge_europe: true,
-        availableFrom: '14/09/2025 17:20:00',
-        // availableUntil: '27/08/2025 20:20:40'
-      },
-
-
-
-
-      {
-        id: 'Royal Drip',
-        name: 'Royal Drip',
-        originalPrice: 31.99,
-        price: 24.99,
-        type: 'Bucket Hat',
-        colors: [
-          { name: 'Denim', code: 'linear-gradient(45deg, #0c223C, #547da0)', img: 'https://i.imgur.com/8SuOQaX.jpeg', hover: 'https://i.imgur.com/3vD7kTT.jpeg', url: '/public/royal-drip-ar00057.html' }
-        ],
-        sizes: ['Unique'],
-        cut: 'Other',
-        gender: 'Men',
-        badge_eco: true,
-        badge_europe: true,
-        availableFrom: '14/09/2025 17:20:00',
-        // availableUntil: '27/08/2025 20:20:40'
-      },
-
-
-
-
-      {
-        id: 'Diamond Mouth',
-        name: 'Diamond Mouth',
-        originalPrice: 22.99,
-        price: 14.99,
-        type: 'T-Shirt',
-        colors: [
-          { name: 'Dark Heather Blue', code: '#7a8ca8', img: 'https://i.imgur.com/8CnQaze.jpeg', hover: 'https://i.imgur.com/SHRNZY4.jpeg', url: '/public/diamond-mouth-ar00053.html' },
-          { name: 'Heather Grey', code: '#cfcbc8', img: 'https://i.imgur.com/8RKakKY.jpeg', hover: 'https://i.imgur.com/jucCb3h.jpeg', url: '/public/diamond-mouth-ar00054.html' },
-          { name: 'Lavender', code: '#f7ecff', img: 'https://i.imgur.com/TVk0zf8.jpeg', hover: 'https://i.imgur.com/IhKilKK.jpeg', url: '/public/diamond-mouth-ar00055.html' },
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/hFsTDZv.jpeg', hover: 'https://i.imgur.com/iGFKqze.jpeg', url: '/public/diamond-mouth-ar00056.html' }
-        ],
-        sizes: ['S','M','L','XL','2XL'],
-        cut: 'Straight',
-        gender: 'Unisex',
-        badge_eco: true,
-        badge_europe: true,
-        availableFrom: '14/09/2025 17:20:00',
-        // availableUntil: '27/08/2025 20:20:40'
-      },
-
-
-
-      
       {
         id: 'metamorphosis',
         name: 'Metamorphosis',
@@ -90,7 +24,7 @@
         gender: 'Unisex',
         badge_eco: true,
         badge_europe: false,
-        // availableFrom: '27/08/2025 20:20:00',
+        availableFrom: '11/08/2025 17:30:00',
         // availableUntil: '27/08/2025 20:20:40'
       },
 
