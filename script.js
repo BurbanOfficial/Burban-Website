@@ -8,7 +8,7 @@
     // --- EXEMPLE DE DONNÉES PRODUITS ---
     // (conservez votre liste complète; j'ai gardé votre exemple ci-dessous)
     const products = [
-      {
+    {
         id: 'No Fear',
         name: 'No Fear',
         originalPrice: 23.99,
@@ -22,7 +22,7 @@
         gender: 'Unisex',
         badge_eco: true,
         badge_europe: true,
-        availableFrom: '11/09/2025 17:23:00',
+        availableFrom: '14/09/2025 17:20:00',
         // availableUntil: '27/08/2025 20:20:40'
       },
 
@@ -43,7 +43,7 @@
         gender: 'Men',
         badge_eco: true,
         badge_europe: true,
-        availableFrom: '11/09/2025 17:23:00',
+        availableFrom: '14/09/2025 17:20:00',
         // availableUntil: '27/08/2025 20:20:40'
       },
 
@@ -67,17 +67,17 @@
         gender: 'Unisex',
         badge_eco: true,
         badge_europe: true,
-        availableFrom: '11/09/2025 17:23:00',
+        availableFrom: '14/09/2025 17:20:00',
         // availableUntil: '27/08/2025 20:20:40'
       },
 
 
 
-
+      
       {
         id: 'metamorphosis',
         name: 'Metamorphosis',
-        originalPrice: 23.99,
+        originalPrice: 20.99,
         price: 20.99,
         type: 'T-Shirt',
         colors: [
@@ -100,7 +100,7 @@
       {
         id: 'celestial-b',
         name: 'Celestial B',
-        originalPrice: 21.99,
+        originalPrice: 15.99,
         price: 15.99,
         type: 'T-Shirt',
         colors: [
@@ -684,7 +684,7 @@
         if (p.badge_europe) {
           const euroBadge = document.createElement('div');
           euroBadge.className = 'badge europe';
-          euroBadge.innerHTML = `<i class="fa-solid fa-earth-africa"></i><span>Made&nbsp;in&nbsp;Europe*</span>`;
+          euroBadge.innerHTML = `<i class="fa-solid fa-earth-africa"></i><span>Made&nbsp;in&nbsp;Europe</span>`;
           badges.append(euroBadge);
         }
         if (badges.children.length) card.prepend(badges);
@@ -763,5 +763,6 @@
   }); // end DOMContentLoaded
 
 })(); // end IIFE
+
 
 
