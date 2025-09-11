@@ -22,7 +22,7 @@
         gender: 'Unisex',
         badge_eco: true,
         badge_europe: true,
-        availableFrom: '11/09/2025 21:26:00',
+        availableFrom: '11/09/2025 21:45:00',
         // availableUntil: '27/08/2025 20:20:40'
       },
 
@@ -525,27 +525,46 @@
 
     // ------------------ PARSING DATE ROBUSTE ------------------
     function parseDateOrNull(dateInput) {
-      if (dateInput === null || dateInput === undefined || dateInput === '') return null;
-      if (typeof dateInput === 'number') return dateInput > 1e12 ? dateInput : dateInput * 1000;
-      if (dateInput instanceof Date) {
-        const t = dateInput.getTime();
-        return Number.isFinite(t) ? t : null;
-      }
-      if (typeof dateInput !== 'string') return null;
-      const s = dateInput.trim();
-      let t = Date.parse(s);
-      if (Number.isFinite(t)) return t;
-      t = Date.parse(s.replace(' ', 'T'));
-      if (Number.isFinite(t)) return t;
-      const fr = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
-      if (fr) {
-        const day = Number(fr[1]), month = Number(fr[2]) - 1, year = Number(fr[3]), hour = Number(fr[4]||0), minute = Number(fr[5]||0), second = Number(fr[6]||0);
-        const dt = new Date(year, month, day, hour, minute, second);
-        return Number.isFinite(dt.getTime()) ? dt.getTime() : null;
-      }
-      console.warn('parseDateOrNull: impossible de parser la date:', dateInput);
-      return null;
-    }
+  if (!dateInput) return null;
+
+  if (typeof dateInput === 'number') 
+    return dateInput > 1e12 ? dateInput : dateInput * 1000;
+
+  if (dateInput instanceof Date) {
+    const t = dateInput.getTime();
+    return Number.isFinite(t) ? t : null;
+  }
+
+  if (typeof dateInput !== 'string') return null;
+  const s = dateInput.trim();
+
+  // Format standard ISO
+  let t = Date.parse(s);
+  if (Number.isFinite(t)) return t;
+
+  // Essayer avec T
+  t = Date.parse(s.replace(' ', 'T'));
+  if (Number.isFinite(t)) return t;
+
+  // Format français : dd/mm/yyyy hh:mm:ss
+  const fr = s.match(
+    /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
+  );
+  if (fr) {
+    const day = Number(fr[1]);
+    const month = Number(fr[2]) - 1; // 🔴 CORRECTION : -1
+    const year = Number(fr[3]);
+    const hour = Number(fr[4] || 0);
+    const minute = Number(fr[5] || 0);
+    const second = Number(fr[6] || 0);
+
+    const dt = new Date(year, month, day, hour, minute, second);
+    return Number.isFinite(dt.getTime()) ? dt.getTime() : null;
+  }
+
+  console.warn('parseDateOrNull: impossible de parser la date:', dateInput);
+  return null;
+}
 
     // ------------------ VISIBILITÉ SELON DATE ------------------
     function isProductActive(product, nowMs = Date.now()) {
