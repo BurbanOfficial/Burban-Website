@@ -24,7 +24,7 @@
         gender: 'Unisex',
         badge_eco: true,
         badge_europe: false,
-        availableFrom: '11/08/2025 17:30:00',
+        availableFrom: '11/08/2025 17:30:00'
         // availableUntil: '27/08/2025 20:20:40'
       },
 
@@ -697,6 +697,7 @@
   }); // end DOMContentLoaded
 
 })(); // end IIFE
+
 
 
 
