@@ -22,7 +22,7 @@
         gender: 'Unisex',
         badge_eco: true,
         badge_europe: true,
-        availableFrom: '14/09/2025 17:20:00',
+        availableFrom: '11/09/2025 17:23:00',
         // availableUntil: '27/08/2025 20:20:40'
       },
 
@@ -43,7 +43,7 @@
         gender: 'Men',
         badge_eco: true,
         badge_europe: true,
-        availableFrom: '14/09/2025 17:20:00',
+        availableFrom: '11/09/2025 17:23:00',
         // availableUntil: '27/08/2025 20:20:40'
       },
 
@@ -67,7 +67,7 @@
         gender: 'Unisex',
         badge_eco: true,
         badge_europe: true,
-        availableFrom: '14/09/2025 17:20:00',
+        availableFrom: '11/09/2025 17:23:00',
         // availableUntil: '27/08/2025 20:20:40'
       },
 
@@ -763,4 +763,5 @@
   }); // end DOMContentLoaded
 
 })(); // end IIFE
+
 
