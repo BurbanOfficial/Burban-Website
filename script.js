@@ -11,7 +11,7 @@
       {
         id: 'No Fear',
         name: 'No Fear',
-        originalPrice: 23,99,
+        originalPrice: 23.99,
         price: 19.99,
         type: 'T-Shirt',
         colors: [
