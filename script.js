@@ -22,7 +22,7 @@
         gender: 'Unisex',
         badge_eco: true,
         badge_europe: true,
-        availableFrom: '11/09/2025 21:45:00',
+        availableFrom: '14/09/2025 09:00:00',
         // availableUntil: '27/08/2025 20:20:40'
       },
 
@@ -36,14 +36,14 @@
         price: 24.99,
         type: 'Bucket Hat',
         colors: [
-          { name: 'Denim', code: 'linear-gradient(45deg, #0c223C, #547da0)', img: 'https://i.imgur.com/8SuOQaX.jpeg', hover: 'https://i.imgur.com/3vD7kTT.jpeg', url: '/public/royal-drip-ar00057.html' }
+          { name: 'Denim', code: '#0c223C', img: 'https://i.imgur.com/8SuOQaX.jpeg', hover: 'https://i.imgur.com/3vD7kTT.jpeg', url: '/public/royal-drip-ar00057.html' }
         ],
         sizes: ['Unique'],
         cut: 'Other',
         gender: 'Men',
         badge_eco: true,
         badge_europe: true,
-        availableFrom: '11/09/2025 09:00:00',
+        availableFrom: '14/09/2025 09:00:00',
         // availableUntil: '27/08/2025 20:20:40'
       },
 
@@ -67,7 +67,7 @@
         gender: 'Unisex',
         badge_eco: true,
         badge_europe: true,
-        availableFrom: '11/09/2025 09:00:00',
+        availableFrom: '14/09/2025 09:00:00',
         // availableUntil: '27/08/2025 20:20:40'
       },
 
@@ -804,4 +804,5 @@ function isProductActive(product, nowMs = Date.now()) {
   }); // end DOMContentLoaded
 
 })(); // end IIFE
+
 
