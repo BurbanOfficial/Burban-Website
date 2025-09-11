@@ -2,7 +2,6 @@
 (function () {
   'use strict';
 
-  // Attendre que le DOM soit prêt pour éviter les null references
   document.addEventListener('DOMContentLoaded', () => {
 
     // --- EXEMPLE DE DONNÉES PRODUITS ---
@@ -488,29 +487,25 @@
     const applyBtn   = document.getElementById('applyFilters');
     const applyCount = document.getElementById('applyCount');
     const clearAll   = document.getElementById('clearAll');
-    // Element optionnel: bouton "Show all results" (id ou classe)
     const showAllBtn = document.getElementById('showAllResults') || document.querySelector('.show-all-results');
 
-    // --- TRI SPÉCIAL POUR LES TAILLES ---
     const sizeOrder = ['XS','S','M','L','XL','2XL','3XL','4XL'];
     function compareSizes(a, b) {
       if (a === 'Unique') return 1;
       if (b === 'Unique') return -1;
-      const ia = sizeOrder.indexOf(a);
-      const ib = sizeOrder.indexOf(b);
+      const ia = sizeOrder.indexOf(a), ib = sizeOrder.indexOf(b);
       if (ia === -1 && ib === -1) return a.localeCompare(b, 'fr');
       if (ia === -1) return 1;
       if (ib === -1) return -1;
       return ia - ib;
     }
 
-    // Rend l’UI de chaque groupe de filtres (sécurisé si élément manquant)
     function renderFilterOptions(id, items) {
       const container = document.getElementById(id);
       if (!container) return;
       if (id === 'filterSizes') items.sort(compareSizes);
-      else items.sort((a, b) => a.localeCompare(b, 'fr'));
-      items.forEach(item => {
+      else items.sort((a,b)=>a.localeCompare(b,'fr'));
+      items.forEach(item=>{
         const label = document.createElement('label');
         label.innerHTML = `<input type="checkbox" value="${item}"> ${item}`;
         container.append(label);
@@ -523,134 +518,78 @@
     renderFilterOptions('filterGenders', [...new Set(products.map(p=>p.gender))]);
     renderFilterOptions('filterTypes',   [...new Set(products.map(p=>p.type))]);
 
-    // ------------------ PARSING DATE ROBUSTE ------------------
     function parseDateOrNull(dateInput) {
-  if (!dateInput) return null;
+      if (!dateInput) return null;
+      const t = Date.parse(dateInput);
+      if (!isNaN(t)) return t;
+      const fr = dateInput.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+      if (fr) {
+        const day = +fr[1], month = +fr[2]-1, year = +fr[3], hour = +(fr[4]||0), min = +(fr[5]||0), sec = +(fr[6]||0);
+        const dt = new Date(year, month, day, hour, min, sec);
+        return isNaN(dt.getTime()) ? null : dt.getTime();
+      }
+      return null;
+    }
 
-  if (typeof dateInput === 'number') 
-    return dateInput > 1e12 ? dateInput : dateInput * 1000;
-
-  if (dateInput instanceof Date) {
-    const t = dateInput.getTime();
-    return Number.isFinite(t) ? t : null;
-  }
-
-  if (typeof dateInput !== 'string') return null;
-  const s = dateInput.trim();
-
-  // Format standard ISO
-  let t = Date.parse(s);
-  if (Number.isFinite(t)) return t;
-
-  // Essayer avec T
-  t = Date.parse(s.replace(' ', 'T'));
-  if (Number.isFinite(t)) return t;
-
-  // Format français : dd/mm/yyyy hh:mm:ss
-  const fr = s.match(
-    /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
-  );
-  if (fr) {
-    const day = Number(fr[1]);
-    const month = Number(fr[2]) - 1; // 🔴 CORRECTION : -1
-    const year = Number(fr[3]);
-    const hour = Number(fr[4] || 0);
-    const minute = Number(fr[5] || 0);
-    const second = Number(fr[6] || 0);
-
-    const dt = new Date(year, month, day, hour, minute, second);
-    return Number.isFinite(dt.getTime()) ? dt.getTime() : null;
-  }
-
-  console.warn('parseDateOrNull: impossible de parser la date:', dateInput);
-  return null;
-}
-
-    // ------------------ VISIBILITÉ SELON DATE ------------------
-    function isProductActive(product, nowMs = Date.now()) {
+    function isProductActive(product, now = Date.now()) {
       const from = parseDateOrNull(product.availableFrom);
       const until = parseDateOrNull(product.availableUntil);
-      if (from !== null && nowMs < from) return false;
-      if (until !== null && nowMs > until) return false;
+      if (from && now < from) return false;
+      if (until && now > until) return false;
       return true;
     }
 
-    // ------------------ FILTRAGE (SANS DATE) ------------------
-    // ------------------ FILTRAGE (AVEC DATE) ------------------
     function getFilteredByState() {
       return products.filter(p => {
-        // disponibilité par date
         if (!isProductActive(p)) return false;
-
-        // filtres classiques
         if (state.colors.size && ![...state.colors].some(c => (p.colors||[]).some(pc => pc.name === c))) return false;
-        if (state.sizes.size  && ![...state.sizes].some(s => (p.sizes||[]).includes(s)))                 return false;
-        if (state.cuts.size   && !state.cuts.has(p.cut))                                                 return false;
-        if (state.genders.size&& !state.genders.has(p.gender))                                           return false;
-        if (state.types.size  && !state.types.has(p.type))                                               return false;
-        if (state.priceMin!==null && p.price < state.priceMin)                                           return false;
-        if (state.priceMax!==null && p.price > state.priceMax)                                           return false;
-
+        if (state.sizes.size && ![...state.sizes].some(s => (p.sizes||[]).includes(s))) return false;
+        if (state.cuts.size && !state.cuts.has(p.cut)) return false;
+        if (state.genders.size && !state.genders.has(p.gender)) return false;
+        if (state.types.size && !state.types.has(p.type)) return false;
+        if (state.priceMin!==null && p.price < state.priceMin) return false;
+        if (state.priceMax!==null && p.price > state.priceMax) return false;
         return true;
       });
     }
 
-
-    // ------------------ UTILITAIRES D'AFFICHAGE ------------------
-    // IMPORTANT FIX: previewCount doit utiliser getFilteredByState() (les filtres courants)
     function previewCount() {
-      const temp = getFilteredByState();
-      // appliquer contrainte date aussi pour la prévisualisation
-      return temp.filter(p => isProductActive(p)).length;
+      return getFilteredByState().filter(p=>isProductActive(p)).length;
     }
 
-    // met à jour les UI counts (applyCount, showAllBtn si présent)
     function updateCountsUI() {
       const c = previewCount();
       if (applyCount) applyCount.textContent = c;
       if (showAllBtn) {
-        const existing = showAllBtn.getAttribute('data-original-text') || showAllBtn.textContent || '';
-        if (!showAllBtn.getAttribute('data-original-text')) {
-          showAllBtn.setAttribute('data-original-text', existing.trim());
-        }
-        const baseText = showAllBtn.getAttribute('data-original-text') || 'Show all results';
+        const baseText = showAllBtn.getAttribute('data-original-text') || showAllBtn.textContent || 'Show all results';
+        if (!showAllBtn.getAttribute('data-original-text')) showAllBtn.setAttribute('data-original-text', baseText);
         showAllBtn.textContent = `${baseText} (${c})`;
       }
     }
 
-    // ------------------ GESTION DES INPUTS (FILTRES) ------------------
     document.querySelectorAll('#filterForm input').forEach(input => {
       input.addEventListener('change', () => {
-        const groupEl = input.closest('.filter-group') && input.closest('.filter-group').querySelector('summary');
-        const group = groupEl ? groupEl.textContent.trim() : null;
-        const val   = input.value;
-        if (input.type === 'checkbox' && group) {
-          const map = { 'Colors':'colors','Sizes':'sizes','Fits':'cuts','Genders':'genders','Types':'types' };
+        const groupEl = input.closest('.filter-group')?.querySelector('summary');
+        const group = groupEl?.textContent.trim();
+        const val = input.value;
+        const map = { 'Colors':'colors','Sizes':'sizes','Fits':'cuts','Genders':'genders','Types':'types' };
+        if (input.type==='checkbox' && group && map[group]) {
           const key = map[group];
-          if (key) input.checked ? state[key].add(val) : state[key].delete(val);
-        } else if (input.id==='priceMin') {
-          state.priceMin = input.value?Number(input.value):null;
-        } else if (input.id==='priceMax') {
-          state.priceMax = input.value?Number(input.value):null;
-        }
-        // mise à jour dynamique du compteur dans la modal / bouton
+          input.checked ? state[key].add(val) : state[key].delete(val);
+        } else if (input.id==='priceMin') state.priceMin = input.value ? +input.value : null;
+        else if (input.id==='priceMax') state.priceMax = input.value ? +input.value : null;
         updateCountsUI();
       });
     });
 
-    if (applyBtn) {
-      applyBtn.addEventListener('click', () => {
-        filtered = getFilteredByState();
-        renderProducts();
-        if (modal) modal.classList.remove('open');
-        // après appliquer, assurez-vous que le bouton "show all" et applyCount sont à jour
-        updateCountsUI();
-      });
-    }
+    if (applyBtn) applyBtn.addEventListener('click', ()=>{
+      renderProducts();
+      if (modal) modal.classList.remove('open');
+      updateCountsUI();
+    });
 
-    // ------------------ RENDER PRODUCTS ------------------
-    function getVisibleProducts(nowMs = Date.now()) {
-      return filtered.filter(p => isProductActive(p, nowMs));
+    function getVisibleProducts(now = Date.now()) {
+      return getFilteredByState().filter(p=>isProductActive(p, now));
     }
 
     function renderProducts() {
@@ -658,135 +597,74 @@
       const visible = getVisibleProducts();
       grid.innerHTML = '';
       if (!visible.length) {
-        if (noRes) noRes.classList.remove('hidden');
+        noRes?.classList.remove('hidden');
         if (countSpan) countSpan.textContent = '0 articles';
         if (applyCount) applyCount.textContent = '0';
         return;
       }
-      if (noRes) noRes.classList.add('hidden');
-      if (countSpan) countSpan.textContent  = `${visible.length} article${visible.length>1?'s':''}`;
-      if (applyCount) applyCount.textContent = visible.length;
-      if (showAllBtn) {
-        updateCountsUI();
-      }
+      noRes?.classList.add('hidden');
+      countSpan && (countSpan.textContent = `${visible.length} article${visible.length>1?'s':''}`);
+      applyCount && (applyCount.textContent = visible.length);
+      showAllBtn && updateCountsUI();
 
-      visible.forEach(p => {
+      visible.forEach(p=>{
         const card = document.createElement('a');
         card.className = 'product-card';
-        const dc = (p.colors && p.colors[0]) ? p.colors[0] : { url: '#', name: '', img: '', hover: '' };
-        card.href = `${dc.url || '#'}?color=${encodeURIComponent(dc.name || '')}`;
-
-        let priceHTML;
-        if (p.price < p.originalPrice) {
-          const discount = Math.round((p.originalPrice - p.price) / p.originalPrice * 100);
-          priceHTML = `
-            <p class="price">
-              <span class="original">${p.originalPrice}€</span>
-              <span class="sale">${p.price}€</span>
-              <span class="discount">-${discount}%</span>
-            </p>`;
-        } else {
-          priceHTML = `<p>${p.price}€</p>`;
-        }
-
-        card.innerHTML = `
-          <div class="img-wrap">
-            <img src="${dc.img || ''}" data-hover="${dc.hover || ''}" alt="${p.name || ''}">
-          </div>
-          <div class="info">
-            <h3>${p.name}</h3>
-            ${priceHTML}
-            <div class="swatches"></div>
-          </div>`;
-
-        const badges = document.createElement('div');
-        badges.className = 'badges';
-        if (p.badge_eco) {
-          const ecoBadge = document.createElement('div');
-          ecoBadge.className = 'badge eco';
-          ecoBadge.innerHTML = `<i class="fas fa-leaf"></i><span>ecological</span>`;
-          badges.append(ecoBadge);
-        }
-        if (p.badge_europe) {
-          const euroBadge = document.createElement('div');
-          euroBadge.className = 'badge europe';
-          euroBadge.innerHTML = `<i class="fa-solid fa-earth-africa"></i><span>Made&nbsp;in&nbsp;Europe</span>`;
-          badges.append(euroBadge);
-        }
-        if (badges.children.length) card.prepend(badges);
-
+        const dc = (p.colors && p.colors[0]) || { url:'#', name:'', img:'', hover:'' };
+        card.href = `${dc.url}?color=${encodeURIComponent(dc.name)}`;
+        const priceHTML = (p.price<p.originalPrice)
+          ? `<p class="price"><span class="original">${p.originalPrice}€</span><span class="sale">${p.price}€</span><span class="discount">-${Math.round((p.originalPrice-p.price)/p.originalPrice*100)}%</span></p>`
+          : `<p>${p.price}€</p>`;
+        card.innerHTML = `<div class="img-wrap"><img src="${dc.img}" data-hover="${dc.hover}" alt="${p.name}"></div><div class="info"><h3>${p.name}</h3>${priceHTML}<div class="swatches"></div></div>`;
         const sw = card.querySelector('.swatches');
-        if (sw && p.colors && p.colors.length) {
-          p.colors.slice(0,6).forEach(c => {
-            const a = document.createElement('a');
-            a.className = 'swatch';
-            a.style.backgroundColor = c.code || '#ccc';
-            a.title = c.name || '';
-            a.href = `${c.url || '#'}?color=${encodeURIComponent(c.name || '')}`;
-            sw.append(a);
-          });
-          if (p.colors.length > 6) {
-            const more = document.createElement('span');
-            more.className = 'swatch more';
-            more.textContent = `+${p.colors.length-6}`;
-            sw.append(more);
-          }
+        p.colors?.slice(0,6).forEach(c=>{
+          const a = document.createElement('a');
+          a.className = 'swatch';
+          a.style.backgroundColor = c.code;
+          a.title = c.name;
+          a.href = `${c.url}?color=${encodeURIComponent(c.name)}`;
+          sw.append(a);
+        });
+        if (p.colors && p.colors.length>6) {
+          const more = document.createElement('span');
+          more.className='swatch more';
+          more.textContent = `+${p.colors.length-6}`;
+          sw.append(more);
         }
-
-        const prodImg = card.querySelector('.img-wrap img');
-        if (prodImg) {
-          prodImg.addEventListener('mouseenter', () => { if (prodImg.dataset && prodImg.dataset.hover) prodImg.src = prodImg.dataset.hover; });
-          prodImg.addEventListener('mouseleave', () => { if (dc && dc.img) prodImg.src = dc.img; });
-        }
-
+        const imgEl = card.querySelector('.img-wrap img');
+        imgEl?.addEventListener('mouseenter',()=>{ if (imgEl.dataset.hover) imgEl.src = imgEl.dataset.hover; });
+        imgEl?.addEventListener('mouseleave',()=>{ imgEl.src = dc.img; });
         grid.append(card);
       });
     }
 
-    // ------------------ CLEAR / MODAL / INIT ------------------
-    if (clearAll) {
-      clearAll.addEventListener('click', () => {
-        ['colors','sizes','cuts','genders','types'].forEach(k => state[k].clear());
-        state.priceMin = state.priceMax = null;
-        document.querySelectorAll('#filterForm input').forEach(i => {
-          i.checked = false;
-          if (i.type==='number') i.value = '';
-        });
-        filtered = [...products];
-        renderProducts();
-        updateCountsUI();
-        const visibleCount = getVisibleProducts().length;
-        if (applyCount) applyCount.textContent = visibleCount;
-        if (countSpan) countSpan.textContent  = `${visibleCount} article${visibleCount>1?'s':''}`;
-      });
-    }
+    clearAll?.addEventListener('click', ()=>{
+      ['colors','sizes','cuts','genders','types'].forEach(k=>state[k].clear());
+      state.priceMin = state.priceMax = null;
+      document.querySelectorAll('#filterForm input').forEach(i=>{ i.checked=false; if(i.type==='number') i.value=''; });
+      renderProducts();
+      updateCountsUI();
+    });
 
-    if (btnFilter) btnFilter.addEventListener('click', () => modal && modal.classList.add('open'));
-    if (btnClose) btnClose.addEventListener('click', () => modal && modal.classList.remove('open'));
+    btnFilter?.addEventListener('click',()=>modal?.classList.add('open'));
+    btnClose?.addEventListener('click',()=>modal?.classList.remove('open'));
 
-    // Initialisation
-    filtered = getFilteredByState();
+    // Initial render
     renderProducts();
     updateCountsUI();
 
-    // ------------------ MISE À JOUR AUTOMATIQUE CHAQUE SECONDE (précision seconde) ------------------
-    let lastVisibleKey = null;
-    setInterval(() => {
-      try {
-        const now = Date.now();
-        const visible = getVisibleProducts(now);
-        const key = visible.map(p => p.id).join(',') + '|' + visible.length;
-        if (key !== lastVisibleKey) {
-          lastVisibleKey = key;
-          renderProducts();
-          updateCountsUI();
-        }
-      } catch (err) {
-        console.error('Erreur périodique:', err);
+    // Auto-refresh chaque seconde
+    let lastKey = null;
+    setInterval(()=>{
+      const visible = getVisibleProducts();
+      const key = visible.map(p=>p.id).join(',')+'|'+visible.length;
+      if(key!==lastKey){
+        lastKey = key;
+        renderProducts();
+        updateCountsUI();
       }
-    }, 1000);
+    },1000);
 
-  }); // end DOMContentLoaded
-
-})(); // end IIFE
+  });
+})();
 
