@@ -523,59 +523,74 @@
     renderFilterOptions('filterGenders', [...new Set(products.map(p=>p.gender))]);
     renderFilterOptions('filterTypes',   [...new Set(products.map(p=>p.type))]);
 
-    // ------------------ PARSING DATE ROBUSTE ------------------
-    function parseDateOrNull(dateInput) {
+    // ------------------ PARSING DATE ROBUSTE (remplace l'ancienne) ------------------
+function parseDateOrNull(dateInput) {
   if (!dateInput) return null;
 
-  if (typeof dateInput === 'number') 
-    return dateInput > 1e12 ? dateInput : dateInput * 1000;
-
+  // Date object
   if (dateInput instanceof Date) {
     const t = dateInput.getTime();
     return Number.isFinite(t) ? t : null;
   }
 
+  // Numeric timestamp (seconds ou ms)
+  if (typeof dateInput === 'number') {
+    // si > 1e12 on considère déjà des ms, sinon seconds -> *1000
+    return dateInput > 1e12 ? dateInput : dateInput * 1000;
+  }
+
   if (typeof dateInput !== 'string') return null;
   const s = dateInput.trim();
 
-  // Format standard ISO
-  let t = Date.parse(s);
-  if (Number.isFinite(t)) return t;
-
-  // Essayer avec T
-  t = Date.parse(s.replace(' ', 'T'));
-  if (Number.isFinite(t)) return t;
-
-  // Format français : dd/mm/yyyy hh:mm:ss
+  // ---- 1) TRY FRENCH FORMATS FIRST (dd/mm/yyyy[ hh:mm[:ss]])
   const fr = s.match(
     /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
   );
   if (fr) {
     const day = Number(fr[1]);
-    const month = Number(fr[2]) - 1; // 🔴 CORRECTION : -1
-    const year = Number(fr[3]);
+    const month = Number(fr[2]) - 1; // month index 0-11
+    const year = Number(fr[3].length === 2 ? '20' + fr[3] : fr[3]); // support yy -> 20yy
     const hour = Number(fr[4] || 0);
     const minute = Number(fr[5] || 0);
     const second = Number(fr[6] || 0);
 
     const dt = new Date(year, month, day, hour, minute, second);
-    return Number.isFinite(dt.getTime()) ? dt.getTime() : null;
+    const ms = dt.getTime();
+    if (Number.isFinite(ms)) return ms;
   }
 
-  console.warn('parseDateOrNull: impossible de parser la date:', dateInput);
+  // ---- 2) TRY ISO-LIKE (replace space by T) then Date.parse (browser ISO)
+  const iso = s.replace(/\s+/, 'T');
+  const parsedIso = Date.parse(iso);
+  if (!Number.isNaN(parsedIso)) return parsedIso;
+
+  // ---- 3) FALLBACK to Date.parse original (some browsers may accept other locales)
+  const parsed = Date.parse(s);
+  if (!Number.isNaN(parsed)) return parsed;
+
+  // nothing worked
+  console.warn('parseDateOrNull: could not parse date:', dateInput);
   return null;
 }
 
-    // ------------------ VISIBILITÉ SELON DATE ------------------
-    function isProductActive(product, nowMs = Date.now()) {
-      const from = parseDateOrNull(product.availableFrom);
-      const until = parseDateOrNull(product.availableUntil);
-      if (from !== null && nowMs < from) return false;
-      if (until !== null && nowMs > until) return false;
-      return true;
-    }
+// ------------------ VISIBILITÉ SELON DATE (avec debug) ------------------
+function isProductActive(product, nowMs = Date.now()) {
+  const from = parseDateOrNull(product.availableFrom);
+  const until = parseDateOrNull(product.availableUntil);
 
-    // ------------------ FILTRAGE (SANS DATE) ------------------
+  // debug pour savoir pourquoi un produit est masqué
+  if (product.availableFrom && from === null) {
+    console.warn(`Product "${product.id}" availableFrom non-parsable:`, product.availableFrom);
+  }
+  if (product.availableUntil && until === null) {
+    console.warn(`Product "${product.id}" availableUntil non-parsable:`, product.availableUntil);
+  }
+
+  if (from !== null && nowMs < from) return false;   // pas encore disponible
+  if (until !== null && nowMs > until) return false; // expiré
+  return true;
+}
+
     // ------------------ FILTRAGE (AVEC DATE) ------------------
     function getFilteredByState() {
       return products.filter(p => {
@@ -789,5 +804,3 @@
   }); // end DOMContentLoaded
 
 })(); // end IIFE
-
-
