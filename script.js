@@ -9,6 +9,30 @@
     // (conservez votre liste complète; j'ai gardé votre exemple ci-dessous)
     const products = [
       {
+        id: 'K.O. Cutie',
+        name: 'K.O. Cutie',
+        originalPrice: 21.99,
+        price: 14.99,
+        type: 'T-Shirt',
+        colors: [
+          { name: 'Dark Heather Blue', code: '#7a8ca8', img: 'https://i.imgur.com/Lf8kP4J.jpeg', hover: 'https://i.imgur.com/IrUukCq.jpeg', url: '/public/k.o.cutie-ar00059.html' },
+          { name: 'Heather Grey', code: '#cfcbc8', img: 'https://i.imgur.com/BJY2e2R.jpeg', hover: 'https://i.imgur.com/I6yweGx.jpeg', url: '/public/k.o.cutie-ar00060.html' },
+          { name: 'Khaki', code: '#6e6b4d', img: 'https://i.imgur.com/NoStK28.jpeg', hover: 'https://i.imgur.com/VbYkBzD.jpeg', url: '/public/k.o.cutie-ar00061.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/fk6K9DD.jpeg', hover: 'https://i.imgur.com/suT2lpo.jpeg', url: '/public/k.o.cutie-ar00062.html' }
+        ],
+        sizes: ['S','M','L','XL','2XL'],
+        cut: 'Straight',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: true,
+        availableFrom: '14/09/2025 09:00:00',
+        // availableUntil: '27/08/2025 20:20:40'
+      },
+
+
+
+      
+      {
         id: 'No Fear',
         name: 'No Fear',
         originalPrice: 23.99,
@@ -804,5 +828,6 @@ function isProductActive(product, nowMs = Date.now()) {
   }); // end DOMContentLoaded
 
 })(); // end IIFE
+
 
 
