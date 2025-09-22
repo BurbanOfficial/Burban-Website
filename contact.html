@@ -282,48 +282,56 @@
 
   <div class="container">
     <h2>Got a problem or a question?<br>We're here to help!</h2>
-    <!-- Le formulaire envoie les données vers Formspree -->
-    <form id="contactForm" action="https://formspree.io/f/mkgobldr" method="POST">
-      <!-- Honeypot anti-spam (champ caché) -->
-      <div class="hidden">
-        <label for="website">Website</label>
-        <input type="text" id="website" name="website" placeholder="Ne pas remplir">
-      </div>
-      
-      <!-- Adresse Email -->
-      <label for="email">Email Address<span class="required">*</span></label>
-      <input type="email" id="email" name="email" placeholder="Your email address" required>
-      
-      <!-- Objet avec menu déroulant -->
-      <label for="subject">Subject<span class="required">*</span></label>
-      <select id="subject" name="subject" required>
-        <option value="">-- Select a subject --</option>
-        <option value="commande">Order tracking</option>
-        <option value="retour">Return/refund request</option>
-        <option value="taille">Question about sizes</option>
-        <option value="produit">Product information request</option>
-        <option value="support">Technical support</option>
-        <option value="devis">Quote request (bulk order)</option>
-        <option value="collaboration">Collaboration/Partnership</option>
-        <option value="autre">Other</option>
-      </select>
-      
-      <!-- Objet personnalisé (apparait si "Autre" est sélectionné) -->
-      <div id="customSubjectContainer" class="hidden">
-        <label for="customSubject">Custom Subject<span class="required">*</span></label>
-        <input type="text" id="customSubject" name="customSubject" placeholder="Enter your subject">
-      </div>
-      
-      <!-- Message -->
-      <label for="message">Message<span class="required">*</span></label>
-      <textarea id="message" name="message" placeholder="Your message" required></textarea>
-      
-      <!-- Bouton Envoyer avec effet survol -->
-      <button type="submit">
-        <span class="btn-text">Send</span>
-        <span class="hover-effect"></span>
-      </button>
-    </form>
+    <!-- Formulaire avec Formsubmit -->
+<form id="contactForm" action="https://formsubmit.co/support@burbanofficial.com" method="POST" enctype="multipart/form-data">
+  <!-- Honeypot anti-spam -->
+  <div class="hidden">
+    <label for="website">Website</label>
+    <input type="text" id="website" name="website" placeholder="Ne pas remplir">
+  </div>
+
+  <!-- Adresse Email -->
+  <label for="email">Email Address<span class="required">*</span></label>
+  <input type="email" id="email" name="email" placeholder="Your email address" required>
+
+  <!-- Objet avec menu déroulant -->
+  <label for="subject">Subject<span class="required">*</span></label>
+  <select id="subject" name="subject" required>
+    <option value="">-- Select a subject --</option>
+    <option value="commande">Order tracking</option>
+    <option value="retour">Return/refund request</option>
+    <option value="taille">Question about sizes</option>
+    <option value="produit">Product information request</option>
+    <option value="support">Technical support</option>
+    <option value="devis">Quote request (bulk order)</option>
+    <option value="collaboration">Collaboration/Partnership</option>
+    <option value="autre">Other</option>
+  </select>
+
+  <!-- Objet personnalisé -->
+  <div id="customSubjectContainer" class="hidden">
+    <label for="customSubject">Custom Subject<span class="required">*</span></label>
+    <input type="text" id="customSubject" name="customSubject" placeholder="Enter your subject">
+  </div>
+
+  <!-- Message -->
+  <label for="message">Message<span class="required">*</span></label>
+  <textarea id="message" name="message" placeholder="Your message" required></textarea>
+
+  <!-- Pièces jointes -->
+  <label for="attachment">Attachment</label>
+  <input type="file" id="attachment" name="attachment">
+
+  <!-- Champs cachés Formsubmit -->
+  <input type="hidden" name="_captcha" value="true">
+  <input type="hidden" name="_next" value="https://www.burbanofficial.com/thank-you.html">
+
+  <!-- Bouton -->
+  <button type="submit">
+    <span class="btn-text">Send</span>
+    <span class="hover-effect"></span>
+  </button>
+</form>
     <div id="error" class="error-message hidden"></div>
     <div id="confirmation" class="confirmation hidden">
       Thank you! Your message has been successfully received.
@@ -516,3 +524,4 @@ window.addEventListener('load', () => {
 
 </body>
 </html>
+
