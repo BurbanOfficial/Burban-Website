@@ -610,9 +610,9 @@ const thresholds = [
 const upcoming = thresholds.find(t => pts < t.pts);
 if (upcoming) {
 const missing = upcoming.pts - pts;
-document.getElementById('nextReward').textContent = `Prochaine récompense : ${upcoming.label} — il vous manque ${missing} pts`;
+document.getElementById('nextReward').textContent = `Next reward: ${upcoming.label} — You are missing ${missing} pts`;
 } else {
-document.getElementById('nextReward').textContent = 'Félicitations — vous avez atteint le meilleur palier (30€) !';
+document.getElementById('nextReward').textContent = 'Congratulations — you have reached the highest tier (€30)!';
 }
 }catch(err){console.error(err)}
 }
