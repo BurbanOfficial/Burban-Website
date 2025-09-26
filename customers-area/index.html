@@ -577,6 +577,9 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
+      // Ajout Klaviyo si newsletter activée
+      await updateKlaviyo(email, first, last, !!newsletterState);
+
       // Important: force sign out so the user must verify email before logging in
       try { await auth.signOut(); } catch(e){ console.warn('signOut after register failed', e); }
 
@@ -920,6 +923,7 @@ document.getElementById('nextReward').textContent = 'Congratulations — you hav
       toggleSwitchElem(settingsNewsletterToggle, newState);
       try{
         await db.collection('users').doc(user.uid).update({ newsletter: newState });
+        await updateKlaviyo(user.email, data.firstname || "", data.lastname || "", newState);
       }catch(err){
         console.error(err);
         alert('Erreur: ' + err.message);
