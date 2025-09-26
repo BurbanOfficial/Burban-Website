@@ -116,7 +116,8 @@
   .profile-top{display:flex;gap:14px;align-items:center}
   .profile-name{font-size:18px;font-weight:700}
   .profile-email{font-size:13px;color:var(--muted)}
-  .small-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;font-weight:600;color:var(--accent);cursor:pointer}
+  .small-btn{background:transparent;border:1px dashed #d33333ba;padding:8px 12px;border-radius:10px;font-weight:600;color:#d33333ba;cursor:pointer}
+  .small-btn:hover{background:#d33333ba;border:1px solid #ffffffba;padding:8px 12px;border-radius:10px;font-weight:600;color:#ffffffba;cursor:pointer}
 
   .loyalty{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);}
   .points{font-weight:700;font-size:20px}
@@ -143,9 +144,14 @@
   @media (max-width:520px){.row{flex-direction:column}}
 
   .controls{display:flex;gap:12px;flex-wrap:wrap}
-  .controls .btn{padding:10px 14px;border-radius:10px;border: none;background:var(--accent);color:#071016;font-weight:700;cursor:pointer}
+  .controls .btn{padding:10px 14px;border-radius:10px;border:1px solid #8EB1CD;background:var(--accent);color:#071016;font-weight:700;cursor:pointer}
+  .controls .btn:hover{padding:10px 14px;border-radius:10px;border:1px solid #ffffffba;background:var(--accent);color:#ffffff;font-weight:700;cursor:pointer}
   .btn.ghost{background:#ffffff00;border:1px solid rgba(255, 255, 255, 0.06);border-radius:7px;color:var(--muted)}
-
+  .btn{padding:10px 14px;border-radius:10px;border:1px solid #8EB1CD;background:var(--accent);color:#071016;font-weight:700;cursor:pointer}
+  .btn:hover{padding:10px 14px;border-radius:10px;border:1px solid #ffffffba;background:var(--accent);color:#ffffff;font-weight:700;cursor:pointer}
+  .btn-delete{background:transparent;border:1px dashed #d33333ba;padding:8px 12px;border-radius:10px;font-weight:600;color:#d33333ba;cursor:pointer}
+  .btn-delete:hover{background:#d33333ba;border:1px solid #ffffffba;padding:8px 12px;border-radius:10px;font-weight:600;color:#ffffffba;cursor:pointer}
+  
   .fav-list{display:grid;gap:10px}
   .fav-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
   .fav-thumb{width:58px;height:58px;border-radius:8px;overflow:hidden;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center}
@@ -383,7 +389,7 @@
                 <!-- Birthday field: editable only if not set -->
                 <div style="margin-top:12px">
                   <label for="profileBirthday">Date of birth (optional)</label>
-                  <input id="profileBirthday" type="date" />
+                  <input id="profileBirthday" type="date" style="color:#fff; -webkit-text-fill-color:#fff;" />
                   <div id="birthdayNote" class="birthday-note">Add your date of birth to receive a surprise on your special day.</div>
                 </div>
 
@@ -404,7 +410,7 @@
                 <input id="confirmPass" type="password" autocomplete="new-password" />
                 <div style="margin-top:12px;display:flex;gap:10px">
                   <button class="btn" id="updatePassword">Update password</button>
-                  <button class="btn ghost" id="resetPasswordBtn">Reset password (email)</button>
+                  <button class="btn-delete" id="resetPasswordBtn">Reset password (email)</button>
                 </div>
               </form>
             </div>
@@ -451,7 +457,7 @@
                 <!-- <button id="settingsNewsletterToggle" class="toggle-switch on" aria-pressed="true" title="Newsletter (Preferences)"><span class="track"></span><span class="knob"></span></button> -->
               </div>
 
-              <div style="margin-top:14px"><button class="btn ghost" id="deleteAccount">Delete account</button></div>
+              <div style="margin-top:14px"><button class="btn-delete" id="deleteAccount">Delete account</button></div>
             </div>
 
           </div>
