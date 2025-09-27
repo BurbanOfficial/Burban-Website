@@ -922,6 +922,7 @@
         phone: phoneE164,
         birthday: birthday,
         newsletter: !!newsletterState,
+        country: getCountryFromCode(code), // <-- ajouté : champ "country"
         favorites: [],
         points: 200,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1698,6 +1699,38 @@ function getPhoneGroupingForCode(code){
     return code + normalized;
   }
 
+  // ---------- Map des pays francophones (indicatifs) + helper ----------
+function getCountryFromCode(code){
+  const francophoneMap = {
+    '+33': 'France',
+    '+32': 'Belgique',
+    '+41': 'Suisse',
+    '+1':  'Canada', // +1 covers US/Canada — on considère ici Canada FR possible
+    '+225': "Côte d'Ivoire",
+    '+221': "Sénégal",
+    '+212': "Maroc",
+    '+213': "Algérie",
+    '+216': "Tunisie",
+    '+352': "Luxembourg",
+    '+377': "Monaco",
+    '+237': "Cameroun",
+    '+243': "RD Congo",
+    '+242': "Congo",
+    '+261': "Madagascar",
+    '+226': "Burkina Faso",
+    '+223': "Mali",
+    '+224': "Guinée",
+    '+228': "Togo",
+    '+229': "Bénin",
+    '+250': "Rwanda",
+    '+257': "Burundi",
+    '+236': "République centrafricaine",
+    '+235': "Tchad"
+    // tu peux étendre cette map si tu veux d'autres pays
+  };
+  return francophoneMap[code] || '';
+}
+
   /* toggle helper */
   function toggleSwitchElem(btn, toState){
     if(!btn) return false;
@@ -1786,7 +1819,7 @@ function getPhoneGroupingForCode(code){
     const local = phoneInput ? phoneInput.value : '';
     const phoneE164 = local ? buildE164(code, local) : '';
     const newsletterState = settingsNewsletterToggle ? settingsNewsletterToggle.classList.contains('on') : true;
-    const updates = { phone: phoneE164, newsletter: !!newsletterState };
+    const updates = { phone: phoneE164, newsletter: !!newsletterState, country: getCountryFromCode(code) };
     await db.collection('users').doc(userId).update(updates);
   }
 
