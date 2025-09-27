@@ -356,7 +356,7 @@
           <nav class="tabs" role="tablist" aria-label="Espace client onglets">
             <button class="tab-btn" role="tab" aria-selected="true" data-panel="profile">Profile</button>
             <button class="tab-btn" role="tab" aria-selected="false" data-panel="security">Security</button>
-            <!-- <button class="tab-btn" role="tab" aria-selected="false" data-panel="favorites">Favorites</button> -->
+            <button class="tab-btn" role="tab" aria-selected="false" data-panel="favorites">Favorites</button>
             <button class="tab-btn" role="tab" aria-selected="false" data-panel="loyalty">My benefits</button>
             <button class="tab-btn" role="tab" aria-selected="false" data-panel="settings">Preferences</button>
           </nav>
@@ -417,10 +417,29 @@
 
             <!-- FAVORITES PANEL -->
             <div class="card" id="favorites" role="tabpanel" hidden>
-              <h3 style="margin:0 0 8px">Favorites</h3>
-              <div class="fav-list" id="favList"></div>
-              <div style="margin-top:12px"><button class="btn ghost" id="clearFav">Clear favorites</button></div>
+            <h3 style="margin:0 0 8px">Favorites</h3>
+
+            <!-- zone de contrôle / filtre (optionnel) -->
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px">
+              <div class="muted">Your saved items</div>
+              <div style="display:flex;gap:8px">
+                <button class="btn-delete" id="clearFav">Clear favorites</button>
+                <button class="btn ghost" id="refreshFav">Refresh</button>
+              </div>
             </div>
+
+            <!-- liste des favoris -->
+            <div class="fav-list" id="favList" aria-live="polite">
+              <!-- JS injecte ici les éléments -->
+            </div>
+
+            <!-- empty / fallback state -->
+            <template id="fav-empty-template">
+              <div class="muted center" style="padding:18px">
+                You have no favorites yet — <a href="/shop.html" style="color:var(--accent);text-decoration:underline">go to shop</a> to add some.
+              </div>
+            </template>
+          </div>
 
             <!-- LOYALTY PANEL -->
             <div class="card" id="loyalty" role="tabpanel" hidden>
@@ -485,7 +504,7 @@
         <input id="loginPassword" type="password" placeholder="Password" />
         <div style="display:flex;gap:8px;margin-top:8px">
           <button class="btn" id="btnLogin">Log in</button>
-          <button class="btn ghost" id="forgotBtn">Forgot?</button>
+          <button class="btn-delete" id="forgotBtn">Forgot?</button>
         </div>
       </div>
 
@@ -502,13 +521,7 @@
           <div style="flex:0 0 120px">
             <label for="regCountryCode" style="font-size:12px;color:var(--muted);margin-bottom:6px;display:block">Indicatif</label>
             <select id="regCountryCode" class="country-select" aria-label="Indicatif">
-              <option value="+33">🇫🇷 +33</option>
-              <option value="+44">🇬🇧 +44</option>
-              <option value="+1">🇺🇸 +1</option>
-              <option value="+49">🇩🇪 +49</option>
-              <option value="+34">🇪🇸 +34</option>
-              <option value="+39">🇮🇹 +39</option>
-              <option value="+7">🇷🇺 +7</option>
+              <option value="">Chargement des indicatifs…</option>
             </select>
           </div>
 
@@ -528,8 +541,8 @@
         </div> -->
 
         <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn ghost" id="btnRegister">Create account</button>
-          <button class="btn ghost" id="btnCloseAuth">Close</button>
+          <button class="btn" id="btnRegister">Create account</button>
+          <button class="btn-delete" id="btnCloseAuth">Close</button>
         </div>
       </div>
 
@@ -543,6 +556,108 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <script>
+/* ---------- Populate regCountryCode with all countries (REST Countries) ---------- */
+(function populateCountrySelect(){
+  const sel = document.getElementById('regCountryCode');
+  if(!sel) return;
+
+  function countryCodeToFlagEmoji(cc){
+    if(!cc) return '';
+    try{
+      return cc.toUpperCase().replace(/./g, c => String.fromCodePoint(c.charCodeAt(0) + 127397));
+    }catch(e){
+      return '';
+    }
+  }
+
+  function formatCallingCode(root, suffix){
+    if(!root) return '';
+    const normRoot = root.startsWith('+') ? root : '+'+root;
+    if(!suffix || String(suffix).trim()==='') return normRoot;
+    return normRoot + ' ' + String(suffix).trim();
+  }
+
+  // fetch and build list
+  fetch('https://restcountries.com/v3.1/all')
+    .then(r => {
+      if(!r.ok) throw new Error('REST Countries error');
+      return r.json();
+    })
+    .then(countries => {
+      const entries = [];
+      countries.forEach(country => {
+        const name = (country.name && (country.name.common || country.name.official)) || country.cca2 || 'Unknown';
+        const cca2 = country.cca2 || '';
+        const idd = country.idd || {};
+        const root = idd.root || '';
+        const suffixes = Array.isArray(idd.suffixes) && idd.suffixes.length ? idd.suffixes : [''];
+
+        if(!root){
+          // fallback entry with no code
+          entries.push({
+            name,
+            value: '',
+            text: `${countryCodeToFlagEmoji(cca2)} — ${name}`,
+            sortKey: name.toLowerCase()
+          });
+        } else {
+          suffixes.forEach(sfx => {
+            const s = (sfx || '').toString().trim();
+            const display = formatCallingCode(root, s);
+            const value = display.replace(/\s+/g, '');
+            entries.push({
+              name,
+              value,
+              text: `${countryCodeToFlagEmoji(cca2)} ${display} ${name}`,
+              sortKey: name.toLowerCase() + ' ' + value
+            });
+          });
+        }
+      });
+
+      // sort by country name then code
+      entries.sort((a,b) => a.sortKey.localeCompare(b.sortKey));
+
+      // inject options
+      sel.innerHTML = '<option value="">Sélectionner un indicatif</option>';
+      entries.forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e.value;
+        opt.textContent = e.text;
+        sel.appendChild(opt);
+      });
+
+      // default to +33 if present (keeps previous behavior)
+      const defaultOpt = Array.from(sel.options).find(o => o.value && o.value.startsWith('+33'));
+      if(defaultOpt) sel.value = defaultOpt.value;
+
+      // trigger change so your existing regCountryCode.change listener updates placeholders/formatting
+      sel.dispatchEvent(new Event('change'));
+    })
+    .catch(err => {
+      console.error('Country list failed:', err);
+      // fallback minimal set
+      sel.innerHTML = '';
+      const fallback = [
+        {v:'+33', t:'🇫🇷 +33 France'},
+        {v:'+44', t:'🇬🇧 +44 United Kingdom'},
+        {v:'+1',  t:'🇺🇸 +1 United States'}
+      ];
+      sel.appendChild(Object.assign(document.createElement('option'), { value:'', textContent:'Sélectionner un indicatif' }));
+      fallback.forEach(f=>{
+        const o = document.createElement('option');
+        o.value = f.v;
+        o.textContent = f.t;
+        sel.appendChild(o);
+      });
+      sel.value = '+33';
+      sel.dispatchEvent(new Event('change'));
+    });
+})();
+</script>
+
 
   <script>
   // -------------------- CONFIG --------------------
