@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,16 +12,6 @@
 
   <title>Burban | Contact Us - Get in Touch with Our Team</title>
 
-  <!-- Open Graph (for social media) specific to contact page -->
-  <meta property="og:title" content="Burban | Contact Us" />
-  <meta property="og:description" content="Get in touch with Burban, the urban streetwear brand. We're ready to assist with any requests or questions." />
-  <meta property="og:url" content="https://www.burbanofficial.com/contact.html" />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://burbanofficial.com/favicon.png" />
-
-  <!-- Charger l'API Google reCAPTCHA v2 -->
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-
   <!-- Divers -->
   <link rel="canonical" href="https://www.burbanofficial.com/contact.html">
 
@@ -35,7 +24,6 @@
   <!-- Favicon -->
   <link rel="icon" href="https://burbanofficial.com/favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="https://burbanofficial.com/favicon.png">
-  <!-- Favicon pour les navigateurs modernes -->
   <link rel="icon" href="https://burbanofficial.com/favicon.png" sizes="16x16" />
   <link rel="icon" href="https://burbanofficial.com/favicon.png" sizes="32x32" />
   <link rel="icon" href="https://burbanofficial.com/favicon.png" sizes="48x48" />
@@ -58,7 +46,7 @@
       min-height: 30vh;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);  /* Ajuste le décalage pour le centrer parfaitement */
+      transform: translate(-50%, -50%);
       margin-top: 400px;
     }
     h2 {
@@ -97,13 +85,11 @@
       border-color: #000000;
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
     }
-    /* Fixe la taille du textarea et affiche une barre de défilement verticale */
     textarea {
       height: 150px;
       resize: none;
       overflow-y: auto;
     }
-    
     label, textarea {
       font-family: 'satoshi', sans-serif;
     }
@@ -111,16 +97,14 @@
     .hidden {
       display: none;
     }
-    
-    /* Message d'erreur */
+
     .error-message {
       color: #d9534f;
       margin-top: 15px;
       text-align: center;
       font-weight: bold;
     }
-    
-    /* Message de confirmation animé */
+
     .confirmation {
       text-align: center;
       color: #4CAF50;
@@ -132,100 +116,46 @@
     @keyframes fadeIn {
       to { opacity: 1; }
     }
-    
-    /* Bouton de soumission personnalisé */
+
     button[type="submit"] {
       width: 100%;
       padding: 12px;
       margin-top: 20px;
-      background: #000000; /* fond noir */
-      color: #fff; /* texte blanc */
+      background: #000000;
+      color: #fff;
       border: none;
       border-radius: 6px;
       font-size: 16px;
       cursor: pointer;
       position: relative;
-      overflow: hidden; /* cache l'élément animé hors du bouton */
+      overflow: hidden;
       transition: background 0.3s;
     }
-    /* Le texte du bouton avec transition de couleur */
     button[type="submit"] .btn-text {
       position: relative;
       z-index: 1;
       transition: color 0.3s;
     }
-    /* Changement de couleur du texte selon l'état */
-    button[type="submit"].hover-in .btn-text {
-      color: #000;
-    }
-    button[type="submit"].hover-out .btn-text {
-      color: #fff;
-    }
-    
-    /* L'élément qui assure l'effet de survol */
+    button[type="submit"].hover-in .btn-text { color: #000; }
+    button[type="submit"].hover-out .btn-text { color: #fff; }
     button[type="submit"] .hover-effect {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: #ffffff; /* fond en survol */
-      z-index: 0;
-      border: 1px solid #000; /* bordure noire */
-      border-radius: 6px;
-      box-sizing: border-box;
-      transform: translateY(100%);
+      position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+      background: #ffffff; z-index: 0; border: 1px solid #000;
+      border-radius: 6px; box-sizing: border-box; transform: translateY(100%);
     }
-    /* Animation lors du survol */
-    button[type="submit"].hover-in .hover-effect {
-      animation: slideIn 0.3s forwards;
-    }
-    /* Animation lorsque le curseur quitte le bouton */
-    button[type="submit"].hover-out .hover-effect {
-      animation: slideOut 0.3s forwards;
-    }
-    @keyframes slideIn {
-      from { transform: translateY(100%); }
-      to   { transform: translateY(0); }
-    }
-    @keyframes slideOut {
-      from { transform: translateY(0); }
-      to   { transform: translateY(-100%); }
-    }
+    button[type="submit"].hover-in .hover-effect { animation: slideIn 0.3s forwards; }
+    button[type="submit"].hover-out .hover-effect { animation: slideOut 0.3s forwards; }
+    @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @keyframes slideOut { from { transform: translateY(0); } to { transform: translateY(-100%); } }
 
-    /* Tablettes (paysage) et petits ordinateurs portables (largeur entre 769px et 1024px) */
-    @media screen and (max-width: 600px) {
-      .container {
-        width: 80%; /* s’adapte à presque toute la largeur */
-      }
-    }
-
-    /* Tablettes (paysage) et petits ordinateurs portables (largeur entre 769px et 1024px) */
-    @media screen and (min-width: 769px) and (max-width: 1024px) {
-      .container {
-        width: 90%;        /* s’adapte à presque toute la largeur */
-      }
-    }
-
-    /* Petites tablettes et grands téléphones (portrait, largeur entre 481px et 768px) */
-    @media screen and (min-width: 481px) and (max-width: 768px) {
-      .container {
-        width: 90%;        /* quasi pleine largeur */
-        max-width: 500px;
-      }
-    }
-
-    /* Ordinateurs standards (largeur entre 1025px et 1440px) */
-    @media screen and (min-width: 1025px) and (max-width: 1440px) {
-      .container {
-        max-width: 600px;  /* limite plus large pour ordinateurs */
-      }
-    }
-
-    /* Optionnel : centrage du captcha */
     .g-recaptcha { margin-top: 16px; display: flex; justify-content: center; }
     .error-message { color: #d9534f; margin-top: 15px; text-align: center; font-weight: bold; }
 
+    /* responsive */
+    @media screen and (max-width: 600px) { .container { width: 80%; } }
+    @media screen and (min-width: 769px) and (max-width: 1024px) { .container { width: 90%; } }
+    @media screen and (min-width: 481px) and (max-width: 768px) { .container { width: 90%; max-width: 500px; } }
+    @media screen and (min-width: 1025px) and (max-width: 1440px) { .container { max-width: 600px; } }
   </style>
 </head>
 <body>
@@ -238,12 +168,10 @@
 
 <!-- Header -->
 <header class="header">
-  <!-- Logo -->
   <a href="index.html" class="logo-link">
     <img src="https://i.imgur.com/Kl9kTBg.png" alt="Burban Logo" class="logo-img">
   </a>
 
-  <!-- Nav desktop -->
   <nav class="nav">
     <a href="https://burbanofficial.com/index.html" class="nav-item">Home</a>
     <a href="https://burbanofficial.com/shop.html" class="nav-item">Shop</a>
@@ -251,7 +179,6 @@
     <a href="https://burbanofficial.com/contact.html" class="nav-item active">Contact Us</a>
   </nav>
 
-  <!-- Icônes + hamburger -->
   <div class="actions">
     <a href="https://burbanofficial.com/account.html" class="account-btn" aria-label="Mon compte"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
     <a href="https://burbanofficial.com/public/index.html" class="cart-btn" aria-label="Mon panier"><i class="fa-solid fa-bag-shopping"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -260,16 +187,9 @@
       <span class="bar"></span>
       <span class="bar"></span>
     </button>
-    <!-- <div class="lang-switcher desktop-lang">
-      <select id="languageSelector" aria-label="Changer de langue">
-        <option value="EN">EN</option>
-        <option value="FR">FR</option>
-      </select>
-    </div> -->
   </div>
 </header>
 
-<!-- Overlay menu mobile -->
 <div class="overlay-menu" id="overlayMenu">
   <button class="close-btn" aria-label="Fermer le menu">&times;</button>
   <ul class="overlay-nav">
@@ -277,208 +197,226 @@
     <li><a href="https://burbanofficial.com/shop.html">Shop</a></li>
     <li><a href="https://burbanofficial.com/about-burban.html">About Burban</a></li>
     <li><a href="https://burbanofficial.com/contact.html">Contact Us</a></li>
-    <!-- <li class="mobile-lang">
-      <label for="languageSelectorMobile">Language:</label>
-      <select id="languageSelectorMobile" aria-label="Changer de langue">
-        <option value="EN">EN</option>
-        <option value="FR">FR</option>
-      </select>
-    </li> -->
   </ul>
 </div>
 
-  <div class="container">
-    <h2>Got a problem or a question?<br>We're here to help!</h2>
-    <!-- Formulaire avec Formsubmit -->
-<form id="contactForm" action="https://formsubmit.co/support@burbanofficial.com" method="POST" enctype="multipart/form-data">
-  <!-- Honeypot anti-spam -->
-  <div class="hidden" aria-hidden="true">
-    <label for="website">Website</label>
-    <input type="text" id="website" name="website" placeholder="Ne pas remplir" autocomplete="off">
-  </div>
+<div class="container">
+  <h2>Got a problem or a question?<br>We're here to help!</h2>
 
-  <!-- Adresse Email -->
-  <label for="email">Email Address<span class="required">*</span></label>
-  <input type="email" id="email" name="email" placeholder="Email Address" required>
-
-  <!-- Champ caché pour définir le reply-to -->
-  <input type="hidden" name="_replyto" value="">
-
-  <!-- Objet avec menu déroulant -->
-  <label for="subject">Subject<span class="required">*</span></label>
-  <select id="subject" name="subject" required>
-    <option value="">-- Select a subject --</option>
-    <option value="commande">Order tracking</option>
-    <option value="retour">Return/refund request</option>
-    <option value="taille">Question about sizes</option>
-    <option value="produit">Product information request</option>
-    <option value="support">Technical support</option>
-    <option value="devis">Quote request (bulk order)</option>
-    <option value="collaboration">Collaboration/Partnership</option>
-    <option value="autre">Other</option>
-  </select>
-
-  <!-- Objet personnalisé -->
-  <div id="customSubjectContainer" class="hidden">
-    <label for="customSubject">Custom Subject<span class="required">*</span></label>
-    <input type="text" id="customSubject" name="customSubject" placeholder="Enter your subject">
-  </div>
-
-  <!-- Message -->
-  <label for="message">Message<span class="required">*</span></label>
-  <textarea id="message" name="message" placeholder="Your message" required></textarea>
-
-  <!-- Pièces jointes -->
-  <label for="attachment">Attachment</label>
-  <input type="file" id="attachment" name="attachment">
-
-  <!-- Champs cachés Formsubmit -->
-  <input type="hidden" name="_captcha" value="true">
-
-  <!-- === Google reCAPTCHA v2 (replace the site key below) === -->
-  <div class="g-recaptcha" data-sitekey="6LeaE90rAAAAAFSgTJ5AkKLw47VbPXejXZji59i9"></div>
-
-  <!-- Bouton -->
-  <button type="submit">
-    <span class="btn-text">Send</span>
-    <span class="hover-effect"></span>
-  </button>
-</form>
-    <div id="error" class="error-message hidden"></div>
-    <div id="confirmation" class="confirmation hidden">
-      Thank you! Your message has been successfully received.
+  <!-- Formulaire sécurisé sans reCAPTCHA (Option A) -->
+  <form id="contactForm" action="https://formsubmit.co/support@burbanofficial.com" method="POST" enctype="multipart/form-data" novalidate>
+    <!-- Honeypot anti-spam -->
+    <div class="hidden" aria-hidden="true">
+      <label for="website">Website</label>
+      <input type="text" id="website" name="website" placeholder="Ne pas remplir" autocomplete="off">
     </div>
+
+    <!-- Adresse Email -->
+    <label for="email">Email Address<span class="required">*</span></label>
+    <input type="email" id="email" name="email" placeholder="Email Address" required>
+
+    <!-- Champ caché pour définir le reply-to -->
+    <input type="hidden" name="_replyto" value="">
+
+    <!-- Objet avec menu déroulant -->
+    <label for="subject">Subject<span class="required">*</span></label>
+    <select id="subject" name="subject" required>
+      <option value="">-- Select a subject --</option>
+      <option value="commande">Order tracking</option>
+      <option value="retour">Return/refund request</option>
+      <option value="taille">Question about sizes</option>
+      <option value="produit">Product information request</option>
+      <option value="support">Technical support</option>
+      <option value="devis">Quote request (bulk order)</option>
+      <option value="collaboration">Collaboration/Partnership</option>
+      <option value="autre">Other</option>
+    </select>
+
+    <!-- Objet personnalisé -->
+    <div id="customSubjectContainer" class="hidden">
+      <label for="customSubject">Custom Subject<span class="required">*</span></label>
+      <input type="text" id="customSubject" name="customSubject" placeholder="Enter your subject">
+    </div>
+
+    <!-- Message -->
+    <label for="message">Message<span class="required">*</span></label>
+    <textarea id="message" name="message" placeholder="Your message" required></textarea>
+
+    <!-- Pièces jointes -->
+    <label for="attachment">Attachment</label>
+    <input type="file" id="attachment" name="attachment">
+
+    <!-- Champs anti-spam supplémentaires -->
+    <input type="hidden" id="ts" name="ts" value="">
+    <div id="humanCheckWrapper">
+      <label id="humanLabel" for="humanCheck">Question</label>
+      <input type="text" id="humanCheck" name="humanCheck" placeholder="Réponse" required autocomplete="off">
+    </div>
+
+    <!-- Champs cachés Formsubmit -->
+    <input type="hidden" name="_captcha" value="false">
+
+    <!-- Bouton -->
+    <button type="submit">
+      <span class="btn-text">Send</span>
+      <span class="hover-effect"></span>
+    </button>
+  </form>
+
+  <div id="error" class="error-message hidden"></div>
+  <div id="confirmation" class="confirmation hidden">
+    Thank you! Your message has been successfully received.
   </div>
+  <br><p>If you're experiencing any issues sending your message, feel free to reach out directly to our support team at : <br><a href="mailto:support@burbanofficial.com">support@burbanofficial.com</a></p>
+</div>
 
 <script>
-    // Mise à jour automatique de l'année
-    document.getElementById('year').textContent = new Date().getFullYear();
-</script>
+  // safe getElement helper
+  const $ = id => document.getElementById(id);
 
-<script>
-    const hamburger = document.querySelector('.hamburger');
-    const overlay = document.getElementById('overlayMenu');
-    const closeBtn = overlay.querySelector('.close-btn');
-  
-    hamburger.addEventListener('click', () => {
-      overlay.classList.add('open');
-    });
-    closeBtn.addEventListener('click', () => {
-      overlay.classList.remove('open');
-    });
-</script>
+  // Setup: timestamp + human question generation + cooldown constants
+  const contactForm = $('contactForm');
+  const submitButton = document.querySelector('button[type="submit"]');
+  const errorDiv = $('error');
+  const confirmationDiv = $('confirmation');
+  const tsInput = $('ts');
+  const humanLabel = $('humanLabel');
+  const humanInput = $('humanCheck');
+  const replyToHidden = document.querySelector('input[name="_replyto"]');
+  const COOLDOWN_MS = 60_000; // 1 minute between sends minimum
 
-<script>
-  function handleLanguageChange(value) {
-    if (value === 'EN') {
-      window.location.href = 'https://burbanofficial.com/';
-    } else if (value === 'FR') {
-      window.location.href = 'https://burbanofficial.com/FR-fr/';
+  // Generate simple math question (random small addition) to avoid bots
+  function generateHumanQuestion() {
+    const a = Math.floor(Math.random() * 6) + 2; // 2..7
+    const b = Math.floor(Math.random() * 6) + 1; // 1..6
+    const question = `Quel est ${a} + ${b} ?`;
+    const answer = String(a + b);
+    humanLabel.textContent = question + ' ' + ' <span class="required">*</span>';
+    // store expected answer in dataset (not secure server-side but reduces noise)
+    humanInput.dataset.expected = answer;
+    humanInput.placeholder = 'Réponse';
+  }
+
+  function canSend() {
+    const last = Number(localStorage.getItem('contact_last_send') || 0);
+    return (Date.now() - last) > COOLDOWN_MS;
+  }
+  function setSentNow() {
+    localStorage.setItem('contact_last_send', Date.now());
+  }
+
+  // init on load
+  (function initForm() {
+    if (!tsInput) return;
+    tsInput.value = Date.now();
+    generateHumanQuestion();
+  })();
+
+  // helper to show error
+  function showError(msg) {
+    if (errorDiv) {
+      errorDiv.textContent = msg;
+      errorDiv.classList.remove('hidden');
+    } else {
+      alert(msg);
     }
   }
 
-  document.getElementById('languageSelector').addEventListener('change', function () {
-    handleLanguageChange(this.value);
-  });
+  // guard if form missing
+  if (contactForm) {
+    // subject custom handling
+    const subjectSelect = $('subject');
+    const customSubjectContainer = $('customSubjectContainer');
+    if (subjectSelect) {
+      subjectSelect.addEventListener('change', function() {
+        if (this.value === 'autre') {
+          if (customSubjectContainer) customSubjectContainer.classList.remove('hidden');
+          const cs = $('customSubject');
+          if (cs) cs.required = true;
+        } else {
+          if (customSubjectContainer) customSubjectContainer.classList.add('hidden');
+          const cs = $('customSubject');
+          if (cs) cs.required = false;
+        }
+      });
+    }
 
-  document.getElementById('languageSelectorMobile').addEventListener('change', function () {
-    handleLanguageChange(this.value);
-  });
-</script>
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
 
-<script>
-    /***** Gestion du champ "Objet personnalisé" *****/
-    const subjectSelect = document.getElementById('subject');
-    const customSubjectContainer = document.getElementById('customSubjectContainer');
-    subjectSelect.addEventListener('change', function() {
-      if (this.value === 'autre') {
-        customSubjectContainer.classList.remove('hidden');
-        document.getElementById('customSubject').required = true;
+      // Honeypot
+      const honeypot = $('website') ? $('website').value : '';
+      if (honeypot && honeypot.trim() !== '') {
+        // silent stop
+        return;
+      }
+
+      // clear messages
+      if (errorDiv) { errorDiv.classList.add('hidden'); errorDiv.textContent = ''; }
+      if (confirmationDiv) confirmationDiv.classList.add('hidden');
+
+      // cooldown check
+      if (!canSend()) {
+        showError('Merci — attends un instant avant de renvoyer le formulaire.');
+        return;
+      }
+
+      // timestamp check (too fast submissions are suspicious)
+      const ts = Number(tsInput ? tsInput.value : 0);
+      if (ts && (Date.now() - ts) < 4000) { // moins de 4s
+        showError('Soumission trop rapide — veuillez remplir le formulaire manuellement.');
+        return;
+      }
+
+      // email required validation
+      const emailEl = $('email');
+      if (!emailEl || !emailEl.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value)) {
+        showError('Veuillez indiquer une adresse e-mail valide.');
+        return;
+      }
+
+      // human check
+      const expected = humanInput ? humanInput.dataset.expected : null;
+      const humanVal = humanInput ? (humanInput.value || '').trim() : '';
+      if (!expected || humanVal === '') {
+        showError('Veuillez répondre à la question anti-spam.');
+        return;
+      }
+      if (humanVal !== expected) {
+        showError('Réponse anti-spam incorrecte.');
+        generateHumanQuestion(); // regen to avoid brute forcing
+        return;
+      }
+
+      // Disable button + loading text
+      if (submitButton) {
+        submitButton.disabled = true;
+        const originalText = submitButton.querySelector('.btn-text') ? submitButton.querySelector('.btn-text').textContent : 'Send...';
+        if (submitButton.querySelector('.btn-text')) submitButton.querySelector('.btn-text').textContent = "Send...";
+        // fill reply-to
+        if (replyToHidden && emailEl) replyToHidden.value = emailEl.value;
+
+        // set cooldown immediately to prevent double sends
+        setSentNow();
+
+        // Submit the form normally to FormSubmit
+        // Using native submit so Formsubmit handles deliverability (no fetch that could be blocked)
+        contactForm.submit();
+
+        // restore UI after a short delay (user will be redirected by formsubmit; this is fallback)
+        setTimeout(() => {
+          try {
+            if (submitButton) { submitButton.disabled = false; if (submitButton.querySelector('.btn-text')) submitButton.querySelector('.btn-text').textContent = originalText; }
+          } catch(e){}
+        }, 2000);
       } else {
-        customSubjectContainer.classList.add('hidden');
-        document.getElementById('customSubject').required = false;
+        // fallback: if no submit button found, just submit
+        contactForm.submit();
       }
     });
-    
-    /***** Soumission du formulaire avec vérification reCAPTCHA + honeypot *****/
-    const contactForm = document.getElementById('contactForm');
-    const submitButton = document.querySelector('button[type="submit"]');
-    const errorDiv = document.getElementById('error');
-    const confirmationDiv = document.getElementById('confirmation');
 
-    if (contactForm) {
-      contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // Honeypot
-        const honeypot = document.getElementById('website').value;
-        if (honeypot !== "") {
-          // Bot détecté : on stoppe
-          return;
-        }
-
-        // Clear messages
-        errorDiv.classList.add('hidden');
-        errorDiv.textContent = "";
-        confirmationDiv.classList.add('hidden');
-
-        // Vérifier reCAPTCHA (client-side)
-        let captchaResponse = "";
-        if (typeof grecaptcha !== 'undefined') {
-          captchaResponse = grecaptcha.getResponse();
-        }
-
-        if (!captchaResponse) {
-          errorDiv.textContent = "Veuillez confirmer que vous n'êtes pas un robot (reCAPTCHA).";
-          errorDiv.classList.remove('hidden');
-          return;
-        }
-
-        // Disable button + loading text
-        submitButton.disabled = true;
-        const originalText = submitButton.querySelector('.btn-text').textContent;
-        submitButton.querySelector('.btn-text').textContent = "Send...";
-
-        const formData = new FormData(contactForm);
-        // Ajouter le token reCAPTCHA au FormData (nom standard g-recaptcha-response)
-        formData.append('g-recaptcha-response', captchaResponse);
-
-        // Si l'utilisateur a choisi "Autre", on remplace la valeur de l'objet
-        if (subjectSelect && subjectSelect.value === 'autre') {
-          formData.set('subject', document.getElementById('customSubject').value);
-        }
-
-        fetch(contactForm.action, {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'Accept': 'application/json'
-          }
-        })
-        .then(response => {
-          if (response.ok) {
-            confirmationDiv.classList.remove('hidden');
-            contactForm.reset();
-            if (customSubjectContainer) customSubjectContainer.classList.add('hidden');
-            // reset reCAPTCHA widget
-            try { if (typeof grecaptcha !== 'undefined') grecaptcha.reset(); } catch (err) {}
-          } else {
-            return response.json().then(data => {
-              throw new Error(data.errors ? data.errors.map(error => error.message).join(", ") : "An error occurred while sending. Please try again.");
-            });
-          }
-        })
-        .catch(error => {
-          errorDiv.textContent = error.message;
-          errorDiv.classList.remove('hidden');
-        })
-        .finally(() => {
-          submitButton.disabled = false;
-          submitButton.querySelector('.btn-text').textContent = originalText;
-        });
-      });
-
-      // Hover effect classes for button (inchangées)
+    // Hover effect handlers (UX)
+    if (submitButton) {
       submitButton.addEventListener('mouseenter', function() {
         this.classList.remove('hover-out');
         this.classList.add('hover-in');
@@ -491,54 +429,66 @@
         if (e.animationName === 'slideOut') this.classList.remove('hover-out');
       });
     }
-  </script>
+  }
+</script>
 
 <script>
-const loader = document.getElementById('loader');
-const path = loader.querySelector('path');
+  // header menu scripts (safeguarded)
+  const hamburger = document.querySelector('.hamburger');
+  const overlay = document.getElementById('overlayMenu');
+  const closeBtn = overlay ? overlay.querySelector('.close-btn') : null;
 
-// Désactive le scroll pendant le chargement
-document.body.style.overflow = 'hidden';
+  if (hamburger && overlay && closeBtn) {
+    hamburger.addEventListener('click', () => overlay.classList.add('open'));
+    closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
+  }
+</script>
 
-// Récupère la longueur totale du path SVG
-const length = path.getTotalLength();
+<script>
+  // language switcher guards (if elements exist)
+  function handleLanguageChange(value) {
+    if (value === 'EN') {
+      window.location.href = 'https://burbanofficial.com/';
+    } else if (value === 'FR') {
+      window.location.href = 'https://burbanofficial.com/FR-fr/';
+    }
+  }
+  const langDesktop = document.getElementById('languageSelector');
+  if (langDesktop) langDesktop.addEventListener('change', function () { handleLanguageChange(this.value); });
+  const langMobile = document.getElementById('languageSelectorMobile');
+  if (langMobile) langMobile.addEventListener('change', function () { handleLanguageChange(this.value); });
+</script>
 
-// Stocke cette longueur dans une variable CSS custom pour animation finale
-path.style.setProperty('--length', length);
+<script>
+  // loader script (unchanged behavior)
+  const loader = document.getElementById('loader');
+  const path = loader ? loader.querySelector('path') : null;
+  if (path) {
+    document.body.style.overflow = 'hidden';
+    const length = path.getTotalLength();
+    path.style.setProperty('--length', length);
+    path.style.strokeDasharray = 1500;
+    path.style.strokeDashoffset = 0;
+    loader.classList.add('loading');
 
-// Initialise animation boucle
-path.style.strokeDasharray = 1500;
-path.style.strokeDashoffset = 0;
-loader.classList.add('loading'); // classe pour boucle d'animation
+    window.addEventListener('load', () => {
+      loader.classList.remove('loading');
+      path.style.strokeDasharray = length;
+      path.style.strokeDashoffset = length;
+      void path.offsetWidth;
+      loader.classList.add('draw');
 
-// Dès que la page est complètement chargée
-window.addEventListener('load', () => {
-  // Arrête l'animation boucle
-  loader.classList.remove('loading');
-
-  // Prépare animation finale complète
-  path.style.strokeDasharray = length;
-  path.style.strokeDashoffset = length;
-
-  // Force reflow pour appliquer styles immédiatement
-  void path.offsetWidth;
-
-  // Ajoute classe 'draw' pour lancer animation dessin final
-  loader.classList.add('draw');
-
-  // Après la fin de l'animation dessin (3s ici), on fait disparaître le loader
-  setTimeout(() => {
-    loader.classList.add('fade-out');
-
-    // Puis on enlève le loader, montre le contenu principal et réactive le scroll
-    setTimeout(() => {
-      loader.remove();
-      document.body.style.overflow = 'auto'; // ✅ scroll réactivé
-      const main = document.getElementById('main-content');
-      if(main) main.style.opacity = '1';
-    }, 1000);
-  }, 3000);
-});
+      setTimeout(() => {
+        loader.classList.add('fade-out');
+        setTimeout(() => {
+          loader.remove();
+          document.body.style.overflow = 'auto';
+          const main = document.getElementById('main-content');
+          if(main) main.style.opacity = '1';
+        }, 1000);
+      }, 3000);
+    });
+  }
 </script>
 
 <script src="https://burbanofficial.com/public/includes/footer.js"></script>
