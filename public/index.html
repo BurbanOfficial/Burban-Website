@@ -590,10 +590,14 @@
 
       // Affichage personnalisé : "Welcome {firstname} {lastname}" + points en dessous
       el.innerHTML = `
-        <div style="line-height:1.1;">
-          <strong style="display:block;font-size:1rem;">Welcome ${escapeHtml(firstname)} ${escapeHtml(lastname)}</strong>
-          <span style="font-size:0.95rem;color:#333;">${points} point${points > 1 ? 's' : ''} remaining</span>
-        </div>`;
+      <div style="line-height:1.3;">
+        <span style="display:block;font-size:1rem;">Welcome ${escapeHtml(firstname)} ${escapeHtml(lastname)}</span>
+        <span style="display:block;margin-top:6px;font-size:0.95rem;color:#333;">
+          ${points} point${points > 1 ? 's' : ''} remaining
+        </span>
+      </div>`;
+
+
 
     } catch (err) {
       console.error('updateAccountDisplay error:', err);
