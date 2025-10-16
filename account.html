@@ -813,6 +813,24 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      try {
+        const target = localStorage.getItem('postLoginRedirect');
+        if (target) {
+          localStorage.removeItem('postLoginRedirect');
+          // redirige immédiatement vers la page demandée (ex: panier)
+          window.location.href = target;
+        } else {
+          // pas de redirection demandée → utiliser ton comportement normal (ex: rester sur account)
+          // window.location.href = '/'; // à personnaliser si besoin
+        }
+      } catch (e) {
+        console.warn('Erreur redirection post-login (account.html)', e);
+      }
+    }
+  });
+
   // -------------------- UI refs --------------------
   const authModal = document.getElementById('authModal');
   const openAuth = document.getElementById('openAuth');
