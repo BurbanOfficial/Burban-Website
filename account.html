@@ -1859,6 +1859,22 @@ function getCountryFromCode(code){
   document.getElementById('languageSelectorMobile').addEventListener('change', function () {
     handleLanguageChange(this.value);
   });
+
+  // -------------------- Redirection post-login (vers panier) --------------------
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    try {
+      const target = localStorage.getItem('postLoginRedirect');
+      if (target) {
+        localStorage.removeItem('postLoginRedirect');
+        // redirige directement vers la page où l’utilisateur voulait aller (ex: panier)
+        window.location.href = target;
+      }
+    } catch (e) {
+      console.warn('Erreur lors de la redirection post-login', e);
+    }
+  }
+});
 </script>
 
   <script>
