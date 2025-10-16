@@ -616,12 +616,92 @@
       });
     }
 
+    /* ---------- Gestion du clic "Create an account or log in" + redirection post-login ---------- */
+
+/**
+ * Définit la clé de redirection (page actuelle) et redirige vers account.html
+ */
+function redirectToLoginSavingReturn() {
+  try {
+    localStorage.setItem('postLoginRedirect', window.location.href);
+  } catch (e) {
+    console.warn('Impossible de sauvegarder la redirection post-login', e);
+  }
+  // envoi vers la page de login
+  window.location.href = 'https://burbanofficial.com/account.html';
+}
+
+/**
+ * Attache les listeners sur le lien du bloc #account-hint et sur le bouton d'entête (.account-btn)
+ * Si user déjà connecté → laisse le comportement normal (ne redirige pas).
+ */
+function attachLoginRedirectListeners() {
+  // icône compte en header
+  const headerAccount = document.querySelector('.account-btn');
+  if (headerAccount) {
+    headerAccount.addEventListener('click', function (ev) {
+      // si pas connecté → empêcher le lien par défaut, mémoriser et rediriger
+      if (!auth.currentUser) {
+        ev.preventDefault();
+        redirectToLoginSavingReturn();
+      }
+      // si connecté => on laisse le href normal (ou tu peux ouvrir la page compte)
+    });
+  }
+
+  // lien "Create an account or log in" dans le bloc summary (il est recréé dynamiquement)
+  // on utilise delegation / setInterval pour catch le lien si il est créé plus tard
+  const tryAttach = () => {
+    const accountLink = document.querySelector('#account-hint a[href*="account.html"]');
+    if (accountLink) {
+      accountLink.addEventListener('click', function (ev) {
+        if (!auth.currentUser) {
+          ev.preventDefault();
+          redirectToLoginSavingReturn();
+        }
+      });
+      return true;
+    }
+    return false;
+  };
+
+  // tente d'attacher maintenant, sinon retente quelques fois (utile si #account-hint est rendu async)
+  if (!tryAttach()) {
+    let attempts = 0;
+    const id = setInterval(() => {
+      attempts++;
+      if (tryAttach() || attempts > 10) clearInterval(id);
+    }, 200);
+  }
+}
+
     // --- Auth & Init ---
     // Assure l'update quand l'état auth change
     auth.onAuthStateChanged((user) => {
       updateVoucherOptions();   // déjà présent dans ton code, on le garde
       updateAccountDisplay();   // <-- nouveau : met à jour l'en-tête / points
+
+        if (user) {
+        try {
+          const target = localStorage.getItem('postLoginRedirect');
+          if (target) {
+            localStorage.removeItem('postLoginRedirect');
+            // si on n'est pas déjà sur la page cible → redirection
+            if (window.location.href !== target) {
+              window.location.href = target;
+            }
+          }
+        } catch (e) {
+          console.warn('Erreur lors de la redirection post-login', e);
+        }
+      }
     });
+
+    // Appel lors du chargement pour attacher les listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      attachLoginRedirectListeners();
+    });
+
     document.addEventListener('DOMContentLoaded',()=>{document.getElementById('loader2').style.display='none';loadCart();
       // Modal handlers
       const modal=document.getElementById('shippingModal');const close=modal.querySelector('.close');close.onclick=()=>modal.style.display='none';window.onclick=e=>{if(e.target===modal)modal.style.display='none';};document.getElementById('shippingForm').addEventListener('submit',e=>{e.preventDefault();modal.style.display='none';handleCheckout();});
