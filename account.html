@@ -1860,15 +1860,25 @@ function getCountryFromCode(code){
     handleLanguageChange(this.value);
   });
 
-  // -------------------- Redirection post-login (vers panier) --------------------
-auth.onAuthStateChanged((user) => {
+  // -------------------- Redirection post-login (vers panier ou autre) --------------------
+auth.onAuthStateChanged(async (user) => {
   if (user) {
     try {
+      // Petite pause pour laisser Firebase stabiliser la session
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       const target = localStorage.getItem('postLoginRedirect');
       if (target) {
         localStorage.removeItem('postLoginRedirect');
-        // redirige directement vers la page où l’utilisateur voulait aller (ex: panier)
-        window.location.href = target;
+        console.log('Redirection post-login détectée vers :', target);
+
+        // Redirection directe si différente de la page actuelle
+        if (window.location.href !== target) {
+          window.location.href = target;
+        }
+      } else {
+        // Comportement normal (aucune redirection enregistrée)
+        console.log('Aucune redirection post-login — on reste sur account.html');
       }
     } catch (e) {
       console.warn('Erreur lors de la redirection post-login', e);
