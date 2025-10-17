@@ -813,102 +813,6 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  /* ===== Reliable post-login redirect (account.html) ===== */
-(function () {
-  const REDIRECT_KEY = 'burban_postLoginRedirect';
-
-  // utilise la variable auth si définie, sinon firebase.auth()
-  const firebaseAuth = (typeof auth !== 'undefined') ? auth : (firebase && firebase.auth ? firebase.auth() : null);
-  if (!firebaseAuth) {
-    console.warn('Auth non disponible — redirection post-login désactivée pour le moment.');
-    return;
-  }
-
-  // fonction d'essai de redirection : lit la clé et redirige si possible
-  function tryRedirectOnce() {
-    try {
-      const target = localStorage.getItem(REDIRECT_KEY);
-      console.log('[post-login] trying redirect, stored target =', target);
-      if (target) {
-        localStorage.removeItem(REDIRECT_KEY);
-        if (window.location.href !== target) {
-          // redirection finale
-          window.location.href = target;
-          return true;
-        }
-      }
-    } catch (err) {
-      console.warn('[post-login] redirect error', err);
-    }
-    return false;
-  }
-
-  /* ===== Process Firebase email verification links (oobCode) ===== */
-(function handleVerifyLink() {
-  try {
-    const params = new URLSearchParams(window.location.search);
-    const mode = params.get('mode');
-    const oobCode = params.get('oobCode');
-
-    if (mode === 'verifyEmail' && oobCode) {
-      // Tentative d'application du code (vérifie l'email)
-      console.log('[email-verify] detected oobCode — applying...');
-      firebase.auth().applyActionCode(oobCode)
-      .then(() => {
-        // marque localement que l'email a été vérifié via le lien
-        try { localStorage.setItem('burban_emailVerifiedByLink', '1'); } catch(e){/* ignore */ }
-        // retire les paramètres de l'URL pour propreté
-        if (history && history.replaceState) {
-          const cleanUrl = window.location.origin + window.location.pathname;
-          history.replaceState({}, document.title, cleanUrl);
-        }
-        // message utilisateur
-        alert('Votre adresse e-mail a bien été vérifiée. Vous pouvez maintenant vous connecter.');
-      })
-      .catch(err => {
-        console.warn('[email-verify] applyActionCode failed', err);
-        alert('La vérification du lien a échoué : ' + (err.message || err.code));
-      });
-    }
-  } catch (err) {
-    console.warn('handleVerifyLink error', err);
-  }
-})();
-
-  // 1) onAuthStateChanged : se déclenchera quand l'état change (login / signup)
-  firebaseAuth.onAuthStateChanged((user) => {
-    console.log('[post-login] onAuthStateChanged — user?', !!user);
-    if (!user) return;
-    tryRedirectOnce();
-  });
-
-  // 2) exécution au chargement si l'utilisateur est déjà connecté (cas "déjà loggé")
-  document.addEventListener('DOMContentLoaded', () => {
-    // petit délai pour laisser le runtime s'initialiser
-    setTimeout(() => {
-      if (firebaseAuth.currentUser) {
-        console.log('[post-login] currentUser présent au load, tentative redirect');
-        tryRedirectOnce();
-      }
-    }, 250);
-  });
-
-  // 3) fallback : sondage court (max ~5s) — utile si l'état change juste après le chargement
-  (function pollForAuthAndRedirect() {
-    let attempts = 0;
-    const maxAttempts = 20; // 20 * 250ms = 5s
-    const id = setInterval(() => {
-      attempts++;
-      if (firebaseAuth.currentUser) {
-        console.log('[post-login] poll detected user, trying redirect');
-        if (tryRedirectOnce()) clearInterval(id);
-      }
-      if (attempts >= maxAttempts) clearInterval(id);
-    }, 250);
-  })();
-})();
-
-
   // -------------------- UI refs --------------------
   const authModal = document.getElementById('authModal');
   const openAuth = document.getElementById('openAuth');
@@ -995,49 +899,43 @@
 
   // -------------------- Auth actions --------------------
   btnRegister.addEventListener('click', async ()=>{
-  clearMessage();
-  const first = regFirstname.value.trim();
-  const last = regLastname.value.trim();
-  const email = regEmail.value.trim();
-  const pass = regPassword.value;
-  const birthday = regBirthday.value || '';
-  if(!first || !last || !email || pass.length < 6){ showMessage('Please fill all fields and use a password of at least 6 characters.'); return; }
-  try{
-    const cred = await auth.createUserWithEmailAndPassword(email, pass);
-    await cred.user.sendEmailVerification();
+    clearMessage();
+    const first = regFirstname.value.trim();
+    const last = regLastname.value.trim();
+    const email = regEmail.value.trim();
+    const pass = regPassword.value;
+    const birthday = regBirthday.value || '';
+    if(!first || !last || !email || pass.length < 6){ showMessage('Please fill all fields and use a password of at least 6 characters.'); return; }
+    try{
+      const cred = await auth.createUserWithEmailAndPassword(email, pass);
+      await cred.user.sendEmailVerification();
 
-    // create user doc with phone + newsletter from registration toggles/inputs
-    const code = regCountryCode ? regCountryCode.value : '+33';
-    const phoneE164 = (regPhone && regPhone.value) ? buildE164(code, regPhone.value) : '';
-    const newsletterState = regNewsletterToggle ? regNewsletterToggle.classList.contains('on') : true;
+      // create user doc with phone + newsletter from registration toggles/inputs
+      const code = regCountryCode ? regCountryCode.value : '+33';
+      const phoneE164 = (regPhone && regPhone.value) ? buildE164(code, regPhone.value) : '';
+      const newsletterState = regNewsletterToggle ? regNewsletterToggle.classList.contains('on') : true;
 
-    await db.collection('users').doc(cred.user.uid).set({
-      firstname: first,
-      lastname: last,
-      email,
-      phone: phoneE164,
-      birthday: birthday,
-      newsletter: !!newsletterState,
-      country: getCountryFromCode(code),
-      favorites: [],
-      points: 200,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+      await db.collection('users').doc(cred.user.uid).set({
+        firstname: first,
+        lastname: last,
+        email,
+        phone: phoneE164,
+        birthday: birthday,
+        newsletter: !!newsletterState,
+        country: getCountryFromCode(code), // <-- ajouté : champ "country"
+        favorites: [],
+        points: 200,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
 
-    // >>> burban: remember to redirect AFTER verification
-    try {
-      localStorage.setItem('burban_postLoginRedirect', window.location.origin + '/public/index.html');
-      localStorage.setItem('burban_expectEmailVerification', '1');
-    } catch(e){ console.warn('cannot save redirect flags', e); }
+      // Important: force sign out so the user must verify email before logging in
+      try { await auth.signOut(); } catch(e){ console.warn('signOut after register failed', e); }
 
-    // Important: force sign out so the user must verify email before logging in
-    try { await auth.signOut(); } catch(e){ console.warn('signOut after register failed', e); }
-
-    showMessage('Account created. Verification email sent. Please verify before logging in.', true);
-    // switch to login tab
-    document.querySelector('.auth-tab[data-mode="login"]').click();
-  }catch(err){ console.error(err); showMessage(err.message || 'Registration error'); }
-});
+      showMessage('Account created. Verification email sent. Please verify before logging in.', true);
+      // switch to login tab
+      document.querySelector('.auth-tab[data-mode="login"]').click();
+    }catch(err){ console.error(err); showMessage(err.message || 'Registration error'); }
+  });
 
   btnLogin.addEventListener('click', async ()=>{
     clearMessage();
@@ -1073,63 +971,33 @@
   (function lockUI(){ mainFrame.style.pointerEvents='none'; mainFrame.style.opacity='0.55'; authModal.classList.add('active'); authModal.setAttribute('aria-hidden','false'); })();
 
   auth.onAuthStateChanged(async (user) => {
-  if (user) {
-    // reload user so emailVerified is up-to-date
-    try { await user.reload(); } catch(e){ console.warn('user.reload failed', e); }
-
-    // if user not verified -> sign out and show message (unless we explicitly detect a prior verification flow)
-    if (!user.emailVerified) {
-      // If we expect verification (user just registered), give friendly instruction
-      const expecting = localStorage.getItem('burban_expectEmailVerification') === '1';
-      if (expecting) {
-        // don't redirect, show friendly notice and keep user signed out
-        showMessage('Votre compte a été créé — vérifiez votre e-mail puis connectez-vous. Un clic sur le lien de vérification est requis.', true);
-        // remove the expect flag (we'll rely on verify-link handling)
-        localStorage.removeItem('burban_expectEmailVerification');
-      } else {
-        showMessage('Please verify your email before logging in.');
+    if(user){
+      // reload user to ensure emailVerified is fresh (important)
+      try { await user.reload(); } catch(e){ console.warn('user.reload failed', e); }
+      // require verified
+      if(!user.emailVerified){
+        showMessage('Please verify your email.');
+        try { await auth.signOut(); } catch(e){ console.warn('signOut in onAuthStateChanged failed', e); }
+        return;
       }
-      try { await auth.signOut(); } catch(e){ console.warn('signOut in onAuthStateChanged failed', e); }
-      return;
+      // hide auth modal and unlock main
+      authModal.classList.remove('active'); authModal.setAttribute('aria-hidden','true');
+      mainFrame.style.pointerEvents='auto'; mainFrame.style.opacity='1';
+
+      openAuth.classList.add('hidden'); logoutSmall.classList.remove('hidden');
+      // load profile
+      loadUserProfile(user);
+      loadUserFavorites(user);
+      loadUserAdvantages(user);
+    }else{
+      // no user: show modal and lock main
+      authModal.classList.add('active'); authModal.setAttribute('aria-hidden','false');
+      mainFrame.style.pointerEvents='none'; mainFrame.style.opacity='0.55';
+      openAuth.classList.remove('hidden'); logoutSmall.classList.add('hidden');
+      // clear UI
+      userName.textContent = 'Guest'; userEmail.textContent = '—'; setAvatarInitials('Guest'); pointsEl.textContent='0'; progressFill.style.width='0%'; coins.textContent='0'; loyaltyFill.style.width='0%'; createdAt.textContent='—'; favList.innerHTML='';
     }
-
-    // At this point user exists AND emailVerified === true
-    // Remove any expect flags
-    try {
-      localStorage.removeItem('burban_expectEmailVerification');
-      localStorage.removeItem('burban_emailVerifiedByLink');
-    } catch(e){/* ignore */ }
-
-    // hide auth modal and unlock main
-    authModal.classList.remove('active'); authModal.setAttribute('aria-hidden','true');
-    mainFrame.style.pointerEvents='auto'; mainFrame.style.opacity='1';
-
-    openAuth.classList.add('hidden'); logoutSmall.classList.remove('hidden');
-    // load profile + other user UI
-    loadUserProfile(user);
-    loadUserFavorites(user);
-    loadUserAdvantages(user);
-
-    // Finally: redirect to stored target if set
-    try {
-      const redirectTarget = localStorage.getItem('burban_postLoginRedirect');
-      if (redirectTarget) {
-        localStorage.removeItem('burban_postLoginRedirect');
-        if (window.location.href !== redirectTarget) {
-          window.location.href = redirectTarget;
-        }
-      }
-    } catch(e){ console.warn('post-login redirect failed', e); }
-
-  } else {
-    // no user: show modal and lock main
-    authModal.classList.add('active'); authModal.setAttribute('aria-hidden','false');
-    mainFrame.style.pointerEvents='none'; mainFrame.style.opacity='0.55';
-    openAuth.classList.remove('hidden'); logoutSmall.classList.add('hidden');
-    // clear UI (same as you had)
-    userName.textContent = 'Guest'; userEmail.textContent = '—'; setAvatarInitials('Guest'); pointsEl.textContent='0'; progressFill.style.width='0%'; coins.textContent='0'; loyaltyFill.style.width='0%'; createdAt.textContent='—'; favList.innerHTML='';
-  }
-});
+  });
 
   // -------------------- Loaders --------------------
   async function loadUserProfile(user){
@@ -1864,29 +1732,14 @@ function getCountryFromCode(code){
 }
 
   /* toggle helper */
-  // ==== Robust toggle helper ====
-function toggleSwitchElem(btn, toState) {
-  if (!btn || !(btn instanceof HTMLElement)) return false;
-
-  // Si toState est undefined, on veut vraiment *inverser* l'état actuel
-  let isOn;
-  if (typeof toState === 'undefined') {
-    isOn = !btn.classList.contains('on');
-  } else {
-    // coercion explicite en bool
-    isOn = !!toState;
+  function toggleSwitchElem(btn, toState){
+    if(!btn) return false;
+    const isOn = (toState === undefined) ? btn.classList.contains('on') : toState;
+    btn.classList.toggle('on', isOn);
+    btn.classList.toggle('off', !isOn);
+    btn.setAttribute('aria-pressed', !!isOn);
+    return isOn;
   }
-
-  // applique classes de manière explicite (second argument force state)
-  btn.classList.toggle('on', isOn);
-  btn.classList.toggle('off', !isOn);
-
-  // attribut ARIA
-  btn.setAttribute('aria-pressed', isOn ? 'true' : 'false');
-
-  return isOn;
-}
-
 
   /* Registration toggle (works before auth) */
   if(regNewsletterToggle){
