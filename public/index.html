@@ -622,11 +622,12 @@
  */
 function redirectToLoginSavingReturn() {
   try {
-    localStorage.setItem('postLoginRedirect', window.location.href);
+    // on enregistre explicitement l'URL vers la page panier
+    localStorage.setItem('burban_postLoginRedirect', window.location.origin + '/public/index.html');
   } catch (e) {
     console.warn('Impossible de sauvegarder la redirection post-login', e);
   }
-  // envoi vers la page de login
+  // redirection vers la page de connexion/création de compte
   window.location.href = 'https://burbanofficial.com/account.html';
 }
 
@@ -682,9 +683,9 @@ function attachLoginRedirectListeners() {
 
         if (user) {
         try {
-          const target = localStorage.getItem('postLoginRedirect');
+          const target = localStorage.getItem('burban_postLoginRedirect');
           if (target) {
-            localStorage.removeItem('postLoginRedirect');
+            localStorage.removeItem('burban_postLoginRedirect');
             // si on n'est pas déjà sur la page cible → redirection
             if (window.location.href !== target) {
               window.location.href = target;
@@ -1028,10 +1029,10 @@ window.addEventListener('load', () => {
   const promoCodeEl = document.getElementById('promo-code');
 
   // Utilisé pour sauvegarder la page cible après login
-  function savePostLoginRedirect() {
+  function saveBurbanPostLoginRedirect() {
     try {
       // on force la redirection vers la page panier (cette page)
-      localStorage.setItem('postLoginRedirect', 'https://burbanofficial.com/public/index.html');
+      localStorage.setItem('burban_postLoginRedirect', 'https://burbanofficial.com/public/index.html');
     } catch (e) {
       console.warn('Impossible de sauvegarder la redirection post-login', e);
     }
@@ -1095,7 +1096,7 @@ window.addEventListener('load', () => {
 
   // Click "Se connecter / Créer un compte" -> sauvegarde et redirige vers account.html
   btnLogin.addEventListener('click', function () {
-    savePostLoginRedirect();
+    saveBurbanPostLoginRedirect();
     // Marche sûre : on laisse Firebase sur account.html gérer la création/connexion
     window.location.href = 'https://burbanofficial.com/account.html';
   });
