@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Burban Marquee</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<!-- START BURBAN MARQUEE -->
+<div id="burban-marquee-root" aria-hidden="false">
+  <style>
+    html, body {
+        margin: 0;
+        padding: 0;
+    }
+
+    :root {
+      --bm-accent: #ff4c3c;
+      --bm-fg: #111111;
+      --bm-h: clamp(32px, 4vw, 48px);
+      --bm-radius: clamp(8px, 1.3vw, 16px);
+      --bm-bg: rgba(255, 255, 255, 0.457);
+      --bm-max-width: 1200px;
+      --bm-padding-sides: clamp(12px, 4vw, 40px);
+    }
+
+    #burban-marquee-root {
+      position: relative;
+      width: 100%;
+      box-sizing: border-box;
+      z-index: 1000;
+    }
+
+    .bm-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9));
+      backdrop-filter: blur(6px);
+    }
+
+    .bm-marquee {
+      --h: var(--bm-h);
+      max-width: min(var(--bm-max-width), calc(100% - (var(--bm-padding-sides) * 2)));
+      width: 100%;
+      height: var(--h);
+      background: var(--bm-bg);
+      border-radius: var(--bm-radius);
+      display: flex;
+      align-items: center;
+      gap: clamp(8px, 1.6vw, 20px);
+      padding: clamp(4px, 0.8vw, 8px); /* avant : clamp(6px,1.1vw,12px) */
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.06);
+      position: relative;
+      overflow: hidden;
+      font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      margin: 0 auto;
+    }
+
+    .bm-arrow {
+      width: clamp(28px, 3.5vw, 36px);
+      height: clamp(28px, 3.5vw, 36px);
+      min-width: clamp(34px, 4.6vw, 46px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: transform .16s ease, background .16s ease;
+      color: var(--bm-fg);
+      font-size: clamp(14px, 1.2vw, 18px);
+    }
+
+    .bm-arrow:hover { transform: scale(1.05); }
+
+    .bm-viewport {
+      flex: 1;
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .bm-track {
+      display: flex;
+      gap: clamp(12px, 3vw, 48px);
+      align-items: center;
+      white-space: nowrap;
+      will-change: transform;
+      padding: 0 clamp(6px, 1.6vw, 12px);
+      user-select: none;
+    }
+
+    .bm-item {
+      display: inline-flex;
+      align-items: center;
+      gap: clamp(8px, 1.6vw, 14px);
+      padding: clamp(4px, 0.8vw, 8px) clamp(8px, 1.5vw, 12px); /* avant : clamp(6px,1.2vw,12px) ... */
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: clamp(12px, 1vw, 14px); /* optionnel si tu veux que le texte soit plus fin */
+      color: var(--bm-fg);
+      background: linear-gradient(90deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));
+      border: 1px solid rgba(0,0,0,0.03);
+      white-space: nowrap;
+    }
+
+    .bm-badge {
+      font-size: clamp(11px, 1vw, 13px);
+      padding: clamp(4px, 0.4vw, 4px) clamp(4px, 1vw, 8px);
+      border-radius: 10px;
+      background: var(--bm-accent);
+      color: #fff;
+      font-weight: 700;
+      justify-content: center;
+      letter-spacing: 0.4px;
+    }
+
+    @media (max-width: 520px) {
+      :root { --bm-h: clamp(44px, 9vw, 64px); }
+      .bm-marquee { max-width: calc(100% - 24px); border-radius: 10px; padding: 8px; }
+      .bm-track { gap: 12px; padding: 0 8px; }
+      .bm-item { font-size: 13px; padding: 8px 10px; }
+      .bm-arrow { width: 36px; height: 36px; font-size: 16px; }
+    }
+
+    .bm-sr {
+      position: absolute !important;
+      width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+  </style>
+
+  <div class="bm-wrap">
+    <div class="bm-marquee" role="region" aria-label="Bandeau d'informations Burban">
+      <!-- <button class="bm-arrow" id="bm-left" aria-label="Précédent" title="Précédent">&#9664;</button> -->
+
+      <div class="bm-viewport" id="bm-viewport">
+        <div class="bm-track" id="bm-track" aria-live="polite">
+          <div class="bm-item"><span class="bm-badge">Nouveau</span> Livraison gratuite dès 50€ d'achats</div>
+          <div class="bm-item">Retours gratuits sous 30 jours</div>
+          <div class="bm-item"><span class="bm-badge">Édition limitée</span> Drop exclusif ce vendredi</div>
+          <div class="bm-item">Paiement sécurisé & expédition 48h</div>
+          <div class="bm-item">Inscris-toi et obtiens -10% sur ta première commande</div>
+        </div>
+      </div>
+
+      <!-- <button class="bm-arrow" id="bm-right" aria-label="Suivant" title="Suivant">&#9654;</button> -->
+      <span class="bm-sr" id="bm-status" aria-live="polite">Bandeau d'annonces</span>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      if (window.__burban_marquee_inline_loaded) return;
+      window.__burban_marquee_inline_loaded = true;
+
+      (function ensurePoppins(){
+        if (document.querySelector('link[href*="fonts.googleapis.com"][href*="Poppins"]')) return;
+        var l = document.createElement('link');
+        l.rel = 'stylesheet';
+        l.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap';
+        document.head.appendChild(l);
+      })();
+
+      const track = document.getElementById('bm-track');
+      const viewport = document.getElementById('bm-viewport');
+      const btnLeft = document.getElementById('bm-left');
+      const btnRight = document.getElementById('bm-right');
+      const status = document.getElementById('bm-status');
+
+      let speed = 0.085;
+      const pauseDuration = 2000;
+      const manualPauseAfterClick = 3000;
+      const nudgePx = 260;
+      let direction = 1;
+      let paused = false;
+      let lastTime = null;
+      let pos = 0;
+      let rafId = null;
+      let pauseTimeout = null;
+
+      const TXT_PAUSE = "Pause";
+      const TXT_DEFILEMENT = "Défilement";
+      const TXT_CONTROLE = "Contrôle manuel";
+      const TXT_STATIQUE = "Statique";
+
+      function ensureTrackLong(){
+        const vw = viewport.clientWidth;
+        let tw = track.scrollWidth;
+        if(tw < vw * 1.5){
+          const original = Array.from(track.children).map(n => n.cloneNode(true));
+          original.forEach(c => track.appendChild(c));
+          tw = track.scrollWidth;
+          let attempts = 0;
+          while(tw < vw * 1.8 && attempts < 3){
+            Array.from(track.children).slice(0, original.length).forEach(n => track.appendChild(n.cloneNode(true)));
+            tw = track.scrollWidth;
+            attempts++;
+          }
+        }
+      }
+
+      let minPos = 0, maxPos = 0;
+      function computeLimits(){
+        const trackW = track.scrollWidth;
+        const viewW = viewport.clientWidth;
+        minPos = Math.min(0, viewW - trackW);
+        maxPos = 0;
+      }
+
+      function loop(ts){
+        if(paused){ lastTime = ts; rafId = requestAnimationFrame(loop); return; }
+        if(!lastTime) lastTime = ts;
+        const dt = ts - lastTime;
+        lastTime = ts;
+        pos += direction * speed * dt;
+
+        if(direction === 1 && pos >= maxPos){
+          pos = maxPos;
+          pauseAtEdge();
+        } else if(direction === -1 && pos <= minPos){
+          pos = minPos;
+          pauseAtEdge();
+        }
+
+        track.style.transform = 'translateX(' + pos + 'px)';
+        rafId = requestAnimationFrame(loop);
+      }
+
+      function startLoop(){
+        if(rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(loop);
+      }
+
+      function pauseAtEdge(){
+        if(paused) return;
+        paused = true;
+        status.textContent = TXT_PAUSE;
+        clearTimeout(pauseTimeout);
+        pauseTimeout = setTimeout(()=>{
+          direction *= -1;
+          paused = false;
+          status.textContent = TXT_DEFILEMENT;
+        }, pauseDuration);
+      }
+
+      function manualNudge(px){
+        clearTimeout(pauseTimeout);
+        paused = true;
+        pos = Math.max(minPos, Math.min(maxPos, pos + px));
+        track.style.transform = 'translateX(' + pos + 'px)';
+        status.textContent = TXT_CONTROLE;
+        pauseTimeout = setTimeout(()=>{
+          paused = false;
+          status.textContent = TXT_DEFILEMENT;
+        }, manualPauseAfterClick);
+      }
+
+      // btnLeft.addEventListener('click', ()=> manualNudge(nudgePx));
+      // btnRight.addEventListener('click', ()=> manualNudge(-nudgePx));
+
+      let hoverCount = 0;
+      // [viewport, btnLeft, btnRight].forEach(el=>{
+        // el.addEventListener('mouseenter', ()=>{ hoverCount++; paused = true; });
+       // el.addEventListener('mouseleave', ()=>{ hoverCount = Math.max(0, hoverCount-1); if(hoverCount===0) paused = false; });
+     // });
+
+      document.addEventListener('keydown', (e)=>{
+        if(e.key === 'ArrowLeft'){ e.preventDefault(); btnLeft.click(); }
+        if(e.key === 'ArrowRight'){ e.preventDefault(); btnRight.click(); }
+      });
+
+      let resizeTimer = null;
+      window.addEventListener('resize', ()=>{
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(()=>{
+          computeLimits();
+          pos = Math.max(minPos, Math.min(maxPos, pos));
+          track.style.transform = 'translateX(' + pos + 'px)';
+        }, 120);
+      });
+
+      function checkIfTooSmall(){
+        if(track.scrollWidth <= viewport.clientWidth + 10){
+          paused = true; status.textContent = TXT_STATIQUE;
+        } else {
+          paused = false; status.textContent = TXT_DEFILEMENT;
+        }
+      }
+
+      function init(){
+        ensureTrackLong();
+        computeLimits();
+        pos = minPos;
+        track.style.transform = 'translateX(' + pos + 'px)';
+        startLoop();
+        checkIfTooSmall();
+      }
+
+      setTimeout(init, 60);
+    })();
+  </script>
+</div>
+<!-- END BURBAN MARQUEE -->
+</body>
+</html>
