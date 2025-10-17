@@ -813,6 +813,70 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
+  /* ===== Reliable post-login redirect (account.html) ===== */
+(function () {
+  const REDIRECT_KEY = 'burban_postLoginRedirect';
+
+  // utilise la variable auth si définie, sinon firebase.auth()
+  const firebaseAuth = (typeof auth !== 'undefined') ? auth : (firebase && firebase.auth ? firebase.auth() : null);
+  if (!firebaseAuth) {
+    console.warn('Auth non disponible — redirection post-login désactivée pour le moment.');
+    return;
+  }
+
+  // fonction d'essai de redirection : lit la clé et redirige si possible
+  function tryRedirectOnce() {
+    try {
+      const target = localStorage.getItem(REDIRECT_KEY);
+      console.log('[post-login] trying redirect, stored target =', target);
+      if (target) {
+        localStorage.removeItem(REDIRECT_KEY);
+        if (window.location.href !== target) {
+          // redirection finale
+          window.location.href = target;
+          return true;
+        }
+      }
+    } catch (err) {
+      console.warn('[post-login] redirect error', err);
+    }
+    return false;
+  }
+
+  // 1) onAuthStateChanged : se déclenchera quand l'état change (login / signup)
+  firebaseAuth.onAuthStateChanged((user) => {
+    console.log('[post-login] onAuthStateChanged — user?', !!user);
+    if (!user) return;
+    tryRedirectOnce();
+  });
+
+  // 2) exécution au chargement si l'utilisateur est déjà connecté (cas "déjà loggé")
+  document.addEventListener('DOMContentLoaded', () => {
+    // petit délai pour laisser le runtime s'initialiser
+    setTimeout(() => {
+      if (firebaseAuth.currentUser) {
+        console.log('[post-login] currentUser présent au load, tentative redirect');
+        tryRedirectOnce();
+      }
+    }, 250);
+  });
+
+  // 3) fallback : sondage court (max ~5s) — utile si l'état change juste après le chargement
+  (function pollForAuthAndRedirect() {
+    let attempts = 0;
+    const maxAttempts = 20; // 20 * 250ms = 5s
+    const id = setInterval(() => {
+      attempts++;
+      if (firebaseAuth.currentUser) {
+        console.log('[post-login] poll detected user, trying redirect');
+        if (tryRedirectOnce()) clearInterval(id);
+      }
+      if (attempts >= maxAttempts) clearInterval(id);
+    }, 250);
+  })();
+})();
+
+
   // -------------------- UI refs --------------------
   const authModal = document.getElementById('authModal');
   const openAuth = document.getElementById('openAuth');
@@ -1732,14 +1796,29 @@ function getCountryFromCode(code){
 }
 
   /* toggle helper */
-  function toggleSwitchElem(btn, toState){
-    if(!btn) return false;
-    const isOn = (toState === undefined) ? btn.classList.contains('on') : toState;
-    btn.classList.toggle('on', isOn);
-    btn.classList.toggle('off', !isOn);
-    btn.setAttribute('aria-pressed', !!isOn);
-    return isOn;
+  // ==== Robust toggle helper ====
+function toggleSwitchElem(btn, toState) {
+  if (!btn || !(btn instanceof HTMLElement)) return false;
+
+  // Si toState est undefined, on veut vraiment *inverser* l'état actuel
+  let isOn;
+  if (typeof toState === 'undefined') {
+    isOn = !btn.classList.contains('on');
+  } else {
+    // coercion explicite en bool
+    isOn = !!toState;
   }
+
+  // applique classes de manière explicite (second argument force state)
+  btn.classList.toggle('on', isOn);
+  btn.classList.toggle('off', !isOn);
+
+  // attribut ARIA
+  btn.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+
+  return isOn;
+}
+
 
   /* Registration toggle (works before auth) */
   if(regNewsletterToggle){
