@@ -245,138 +245,243 @@ window.addEventListener('load', () => {
 <script>
 (function(){
   const nav = document.querySelector('.nav');
-  if(!nav) return;
+  if (!nav) return;
 
-  // create puck
-  const hover = document.createElement('div');
-  hover.className = 'nav-hover';
-  nav.appendChild(hover);
+  // create SVG overlay
+  const svgNS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('class','nav-svg-overlay');
+  svg.setAttribute('width','100%');
+  svg.setAttribute('height','100%');
+  svg.setAttribute('preserveAspectRatio','none');
+  svg.style.overflow = 'visible';
+  nav.appendChild(svg);
 
-  // state
-  let target = { x: 0, y: 0, w: 0, h: 0, opacity: 0, scale: 1, rotX: 0, rotY: 0, sheenX: 0 };
-  let current = { x: 0, y: 0, w: 0, h: 0, opacity: 0, scale: 1, rotX: 0, rotY: 0, sheenX: 0 };
+  // defs: gradient + goo filter (liquid effect)
+  const defs = document.createElementNS(svgNS, 'defs');
+  defs.innerHTML = `
+    <linearGradient id="liquidGrad" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#ff6b6b"/>
+      <stop offset="30%" stop-color="#ff9a6b"/>
+      <stop offset="60%" stop-color="#ffd76b"/>
+      <stop offset="85%" stop-color="#9bff8a"/>
+      <stop offset="100%" stop-color="#6bd9ff"/>
+    </linearGradient>
 
-  const LERP = 0.16;
+    <!-- gooey blur to make the drop "liquid" -->
+    <filter id="goo" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+      <feColorMatrix in="blur" type="matrix"
+        values="1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 18 -7" result="goo" />
+      <feBlend in="SourceGraphic" in2="goo" />
+    </filter>
 
-  function setTargetFromEl(el, pointerX = null, pointerY = null) {
-    const r = el.getBoundingClientRect();
-    const navR = nav.getBoundingClientRect();
-    const padX = 12, padY = 8;
-    target.x = (r.left - navR.left) - padX;
-    target.y = (r.top  - navR.top) - padY;
-    target.w = r.width + padX * 2;
-    target.h = r.height + padY * 2;
-    target.opacity = 1;
-    target.scale = 1.02;
-    // compute small tilt based on pointer over element center if available
-    if (pointerX !== null && pointerY !== null) {
-      const cx = r.left + r.width/2;
-      const cy = r.top + r.height/2;
-      const dx = (pointerX - cx) / r.width; // -0.5..0.5
-      const dy = (pointerY - cy) / r.height;
-      target.rotY = clamp(dx * 12, -12, 12); // degrees
-      target.rotX = clamp(-dy * 8, -8, 8);
-      // sheen position 0..1 from left to right
-      target.sheenX = (pointerX - r.left) / r.width;
-    } else {
-      target.rotX = 0; target.rotY = 0; target.sheenX = 0.5;
-    }
+    <!-- clipPath we will update dynamically -->
+    <clipPath id="textClip">
+      <!-- <text> dynamically set here --> 
+    </clipPath>
+  `;
+  svg.appendChild(defs);
+
+  // blob circle (drop)
+  const circle = document.createElementNS(svgNS, 'ellipse');
+  circle.setAttribute('class','nav-drop');
+  circle.setAttribute('rx', 36);
+  circle.setAttribute('ry', 26);
+  circle.setAttribute('cx', -200); // offscreen initially
+  circle.setAttribute('cy', -200);
+  // glass look when not clipped
+  circle.setAttribute('fill', 'rgba(255,255,255,0.10)');
+  circle.setAttribute('stroke', 'rgba(255,255,255,0.12)');
+  circle.setAttribute('filter', 'url(#goo)');
+  svg.appendChild(circle);
+
+  // liquid text (appears when clipped) - invisible initially
+  const textEl = document.createElementNS(svgNS, 'text');
+  textEl.setAttribute('class','liquid-text');
+  textEl.setAttribute('id','navClipText');
+  textEl.setAttribute('x', 0);
+  textEl.setAttribute('y', 0);
+  textEl.setAttribute('text-anchor','start');
+  textEl.setAttribute('dominant-baseline','alphabetic');
+  textEl.setAttribute('fill','url(#liquidGrad)');
+  textEl.style.opacity = 0;
+  // append the text inside defs -> clipPath will reference this via <use>
+  defs.querySelector('#textClip').appendChild(textEl);
+
+  // also create a visible clone for debugging or fallback; we will show it when clip active
+  const visibleText = document.createElementNS(svgNS, 'text');
+  visibleText.setAttribute('class','liquid-text');
+  visibleText.setAttribute('id','navVisibleText');
+  visibleText.setAttribute('x', 0);
+  visibleText.setAttribute('y', 0);
+  visibleText.setAttribute('text-anchor','start');
+  visibleText.setAttribute('dominant-baseline','alphabetic');
+  visibleText.setAttribute('fill','url(#liquidGrad)');
+  visibleText.style.opacity = 0;
+  svg.appendChild(visibleText);
+
+  // We'll use the textClip id in a clipPath of the circle dynamically
+  function applyClip() {
+    circle.setAttribute('clip-path', 'url(#textClip)');
+  }
+  function removeClip() {
+    circle.removeAttribute('clip-path');
+    visibleText.style.opacity = 0;
+    textEl.textContent = '';
+    visibleText.textContent = '';
   }
 
-  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  // state for lerping movement
+  const state = {
+    tx: -200, ty: -200, tw: 72, th: 52, topOpacity: 0,
+    cx: -200, cy: -200, rx: 36, ry: 26, opacity: 0
+  };
 
+  const LERP = 0.18;
+
+  // tiny helper to set text attributes to match link style/position
+  function setClipTextForLink(link) {
+    const r = link.getBoundingClientRect();
+    const navR = nav.getBoundingClientRect();
+    const font = getComputedStyle(link);
+    const fontSize = font.fontSize || '18px';
+    const fontWeight = font.fontWeight || '600';
+    const left = r.left - navR.left;
+    const top = r.top - navR.top;
+
+    // set text content & style
+    textEl.textContent = link.textContent.trim();
+    visibleText.textContent = textEl.textContent;
+
+    textEl.setAttribute('font-family', font.fontFamily || 'Poppins, sans-serif');
+    textEl.setAttribute('font-size', fontSize);
+    textEl.setAttribute('font-weight', fontWeight);
+    textEl.setAttribute('x', left);
+    // position y accounting baseline
+    const baselineY = top + parseFloat(fontSize) * 0.82;
+    textEl.setAttribute('y', baselineY);
+
+    visibleText.setAttribute('font-family', font.fontFamily || 'Poppins, sans-serif');
+    visibleText.setAttribute('font-size', fontSize);
+    visibleText.setAttribute('font-weight', fontWeight);
+    visibleText.setAttribute('x', left);
+    visibleText.setAttribute('y', baselineY);
+
+    // set circle target to center of link
+    state.tx = left + r.width / 2;
+    state.ty = top + r.height / 2;
+    state.tw = r.width + 24; // padding
+    state.th = r.height + 18;
+    state.topOpacity = 1;
+
+    // make visible clone show (for browsers where clip on element is tricky)
+    visibleText.style.opacity = 1;
+  }
+
+  // mouse handlers
   nav.addEventListener('mousemove', (e) => {
     if (window.matchMedia('(max-width: 768px)').matches) {
-      target.opacity = 0; return;
+      state.topOpacity = 0;
+      return;
     }
-    const item = e.target.closest('.nav-item');
-    if (item && nav.contains(item)) {
-      setTargetFromEl(item, e.clientX, e.clientY);
-      hover.classList.add('visible','soft-scale','show-ripple');
-      // move sheen faster
-      hover.style.setProperty('--sheen', 'active');
+    const target = e.target.closest('.nav-item');
+    if (target && nav.contains(target)) {
+      setClipTextForLink(target);
+      applyClip();
+      // set circle intended rx/ry to roughly cover link (smoothly updated in RAF)
+      state.rx = Math.max(18, state.tw / 2);
+      state.ry = Math.max(12, state.th / 2);
+      // animate circle color to gradient: set fill to gradient when clipped
+      circle.setAttribute('fill', 'url(#liquidGrad)');
+      circle.setAttribute('stroke', 'rgba(255,255,255,0.06)');
     } else {
-      target.opacity = 0;
-      hover.classList.remove('show-ripple');
+      // just show plain drop (no clip)
+      state.topOpacity = 0;
+      removeClip();
+      circle.setAttribute('fill', 'rgba(255,255,255,0.10)');
+      circle.setAttribute('stroke', 'rgba(255,255,255,0.12)');
+      visibleText.style.opacity = 0;
     }
+    // always update target position to mouse (so drop follows)
+    const navR = nav.getBoundingClientRect();
+    state.tx = e.clientX - navR.left;
+    state.ty = e.clientY - navR.top;
   });
 
   nav.addEventListener('mouseleave', () => {
-    target.opacity = 0;
-    hover.classList.remove('show-ripple');
+    state.topOpacity = 0;
+    removeClip();
   });
 
-  // keyboard accessibility / focus
+  // focus / keyboard: when focusing a link, position drop over it
   const items = nav.querySelectorAll('.nav-item');
   items.forEach(it => {
-    it.addEventListener('focus', (ev) => {
+    it.addEventListener('focus', () => {
       if (window.matchMedia('(max-width: 768px)').matches) return;
-      setTargetFromEl(it);
-      hover.classList.add('visible','soft-scale');
+      setClipTextForLink(it);
+      applyClip();
+      circle.setAttribute('fill', 'url(#liquidGrad)');
     });
     it.addEventListener('blur', () => {
-      target.opacity = 0;
-      hover.classList.remove('soft-scale');
-    });
-    it.addEventListener('mouseenter', (ev) => {
-      if (window.matchMedia('(max-width: 768px)').matches) return;
-      setTargetFromEl(it, ev.clientX, ev.clientY);
-      hover.classList.add('visible','soft-scale','show-ripple');
+      state.topOpacity = 0;
+      removeClip();
     });
   });
 
-  // animate loop with lerp
-  function raf(){
-    current.x += (target.x - current.x) * LERP;
-    current.y += (target.y - current.y) * LERP;
-    current.w += (target.w - current.w) * LERP;
-    current.h += (target.h - current.h) * LERP;
-    current.opacity += (target.opacity - current.opacity) * (LERP * 1.2);
-    current.scale += (target.scale - current.scale) * (LERP * 1.4);
-    current.rotX += (target.rotX - current.rotX) * (LERP * 1.6);
-    current.rotY += (target.rotY - current.rotY) * (LERP * 1.6);
-    current.sheenX += (target.sheenX - current.sheenX) * (LERP * 2.2);
+  // animate loop
+  function raf() {
+    state.cx += (state.tx - state.cx) * LERP;
+    state.cy += (state.ty - state.cy) * LERP;
+    // smooth widths/heights -> affect rx/ry
+    state.rx += (state.rx - state.rx) * 0.0; // keep rx as set
+    state.ry += (state.ry - state.ry) * 0.0;
 
-    // apply transform (translate then rotate then scale)
-    const transform = `translate3d(${current.x}px, ${current.y}px, 0) rotateX(${current.rotX}deg) rotateY(${current.rotY}deg) scale(${current.scale})`;
-    hover.style.transform = transform;
+    // set ellipse attributes centered in SVG coord system (SVG uses px relative to svg bounds)
+    circle.setAttribute('cx', state.cx);
+    circle.setAttribute('cy', state.cy);
+    // rx/ry lerp towards target rx/ry values
+    const currentRx = parseFloat(circle.getAttribute('rx')) || 36;
+    const currentRy = parseFloat(circle.getAttribute('ry')) || 26;
+    const targetRx = state.rx;
+    const targetRy = state.ry;
+    const newRx = currentRx + (targetRx - currentRx) * LERP;
+    const newRy = currentRy + (targetRy - currentRy) * LERP;
+    circle.setAttribute('rx', newRx);
+    circle.setAttribute('ry', newRy);
 
-    hover.style.width = Math.max(0, current.w) + 'px';
-    hover.style.height = Math.max(0, current.h) + 'px';
-    hover.style.opacity = String(current.opacity);
+    // opacity smooth
+    const curOp = parseFloat(circle.style.opacity || circle.getAttribute('data-opacity') || 0) || 0;
+    const newOp = curOp + (state.topOpacity - curOp) * (LERP * 1.3);
+    circle.style.opacity = newOp;
+    circle.setAttribute('data-opacity', newOp);
 
-    // move sheen pseudo-element by updating before transform via translate on ::before
-    // We'll pass the sheen position as a CSS variable to control translateX in CSS
-    hover.style.setProperty('--sheen-pos', (current.sheenX * 100) + '%');
-    // update ::before transform using inline style (via style.transform is not available for pseudo; instead update background position)
-    // We'll emulate by shifting background via background-position using another CSS variable
-    hover.style.setProperty('--sheen-translate', ((current.sheenX - 0.5) * 60) + '%');
+    // When clipped, hide underlying plain fill by showing visibleText on top of circle
+    if (circle.getAttribute('clip-path')) {
+      visibleText.style.opacity = Math.min(1, newOp * 1.1);
+    } else {
+      visibleText.style.opacity = 0;
+    }
 
     requestAnimationFrame(raf);
   }
   raf();
 
-  // keep pseudo-element responsive: update its transform from CSS on each frame using the variable
-  // (add a small CSS rule to use --sheen-translate; but fallback if not supported, the sheen still looks good)
+  // on resize, ensure svg covers nav correctly - since we used width/height 100% and svg appended inside nav it's fine
 
-  // hide on resize if needed
-  window.addEventListener('resize', () => {
-    if (window.matchMedia('(max-width: 768px)').matches) {
-      target.opacity = 0;
-      hover.classList.remove('visible','soft-scale','show-ripple');
+  // small fallback: if clipPath not supported, keep a tinted drop
+  try {
+    // test by reading computed clip-path; if throws, enable fallback class
+    const test = document.createElement('div');
+    if (typeof SVGElement.prototype.clipPath === 'undefined' && typeof document.createElementNS === 'function') {
+      circle.classList.add('fallback');
     }
-  });
-
-  // small helper to set the ::before transform using mutation of style.sheet
-  // We'll append a dynamic style that reads --sheen-translate to move the ::before
-  const styleTag = document.createElement('style');
-  styleTag.textContent = `
-    .nav-hover::before {
-      transform: rotate(-12deg) translateX(var(--sheen-translate, 0%));
-      transition: transform .28s cubic-bezier(.2,.9,.2,1);
-    }
-  `;
-  document.head.appendChild(styleTag);
+  } catch (e) {
+    // ignore
+  }
 
 })();
 </script>
