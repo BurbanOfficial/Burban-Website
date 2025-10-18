@@ -391,41 +391,41 @@
 <div id="checkoutAuthModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="checkoutAuthTitle" style="display:none;">
   <div class="modal-content" style="max-width:720px;margin:6% auto;padding:24px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.3);">
     <button id="checkoutAuthClose" class="close" aria-label="Close modal" style="border:none;background:transparent;font-size:22px;float:right;">&times;</button>
-    <h2 id="checkoutAuthTitle" style="margin-top:4px;">Se connecter ou continuer</h2>
+    <h2 id="checkoutAuthTitle" style="margin-top:4px;">Log in or continue</h2>
     <p id="checkoutAuthMessage" style="color:#333;font-size:15px;margin:8px 0 18px;">
-      Pour finaliser votre commande, vous pouvez créer un compte, vous connecter, ou payer en tant qu'invité.
+      To finalize your order, you can create an account, log in or pay as a guest.
     </p>
 
     <div style="display:flex;gap:18px;flex-wrap:wrap;">
       <div style="flex:1;min-width:260px;padding:16px;border-radius:10px;border:1px solid #eee;background:#fafafa;">
-        <h3 style="margin:0 0 8px;">Se connecter / Créer un compte</h3>
+        <h3 style="margin:0 0 8px;">Log in / Sign up</h3>
         <p style="margin:0 0 12px;font-size:14px;color:#666;">
-          Créez un compte pour gagner des points fidélité et bénéficier d'un code promo de bienvenue.
+          Create an account toi earn loyalty points and benefit from a welcome promo code.
         </p>
         <ul style="margin:8px 0 12px;color:#444;font-size:14px;padding-left:18px;">
-          <li>Code promo première commande : <strong>WELCOME10</strong></li>
-          <li id="modalPointsLine">Points que vous gagnerez : <strong id="modalPoints">—</strong></li>
+          <li>First order promo code : <strong>WELCOME10</strong></li>
+          <li id="modalPointsLine">Points that you will win : <strong id="modalPoints">—</strong></li>
         </ul>
         <div style="display:flex;gap:10px;">
-          <button id="modalGoAccount" class="btn" style="background:#000;color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;">Se connecter / Créer</button>
-          <button id="modalLearnMore" class="btn" style="background:transparent;border:1px solid #ddd;padding:10px 14px;border-radius:8px;cursor:pointer;">Plus d'infos</button>
+          <button id="modalGoAccount" class="btn" style="background:#000;color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;">Log in / Sign up</button>
+          <!-- <button id="modalLearnMore" class="btn" style="background:transparent;border:1px solid #ddd;padding:10px 14px;border-radius:8px;cursor:pointer;">Plus d'infos</button> -->
         </div>
       </div>
 
       <div style="flex:1;min-width:260px;padding:16px;border-radius:10px;border:1px dashed #e6e6e6;">
-        <h3 style="margin:0 0 8px;">Payer en tant qu'invité</h3>
+        <h3 style="margin:0 0 8px;">Pay as a guest</h3>
         <p style="margin:0 0 12px;font-size:14px;color:#666;">
-          Payer en tant qu'invité ne vous créera pas de compte. Vous gagnerez des points uniquement si vous liez un compte avant le paiement.
+          Paying as a guest will not create an account. You will earn points only if you link an account before payment.
         </p>
         <div style="display:flex;gap:10px;">
-          <button id="modalContinueGuest" class="btn" style="background:#0b74de;color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;">Continuer en tant qu'invité</button>
-          <button id="modalSaveCart" class="btn" style="background:transparent;border:1px solid #ddd;padding:10px 14px;border-radius:8px;cursor:pointer;">Sauvegarder le panier</button>
+          <button id="modalContinueGuest" class="btn" style="background:#0b74de;color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;">Continue as a guest</button>
+          <!-- <button id="modalSaveCart" class="btn" style="background:transparent;border:1px solid #ddd;padding:10px 14px;border-radius:8px;cursor:pointer;">Save the cart</button> -->
         </div>
       </div>
     </div>
 
     <p style="margin-top:18px;font-size:13px;color:#666;">
-      Vous pouvez aussi revenir au site et vous connecter plus tard. Si vous vous créez un compte, vérifiez votre e-mail : la redirection vers le panier aura lieu après vérification.
+      You can also return to the site and log in later if you create an account : check your email, the redirection to the cart will take place after verification.
     </p>
   </div>
 </div>
@@ -853,7 +853,7 @@ function attachLoginRedirectListeners() {
         else alert('Payment function not available.');
       } catch (err) {
         console.error(err);
-        alert('Une erreur est survenue — veuillez réessayer.');
+        alert('An error as occured — please try again.');
       }
     });
   }
@@ -863,8 +863,8 @@ function attachLoginRedirectListeners() {
       try {
         const items = JSON.parse(localStorage.getItem('cartItems')) || [];
         localStorage.setItem('savedCartBackup', JSON.stringify({items, date: new Date().toISOString()}));
-        alert('Panier sauvegardé localement. Connectez-vous plus tard pour le retrouver.');
-      } catch(e) { console.warn(e); alert('Impossible de sauvegarder le panier.'); }
+        alert('Cart save locally. Log in later to find it.');
+      } catch(e) { console.warn(e); alert('Unable to save the cart.'); }
     });
   }
 
