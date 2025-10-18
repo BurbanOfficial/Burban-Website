@@ -263,12 +263,16 @@ window.addEventListener('load', () => {
     const r = el.getBoundingClientRect();
     const navR = nav.getBoundingClientRect();
     const padX = 6, padY = 3;
-    target.x = (r.left - navR.left) - padX;
-    target.y = (r.top - navR.top) - padY;
+
     target.w = r.width + padX * 2;
     target.h = r.height + padY * 2;
+
+    // centrer le rectangle
+    target.x = r.left - navR.left + r.width/2 - target.w/2;
+    target.y = r.top - navR.top + r.height/2 - target.h/2;
+
     target.opacity = 1;
-  }
+}
 
   nav.addEventListener('mousemove', (e)=>{
     if (window.matchMedia('(max-width:768px)').matches) return;
