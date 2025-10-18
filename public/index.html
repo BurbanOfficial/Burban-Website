@@ -260,6 +260,38 @@
 #checkoutAuthModal .modal-content:focus { outline: none; }
 #checkoutAuthModal .close { font-size:22px; }
 
+/* Aligne parfaitement les boutons du modal checkout */
+.checkout-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.checkout-btn-wrapper .btn {
+  background: #000;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  max-width: 220px;
+  text-align: center;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.checkout-btn-wrapper .btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* Spécifique au bouton invité */
+.checkout-btn-wrapper .btn.guest {
+  background: #0b74de;
+}
+
   </style>
 
   <!-- Firebase SDK -->
@@ -452,7 +484,7 @@
           <li>First order promo code : <strong>WELCOME10</strong></li>
           <li id="modalPointsLine">Points that you will win : <strong id="modalPoints">—</strong></li>
         </ul>
-        <div style="display:flex;gap:10px;">
+        <div class="checkout-btn-wrapper">
           <button id="modalGoAccount" class="btn" style="background:#000;color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;">Log in / Sign up</button>
           <!-- <button id="modalLearnMore" class="btn" style="background:transparent;border:1px solid #ddd;padding:10px 14px;border-radius:8px;cursor:pointer;">Plus d'infos</button> -->
         </div>
@@ -463,7 +495,7 @@
         <p style="margin:0 0 12px;font-size:14px;color:#666;">
           Paying as a guest will not create an account. You will earn points only if you link an account before payment.
         </p>
-        <div style="display:flex;gap:10px;">
+        <div class="checkout-btn-wrapper">
           <button id="modalContinueGuest" class="btn" style="background:#0b74de;color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;">Continue as a guest</button>
           <!-- <button id="modalSaveCart" class="btn" style="background:transparent;border:1px solid #ddd;padding:10px 14px;border-radius:8px;cursor:pointer;">Save the cart</button> -->
         </div>
