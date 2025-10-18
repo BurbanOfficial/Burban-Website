@@ -37,80 +37,58 @@ body {
 /* ------------------ Liquid glass puck (desktop) ------------------ */
 /* ---------- Liquid glass puck (renforcé) ---------- */
 /* --------- Nav + Liquid glass puck (version debug visible) --------- */
+/* --- NAV STYLE --- */
 .nav { position: relative; }
 
-/* Forcer couleur lien (pas de bleu) */
-.nav-item, .nav-item:visited { color: #111 !important; text-decoration: none; }
+.nav-item, .nav-item:visited {
+  color: #111 !important;
+  text-decoration: none;
+  font-weight: 500;
+  transition: transform 0.25s ease, color 0.25s ease;
+  display: inline-block;
+  padding: 10px 8px;
+  position: relative;
+  z-index: 10;
+}
 
-/* underline stays above puck */
-.nav-item { position: relative; z-index: 8; padding: 10px 6px; display:inline-block; transition: color .18s ease; }
+/* Soulignement (garde ton hover classique) */
 .nav-item::after {
   content: '';
   position: absolute;
-  left: 0; bottom: -6px; height: 3px; width: 0%;
-  background: #000; border-radius: 3px;
-  transition: width .22s cubic-bezier(.2,.9,.2,1);
-  z-index: 9;
+  left: 0; bottom: -6px;
+  width: 0%; height: 2px;
+  background: #000;
+  border-radius: 3px;
+  transition: width 0.25s cubic-bezier(.2,.9,.2,1);
 }
-.nav-item:hover::after, .nav-item:focus::after, .nav-item.active::after { width: 100%; }
+.nav-item:hover::after,
+.nav-item.active::after {
+  width: 100%;
+}
 
-/* Desktop only: stronger, visible liquid glass puck */
-@media (min-width: 769px) {
-  .nav-hover {
-    position: absolute; top: 0; left: 0;
-    width: 0; height: 0; border-radius: 14px;
-    pointer-events: none; z-index: 5; opacity: 0;
-    transform-origin: center;
-    /* reinforced glass */
-    background: linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0.08));
-    border: 1px solid rgba(255,255,255,0.24);
-    box-shadow:
-      0 28px 64px rgba(6,10,15,0.26),
-      inset 0 1px 0 rgba(255,255,255,0.38),
-      inset 0 -12px 36px rgba(0,0,0,0.12);
-    backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
-    transition: box-shadow .25s ease, background .25s ease, opacity .18s ease, transform .18s ease;
-    overflow: hidden;
-  }
+/* Effet zoom texte (loupe) */
+.nav-item:hover {
+  transform: scale(1.08);
+}
 
-  /* sheen (reflet) pronounced */
-  .nav-hover::before {
-    content: '';
-    position: absolute; top: -50%; left: -80%;
-    width: 260%; height: 220%;
-    background: linear-gradient(120deg,
-      rgba(255,255,255,0.45),
-      rgba(255,255,255,0.18) 28%,
-      rgba(255,255,255,0.06) 55%,
-      rgba(255,255,255,0)
-    );
-    transform: rotate(-12deg) translateX(0%);
-    filter: blur(14px); opacity: 0.96;
-    transition: transform .45s cubic-bezier(.2,.9,.2,1), opacity .35s;
-    pointer-events: none;
-  }
-
-  .nav-hover::after {
-    content: '';
-    position: absolute; inset: 6px; border-radius: 10px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
-    pointer-events: none; opacity: .9; mix-blend-mode: overlay;
-  }
-
-  .nav-hover.visible { opacity: 1; }
-  .nav-hover.show-ripple {
-    box-shadow:
-      0 34px 92px rgba(6,10,15,0.28),
-      inset 0 1px 0 rgba(255,255,255,0.40),
-      inset 0 -14px 40px rgba(0,0,0,0.14);
-  }
-  .nav-hover.soft-scale { transition: transform .20s cubic-bezier(.2,.9,.2,1); }
-
-  /* DEBUG: force a visible border/glow so tu vois l'effet (retire en prod) */
-  .nav-hover.debug-visible {
-    outline: 1px solid rgba(0,0,0,0.06);
-    box-shadow: 0 34px 92px rgba(6,10,15,0.32);
-  }
+/* Rectangle verre liquide */
+.nav-hover {
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  width: 0; height: 0;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+  border: 1px solid rgba(255,255,255,0.25);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 10px 30px rgba(0,0,0,0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.3s ease;
+}
+.nav-hover.visible {
+  opacity: 1;
 }
 
 /* Conteneur des icônes et hamburger */
