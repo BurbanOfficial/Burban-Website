@@ -35,6 +35,7 @@ body {
    ------------------------- */
 /* ---------- Nav rectangle + underline hover propre (desktop) ---------- */
 /* ------------------ Liquid glass puck (desktop) ------------------ */
+/* ---------- Liquid glass puck (renforcé) ---------- */
 .nav { position: relative; }
 
 /* Forcer couleur lien (pas de bleu) */
@@ -42,7 +43,7 @@ body {
 .nav-item:visited { color: #111 !important; text-decoration: none; }
 
 /* underline stays above puck */
-.nav-item { position: relative; z-index: 4; padding: 10px 6px; display:inline-block; transition: color .18s ease; }
+.nav-item { position: relative; z-index: 6; padding: 10px 6px; display:inline-block; transition: color .18s ease; }
 .nav-item::after {
   content: '';
   position: absolute;
@@ -53,13 +54,13 @@ body {
   background: #000;
   border-radius: 3px;
   transition: width .22s cubic-bezier(.2,.9,.2,1);
-  z-index: 5; /* au-dessus de tout */
+  z-index: 7; /* au-dessus de tout */
 }
 .nav-item:hover::after,
 .nav-item:focus::after,
-.nav-item.active::after { width: 100%; }
+.nav-item.active::after { width: 100%; color: #000; }
 
-/* Liquid glass puck style (desktop only) */
+/* Desktop only: puck plus visible, glass renforcé */
 @media (min-width: 769px) {
   .nav-hover {
     position: absolute;
@@ -67,53 +68,64 @@ body {
     width: 0; height: 0;
     border-radius: 14px;
     pointer-events: none;
-    z-index: 2; /* derrière .nav-item (z-index:4) et underline (z-index:5) */
+    z-index: 2; /* derrière .nav-item */
     opacity: 0;
     transform-origin: center;
-    /* glass look */
-    background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
-    border: 1px solid rgba(255,255,255,0.15);
+    /* stronger glass look */
+    background: linear-gradient(180deg, rgba(255,255,255,0.20), rgba(255,255,255,0.06));
+    border: 1px solid rgba(255,255,255,0.20);
     box-shadow:
-      0 8px 30px rgba(15, 20, 25, 0.12),      /* outer shadow */
-      inset 0 1px 0 rgba(255,255,255,0.18),    /* top inner highlight */
-      inset 0 -6px 18px rgba(0,0,0,0.06);      /* bottom inner shading */
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: box-shadow .25s ease, background .25s ease, opacity .2s ease;
+      0 18px 48px rgba(10,15,20,0.18),      /* plus d'ombre externe */
+      inset 0 1px 0 rgba(255,255,255,0.32),  /* inner highlight marqué */
+      inset 0 -10px 30px rgba(0,0,0,0.10);   /* shading plus profond */
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    transition: box-shadow .25s ease, background .25s ease, opacity .18s ease, transform .18s ease;
     overflow: hidden;
   }
 
-  /* sheen layer (moving highlight) */
+  /* sheen (reflet) plus prononcé */
   .nav-hover::before {
     content: '';
     position: absolute;
-    top: -40%;
-    left: -60%;
-    width: 220%;
-    height: 200%;
-    background: linear-gradient(120deg, rgba(255,255,255,0.18), rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0));
+    top: -50%;
+    left: -80%;
+    width: 260%;
+    height: 220%;
+    background: linear-gradient(120deg,
+      rgba(255,255,255,0.35),
+      rgba(255,255,255,0.12) 28%,
+      rgba(255,255,255,0.04) 55%,
+      rgba(255,255,255,0)
+    );
     transform: rotate(-12deg) translateX(0%);
-    filter: blur(12px);
-    opacity: 0.7;
-    transition: transform .6s cubic-bezier(.2,.9,.2,1);
+    filter: blur(14px);
+    opacity: 0.92;
+    transition: transform .55s cubic-bezier(.2,.9,.2,1), opacity .35s;
     pointer-events: none;
   }
 
-  /* subtle ripple when hover appears */
+  /* subtle inner moving glow to give depth */
+  .nav-hover::after {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+    pointer-events: none;
+    opacity: .9;
+    mix-blend-mode: overlay;
+  }
+
+  /* classes togglées par JS */
+  .nav-hover.visible { opacity: 1; }
   .nav-hover.show-ripple {
     box-shadow:
-      0 14px 40px rgba(15, 20, 25, 0.14),
-      inset 0 1px 0 rgba(255,255,255,0.2),
-      inset 0 -8px 26px rgba(0,0,0,0.07);
+      0 24px 64px rgba(6,10,15,0.22),
+      inset 0 1px 0 rgba(255,255,255,0.36),
+      inset 0 -12px 36px rgba(0,0,0,0.12);
   }
-
-  /* small grow when visible */
-  .nav-hover.visible { opacity: 1; }
-
-  /* optional: tiny scale on active hover for more 'liquid' presence */
-  .nav-hover.soft-scale {
-    transition: transform .22s cubic-bezier(.2,.9,.2,1);
-  }
+  .nav-hover.soft-scale { transition: transform .20s cubic-bezier(.2,.9,.2,1); }
 }
 
 /* Conteneur des icônes et hamburger */
