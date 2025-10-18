@@ -1014,11 +1014,15 @@
   if (user) {
     try { await user.reload(); } catch(e){ console.warn('user.reload failed', e); }
 
-    // --- AJOUT UTM_EMAIL POUR KLAVIYO ---
+    // --- AJOUT UTM_EMAIL POUR KLAVIYO (sans double encodage) ---
     if (user.email) {
-      const email = encodeURIComponent(user.email.trim().toLowerCase());
+      const email = user.email.trim().toLowerCase();
       const url = new URL(window.location.href);
-      url.searchParams.set('utm_email', email);
+
+      // On ajoute l'email "brut", mais on remplace seulement & et ? pour ne pas casser l'URL
+      const safeEmail = email.replace(/&/g, '%26').replace(/\?/g, '%3F');
+
+      url.searchParams.set('utm_email', safeEmail);
       history.replaceState(null, '', url.toString());
       console.log('[Espace Client] utm_email ajouté à l’URL :', email);
     }
@@ -1973,4 +1977,5 @@ window.addEventListener('load', () => {
 <script src="https://burbanofficial.com/public/includes/footer.js"></script>
 </body>
 </html>
+
 
