@@ -208,6 +208,12 @@
     display: none;
   }
 }
+
+/* Optional improvements for the checkout modal */
+#checkoutAuthModal[aria-hidden="false"] { display:block; }
+#checkoutAuthModal .modal-content:focus { outline: none; }
+#checkoutAuthModal .close { font-size:22px; }
+
   </style>
 
   <!-- Firebase SDK -->
@@ -380,6 +386,50 @@
     <img src="https://imgur.com/1fhCyig.png"       alt="Klarna"          class="pay-logo">
   </div>
 </div>
+
+<!-- START: Checkout auth modal (Burban) -->
+<div id="checkoutAuthModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="checkoutAuthTitle" style="display:none;">
+  <div class="modal-content" style="max-width:720px;margin:6% auto;padding:24px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+    <button id="checkoutAuthClose" class="close" aria-label="Close modal" style="border:none;background:transparent;font-size:22px;float:right;">&times;</button>
+    <h2 id="checkoutAuthTitle" style="margin-top:4px;">Se connecter ou continuer</h2>
+    <p id="checkoutAuthMessage" style="color:#333;font-size:15px;margin:8px 0 18px;">
+      Pour finaliser votre commande, vous pouvez créer un compte, vous connecter, ou payer en tant qu'invité.
+    </p>
+
+    <div style="display:flex;gap:18px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:260px;padding:16px;border-radius:10px;border:1px solid #eee;background:#fafafa;">
+        <h3 style="margin:0 0 8px;">Se connecter / Créer un compte</h3>
+        <p style="margin:0 0 12px;font-size:14px;color:#666;">
+          Créez un compte pour gagner des points fidélité et bénéficier d'un code promo de bienvenue.
+        </p>
+        <ul style="margin:8px 0 12px;color:#444;font-size:14px;padding-left:18px;">
+          <li>Code promo première commande : <strong>WELCOME10</strong></li>
+          <li id="modalPointsLine">Points que vous gagnerez : <strong id="modalPoints">—</strong></li>
+        </ul>
+        <div style="display:flex;gap:10px;">
+          <button id="modalGoAccount" class="btn" style="background:#000;color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;">Se connecter / Créer</button>
+          <button id="modalLearnMore" class="btn" style="background:transparent;border:1px solid #ddd;padding:10px 14px;border-radius:8px;cursor:pointer;">Plus d'infos</button>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:260px;padding:16px;border-radius:10px;border:1px dashed #e6e6e6;">
+        <h3 style="margin:0 0 8px;">Payer en tant qu'invité</h3>
+        <p style="margin:0 0 12px;font-size:14px;color:#666;">
+          Payer en tant qu'invité ne vous créera pas de compte. Vous gagnerez des points uniquement si vous liez un compte avant le paiement.
+        </p>
+        <div style="display:flex;gap:10px;">
+          <button id="modalContinueGuest" class="btn" style="background:#0b74de;color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;">Continuer en tant qu'invité</button>
+          <button id="modalSaveCart" class="btn" style="background:transparent;border:1px solid #ddd;padding:10px 14px;border-radius:8px;cursor:pointer;">Sauvegarder le panier</button>
+        </div>
+      </div>
+    </div>
+
+    <p style="margin-top:18px;font-size:13px;color:#666;">
+      Vous pouvez aussi revenir au site et vous connecter plus tard. Si vous vous créez un compte, vérifiez votre e-mail : la redirection vers le panier aura lieu après vérification.
+    </p>
+  </div>
+</div>
+<!-- END: Checkout auth modal -->
 
   <!-- Scripts -->
   <script>
@@ -676,25 +726,91 @@ function attachLoginRedirectListeners() {
 
     // --- Auth & Init ---
     // Assure l'update quand l'état auth change
-    auth.onAuthStateChanged((user) => {
-      updateVoucherOptions();   // déjà présent dans ton code, on le garde
-      updateAccountDisplay();   // <-- nouveau : met à jour l'en-tête / points
+    auth.onAuthStateChanged(async (user) => {
+    // update voucher options and account display as before
+    try { updateVoucherOptions(); } catch(e){ console.warn(e); }
+    try { updateAccountDisplay(); } catch(e){ console.warn(e); }
 
-        if (user) {
+    // If no user -> nothing special
+    if (!user) return;
+
+    // If we requested email verification, ensure emailVerified is true before redirect
+    const requireVerified = localStorage.getItem('requireEmailVerified') === 'true';
+    const storedRedirect = localStorage.getItem('postLoginRedirect');
+
+    if (requireVerified) {
+      // If verified already -> redirect and clean flags
+      if (user.emailVerified) {
         try {
-          const target = localStorage.getItem('postLoginRedirect');
-          if (target) {
+          if (storedRedirect) {
             localStorage.removeItem('postLoginRedirect');
-            // si on n'est pas déjà sur la page cible → redirection
-            if (window.location.href !== target) {
-              window.location.href = target;
+            localStorage.removeItem('requireEmailVerified');
+            // redirect to saved target if different
+            if (window.location.href !== storedRedirect) {
+              window.location.href = storedRedirect;
             }
           }
         } catch (e) {
-          console.warn('Erreur lors de la redirection post-login', e);
+          console.warn('post-login redirect error', e);
         }
+      } else {
+        // Not verified: inform the user and set a short poll to detect verification
+        try {
+          alert('Un e-mail de vérification a été envoyé. Veuillez vérifier votre e-mail et cliquer sur le lien. La redirection vers votre panier se fera automatiquement une fois votre adresse vérifiée.');
+        } catch(e){}
+        // Polling: vérifie la propriété emailVerified toutes les 3s pendant 2 minutes
+        let tries = 0;
+        const maxTries = 40;
+        const poll = setInterval(async () => {
+          tries++;
+          await user.reload(); // met à jour l'objet user
+          const freshUser = auth.currentUser;
+          if (freshUser && freshUser.emailVerified) {
+            clearInterval(poll);
+            try {
+              if (storedRedirect) {
+                localStorage.removeItem('postLoginRedirect');
+                localStorage.removeItem('requireEmailVerified');
+                if (window.location.href !== storedRedirect) {
+                  window.location.href = storedRedirect;
+                }
+              }
+            } catch (e) { console.warn('redirect after verification failed', e); }
+          } else if (tries >= maxTries) {
+            clearInterval(poll);
+            // Optionally informer
+            console.warn('Email verification polling timed out.');
+          }
+        }, 3000);
+      }
+      return;
+    }
+
+    // Default behavior (no verification required): redirect if postLoginRedirect present
+    if (storedRedirect) {
+      try {
+        localStorage.removeItem('postLoginRedirect');
+        if (window.location.href !== storedRedirect) {
+          window.location.href = storedRedirect;
+        }
+      } catch (e) {
+        console.warn('post-login redirect error', e);
+      }
+    }
+  });
+
+  // Ensure modal updates points when totals change (e.g., changing quantity)
+  // We listen to DOMSubtreeModified on #total (lightning cheap approach)
+  const totalEl = document.getElementById('total');
+  if (totalEl) {
+    const obs = new MutationObserver(() => {
+      if (modal && modal.style.display === 'block') {
+        const total = parseDisplayedTotal();
+        modalPoints.innerText = `${computePointsFromTotal(total)} point${computePointsFromTotal(total) > 1 ? 's' : ''}`;
       }
     });
+    obs.observe(totalEl, { childList: true, subtree: true, characterData: true });
+  }
 
     // Appel lors du chargement pour attacher les listeners
     document.addEventListener('DOMContentLoaded', () => {
