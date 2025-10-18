@@ -252,7 +252,7 @@ window.addEventListener('load', () => {
   if (existing) existing.remove();
 
   const hover = document.createElement('div');
-  hover.className = 'nav-hover debug-visible'; // debug-visible pour voir à coup sûr
+  hover.className = 'nav-hover';
   nav.appendChild(hover);
   console.log('Puck: créé');
 
@@ -263,27 +263,29 @@ window.addEventListener('load', () => {
   function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
   function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
 
+  // Reduced gap: padX/padY lowered so rectangle is tighter around the text
   function setTargetFromEl(el, px=null, py=null){
     const r = el.getBoundingClientRect();
     const navR = nav.getBoundingClientRect();
-    const padX = 14, padY = 10;
+    const padX = 6, padY = 4; // <-- gap réduit ici
     target.x = (r.left - navR.left) - padX;
     target.y = (r.top  - navR.top) - padY;
     target.w = r.width + padX * 2;
     target.h = r.height + padY * 2;
     target.opacity = 1;
-    target.scale = 1.035;
+    target.scale = 1.04;   // base follow scale
     target.appear = 1;
     if (px !== null && py !== null){
       const cx = r.left + r.width/2, cy = r.top + r.height/2;
       const dx = (px - cx) / r.width, dy = (py - cy) / r.height;
-      target.rotY = clamp(dx * 10, -10, 10);
-      target.rotX = clamp(-dy * 6, -6, 6);
+      target.rotY = clamp(dx * 8, -8, 8);
+      target.rotX = clamp(-dy * 5, -5, 5);
       target.sheenX = clamp((px - r.left) / r.width, 0, 1);
     } else {
       target.rotX = 0; target.rotY = 0; target.sheenX = 0.5;
     }
-    console.log('Puck: target set', {x:target.x, w:target.w});
+    // log minimal pour debug console
+    // console.log('Puck target', target.x, target.w);
   }
 
   nav.addEventListener('mousemove', (e)=>{
@@ -300,7 +302,6 @@ window.addEventListener('load', () => {
 
   nav.addEventListener('mouseleave', ()=>{
     target.opacity = 0; target.appear = 0; hover.classList.remove('show-ripple');
-    console.log('Puck: leave');
   });
 
   const items = nav.querySelectorAll('.nav-item');
@@ -308,9 +309,7 @@ window.addEventListener('load', () => {
     it.addEventListener('mouseenter',(ev)=>{ if (window.matchMedia('(max-width:768px)').matches) return; setTargetFromEl(it, ev.clientX, ev.clientY); hover.classList.add('visible','soft-scale','show-ripple'); });
     it.addEventListener('focus',(ev)=>{ if (window.matchMedia('(max-width:768px)').matches) return; setTargetFromEl(it); hover.classList.add('visible','soft-scale'); });
     it.addEventListener('blur',()=>{ target.opacity=0; target.appear=0; hover.classList.remove('soft-scale','show-ripple'); });
-    // if item is active on load, lock puck to it
     if (it.classList.contains('active')) {
-      // small timeout to let layout settle
       setTimeout(()=>{ setTargetFromEl(it); hover.classList.add('visible'); }, 60);
     }
   });
@@ -320,7 +319,7 @@ window.addEventListener('load', () => {
   styleTag.textContent = `.nav-hover::before{ transform: rotate(-12deg) translateX(var(--sheen-translate, 0%)); }`;
   document.head.appendChild(styleTag);
 
-  // animation loop with appear zoom progress
+  // animation loop with stronger arrival zoom
   function raf(){
     current.x += (target.x - current.x) * LERP;
     current.y += (target.y - current.y) * LERP;
@@ -331,9 +330,10 @@ window.addEventListener('load', () => {
     current.rotX += (target.rotX - current.rotX) * (LERP * 1.6);
     current.rotY += (target.rotY - current.rotY) * (LERP * 1.6);
     current.sheenX += (target.sheenX - current.sheenX) * (LERP * 2.0);
-    current.appear += (target.appear - current.appear) * (LERP * 2.4);
+    current.appear += (target.appear - current.appear) * (LERP * 2.6);
 
-    const appearFactor = 0.82 + 0.21 * easeOutCubic(current.appear); // 0.82 -> ~1.03 (pop)
+    // stronger zoom: start smaller and pop higher (0.72 -> 1.12)
+    const appearFactor = 0.72 + 0.40 * easeOutCubic(current.appear); // 0.72 -> ~1.12
     const finalScale = current.scale * appearFactor;
 
     hover.style.transform = `translate3d(${current.x}px, ${current.y}px, 0) rotateX(${current.rotX}deg) rotateY(${current.rotY}deg) scale(${finalScale})`;
@@ -346,9 +346,6 @@ window.addEventListener('load', () => {
     requestAnimationFrame(raf);
   }
   raf();
-
-  // visible debug off after a little while to view final effect (remove timeout if you want always visible)
-  setTimeout(()=>{ hover.classList.remove('debug-visible'); console.log('Puck: debug-visible removed'); }, 1400);
 
   window.addEventListener('resize', ()=>{ if (window.matchMedia('(max-width:768px)').matches){ target.opacity=0; target.appear=0; hover.classList.remove('visible','soft-scale','show-ripple'); } });
 
