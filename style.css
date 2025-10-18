@@ -34,28 +34,15 @@ body {
    Rectangle arrondi + effet loupe (desktop)
    ------------------------- */
 /* ---------- Nav rectangle + underline hover propre (desktop) ---------- */
-.nav {
-  position: relative; /* nécessaire pour le rectangle */
-}
+/* ------------------ Liquid glass puck (desktop) ------------------ */
+.nav { position: relative; }
 
-/* Retirer tout look de lien par défaut (visited, active navigateur) */
+/* Forcer couleur lien (pas de bleu) */
 .nav-item,
-.nav-item:visited {
-  color: #111 !important;
-  text-decoration: none;
-}
+.nav-item:visited { color: #111 !important; text-decoration: none; }
 
-/* Pseudo-underline (hover & active) — on garde le trait en dessous */
-.nav-item {
-  position: relative;
-  z-index: 2; /* au-dessus du puck */
-  padding: 10px 6px; /* espace pour que le trait soit visible */
-  display: inline-block;
-  transition: color .18s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* underline animé: invisible par défaut */
+/* underline stays above puck */
+.nav-item { position: relative; z-index: 4; padding: 10px 6px; display:inline-block; transition: color .18s ease; }
 .nav-item::after {
   content: '';
   position: absolute;
@@ -66,47 +53,66 @@ body {
   background: #000;
   border-radius: 3px;
   transition: width .22s cubic-bezier(.2,.9,.2,1);
-  z-index: 3; /* au-dessus du puck */
+  z-index: 5; /* au-dessus de tout */
 }
-
-/* on affiche le trait au hover ou si active */
 .nav-item:hover::after,
 .nav-item:focus::after,
-.nav-item.active::after {
-  width: 100%;
-}
+.nav-item.active::after { width: 100%; }
 
-/* couleur au survol (pas de soulignement navigateur) */
-.nav-item:hover,
-.nav-item:focus {
-  color: #000;
-  outline: none;
-}
-
-/* Rectangle qui suit la souris (puck) */
+/* Liquid glass puck style (desktop only) */
 @media (min-width: 769px) {
   .nav-hover {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 0;
-    border-radius: 12px;
-    background: rgba(0,0,0,0.035); /* très discret */
-    border: 1px solid rgba(0,0,0,0.06);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    top: 0; left: 0;
+    width: 0; height: 0;
+    border-radius: 14px;
     pointer-events: none;
-    transform-origin: center;
-    transform: translate3d(0,0,0) scale(1);
-    transition: box-shadow .22s ease, background .22s;
-    z-index: 1; /* derrière les liens mais devant le fond */
+    z-index: 2; /* derrière .nav-item (z-index:4) et underline (z-index:5) */
     opacity: 0;
+    transform-origin: center;
+    /* glass look */
+    background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow:
+      0 8px 30px rgba(15, 20, 25, 0.12),      /* outer shadow */
+      inset 0 1px 0 rgba(255,255,255,0.18),    /* top inner highlight */
+      inset 0 -6px 18px rgba(0,0,0,0.06);      /* bottom inner shading */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: box-shadow .25s ease, background .25s ease, opacity .2s ease;
+    overflow: hidden;
   }
 
-  /* supprimer tout scaling des liens — le loupe sera sur le puck */
-  .nav-item:hover,
-  .nav-item:focus {
-    transform: none;
+  /* sheen layer (moving highlight) */
+  .nav-hover::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    left: -60%;
+    width: 220%;
+    height: 200%;
+    background: linear-gradient(120deg, rgba(255,255,255,0.18), rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0));
+    transform: rotate(-12deg) translateX(0%);
+    filter: blur(12px);
+    opacity: 0.7;
+    transition: transform .6s cubic-bezier(.2,.9,.2,1);
+    pointer-events: none;
+  }
+
+  /* subtle ripple when hover appears */
+  .nav-hover.show-ripple {
+    box-shadow:
+      0 14px 40px rgba(15, 20, 25, 0.14),
+      inset 0 1px 0 rgba(255,255,255,0.2),
+      inset 0 -8px 26px rgba(0,0,0,0.07);
+  }
+
+  /* small grow when visible */
+  .nav-hover.visible { opacity: 1; }
+
+  /* optional: tiny scale on active hover for more 'liquid' presence */
+  .nav-hover.soft-scale {
+    transition: transform .22s cubic-bezier(.2,.9,.2,1);
   }
 }
 
