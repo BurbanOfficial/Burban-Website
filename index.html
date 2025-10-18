@@ -245,20 +245,25 @@ window.addEventListener('load', () => {
 <script>
 (function(){
   const nav = document.querySelector('.nav');
-  if(!nav) return;
+  if(!nav) return console.warn('Puck: .nav introuvable');
 
-  // create puck
+  // remove any existing nav-hover to avoid duplicates
+  const existing = nav.querySelector('.nav-hover');
+  if (existing) existing.remove();
+
   const hover = document.createElement('div');
-  hover.className = 'nav-hover';
+  hover.className = 'nav-hover debug-visible'; // debug-visible pour voir à coup sûr
   nav.appendChild(hover);
+  console.log('Puck: créé');
 
-  // state
-  let target = { x: 0, y: 0, w: 0, h: 0, opacity: 0, scale: 1, rotX: 0, rotY: 0, sheenX: 0, appear: 0 };
-  let current = { x: 0, y: 0, w: 0, h: 0, opacity: 0, scale: 1, rotX: 0, rotY: 0, sheenX: 0, appear: 0 };
+  let target = { x: 0, y: 0, w: 0, h: 0, opacity: 0, scale: 1, rotX:0, rotY:0, sheenX:0, appear:0 };
+  let current = { x: 0, y: 0, w: 0, h: 0, opacity: 0, scale: 1, rotX:0, rotY:0, sheenX:0, appear:0 };
+  const LERP = 0.18;
 
-  const LERP = 0.17;
+  function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+  function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
 
-  function setTargetFromEl(el, pointerX = null, pointerY = null) {
+  function setTargetFromEl(el, px=null, py=null){
     const r = el.getBoundingClientRect();
     const navR = nav.getBoundingClientRect();
     const padX = 14, padY = 10;
@@ -267,69 +272,56 @@ window.addEventListener('load', () => {
     target.w = r.width + padX * 2;
     target.h = r.height + padY * 2;
     target.opacity = 1;
-    target.scale = 1.03; // base scale when following
-    target.appear = 1;   // trigger arrival animation
-    if (pointerX !== null && pointerY !== null) {
-      const cx = r.left + r.width/2;
-      const cy = r.top + r.height/2;
-      const dx = (pointerX - cx) / r.width;
-      const dy = (pointerY - cy) / r.height;
+    target.scale = 1.035;
+    target.appear = 1;
+    if (px !== null && py !== null){
+      const cx = r.left + r.width/2, cy = r.top + r.height/2;
+      const dx = (px - cx) / r.width, dy = (py - cy) / r.height;
       target.rotY = clamp(dx * 10, -10, 10);
       target.rotX = clamp(-dy * 6, -6, 6);
-      target.sheenX = clamp((pointerX - r.left) / r.width, 0, 1);
+      target.sheenX = clamp((px - r.left) / r.width, 0, 1);
     } else {
       target.rotX = 0; target.rotY = 0; target.sheenX = 0.5;
     }
+    console.log('Puck: target set', {x:target.x, w:target.w});
   }
 
-  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
-
-  nav.addEventListener('mousemove', (e) => {
-    if (window.matchMedia('(max-width: 768px)').matches) {
-      target.opacity = 0;
-      target.appear = 0;
-      return;
-    }
+  nav.addEventListener('mousemove', (e)=>{
+    if (window.matchMedia('(max-width:768px)').matches){ target.opacity = 0; target.appear = 0; return; }
     const item = e.target.closest('.nav-item');
-    if (item && nav.contains(item)) {
+    if (item && nav.contains(item)){
       setTargetFromEl(item, e.clientX, e.clientY);
       hover.classList.add('visible','soft-scale','show-ripple');
     } else {
-      target.opacity = 0;
-      target.appear = 0;
+      target.opacity = 0; target.appear = 0;
       hover.classList.remove('show-ripple');
     }
   });
 
-  nav.addEventListener('mouseleave', () => {
-    target.opacity = 0;
-    target.appear = 0;
-    hover.classList.remove('show-ripple');
+  nav.addEventListener('mouseleave', ()=>{
+    target.opacity = 0; target.appear = 0; hover.classList.remove('show-ripple');
+    console.log('Puck: leave');
   });
 
-  // keyboard accessibility / focus
   const items = nav.querySelectorAll('.nav-item');
-  items.forEach(it => {
-    it.addEventListener('focus', (ev) => {
-      if (window.matchMedia('(max-width: 768px)').matches) return;
-      setTargetFromEl(it);
-      hover.classList.add('visible','soft-scale','show-ripple');
-    });
-    it.addEventListener('blur', () => {
-      target.opacity = 0;
-      target.appear = 0;
-      hover.classList.remove('soft-scale','show-ripple');
-    });
-    it.addEventListener('mouseenter', (ev) => {
-      if (window.matchMedia('(max-width: 768px)').matches) return;
-      setTargetFromEl(it, ev.clientX, ev.clientY);
-      hover.classList.add('visible','soft-scale','show-ripple');
-    });
+  items.forEach(it=>{
+    it.addEventListener('mouseenter',(ev)=>{ if (window.matchMedia('(max-width:768px)').matches) return; setTargetFromEl(it, ev.clientX, ev.clientY); hover.classList.add('visible','soft-scale','show-ripple'); });
+    it.addEventListener('focus',(ev)=>{ if (window.matchMedia('(max-width:768px)').matches) return; setTargetFromEl(it); hover.classList.add('visible','soft-scale'); });
+    it.addEventListener('blur',()=>{ target.opacity=0; target.appear=0; hover.classList.remove('soft-scale','show-ripple'); });
+    // if item is active on load, lock puck to it
+    if (it.classList.contains('active')) {
+      // small timeout to let layout settle
+      setTimeout(()=>{ setTargetFromEl(it); hover.classList.add('visible'); }, 60);
+    }
   });
 
-  // RAF loop with arrival zoom progress (appear)
+  // dynamic style for sheen movement
+  const styleTag = document.createElement('style');
+  styleTag.textContent = `.nav-hover::before{ transform: rotate(-12deg) translateX(var(--sheen-translate, 0%)); }`;
+  document.head.appendChild(styleTag);
+
+  // animation loop with appear zoom progress
   function raf(){
-    // lerp core values
     current.x += (target.x - current.x) * LERP;
     current.y += (target.y - current.y) * LERP;
     current.w += (target.w - current.w) * LERP;
@@ -339,48 +331,26 @@ window.addEventListener('load', () => {
     current.rotX += (target.rotX - current.rotX) * (LERP * 1.6);
     current.rotY += (target.rotY - current.rotY) * (LERP * 1.6);
     current.sheenX += (target.sheenX - current.sheenX) * (LERP * 2.0);
-    // arrival progress: when appear goes 0->1 we animate a pop zoom
-    current.appear += (target.appear - current.appear) * (LERP * 2.2);
+    current.appear += (target.appear - current.appear) * (LERP * 2.4);
 
-    // compute final scale: base scale * (ease from 0.88 -> 1.03) driven by appear
-    const appearFactor = 0.88 + 0.15 * easeOutCubic(current.appear); // from 0.88 to ~1.03
+    const appearFactor = 0.82 + 0.21 * easeOutCubic(current.appear); // 0.82 -> ~1.03 (pop)
     const finalScale = current.scale * appearFactor;
 
-    // apply transform: translate -> rotate -> scale
-    const transform = `translate3d(${current.x}px, ${current.y}px, 0) rotateX(${current.rotX}deg) rotateY(${current.rotY}deg) scale(${finalScale})`;
-    hover.style.transform = transform;
-
+    hover.style.transform = `translate3d(${current.x}px, ${current.y}px, 0) rotateX(${current.rotX}deg) rotateY(${current.rotY}deg) scale(${finalScale})`;
     hover.style.width = Math.max(0, current.w) + 'px';
     hover.style.height = Math.max(0, current.h) + 'px';
     hover.style.opacity = String(current.opacity);
 
-    // sheen movement via CSS var
-    hover.style.setProperty('--sheen-translate', ((current.sheenX - 0.5) * 80) + '%');
+    hover.style.setProperty('--sheen-translate', ((current.sheenX - 0.5) * 100) + '%');
 
     requestAnimationFrame(raf);
   }
   raf();
 
-  // easing helper
-  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+  // visible debug off after a little while to view final effect (remove timeout if you want always visible)
+  setTimeout(()=>{ hover.classList.remove('debug-visible'); console.log('Puck: debug-visible removed'); }, 1400);
 
-  // dynamic style to move ::before using CSS variable --sheen-translate
-  const styleTag = document.createElement('style');
-  styleTag.textContent = `
-    .nav-hover::before {
-      transform: rotate(-12deg) translateX(var(--sheen-translate, 0%));
-      transition: transform .28s cubic-bezier(.2,.9,.2,1);
-    }
-  `;
-  document.head.appendChild(styleTag);
-
-  window.addEventListener('resize', () => {
-    if (window.matchMedia('(max-width: 768px)').matches) {
-      target.opacity = 0;
-      target.appear = 0;
-      hover.classList.remove('visible','soft-scale','show-ripple');
-    }
-  });
+  window.addEventListener('resize', ()=>{ if (window.matchMedia('(max-width:768px)').matches){ target.opacity=0; target.appear=0; hover.classList.remove('visible','soft-scale','show-ripple'); } });
 
 })();
 </script>
