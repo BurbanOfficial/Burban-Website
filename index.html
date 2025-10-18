@@ -327,6 +327,7 @@ window.addEventListener('load', () => {
   });
 
   function raf(){
+    const fluidity = 1.2; // nouveau facteur pour rendre le mouvement plus réactif
     // lerp toward target
     current.x += (target.x - current.x) * LERP;
     current.y += (target.y - current.y) * LERP;
