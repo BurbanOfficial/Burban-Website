@@ -259,32 +259,32 @@ window.addEventListener('load', () => {
   let current = { x:0, y:0, w:0, h:0, opacity:0 };
   const LERP = 0.36; // beaucoup plus réactif
 
-  function setTarget(el){
-    const r = el.getBoundingClientRect();
-    const navR = nav.getBoundingClientRect();
-    const padX = 6, padY = 3;
+  function setTarget(el, scale=1){
+  const r = el.getBoundingClientRect();
+  const navR = nav.getBoundingClientRect();
+  const padX = 6, padY = 3;
 
-    target.w = r.width + padX * 2;
-    target.h = r.height + padY * 2;
+  const scaledW = r.width * scale;
+  const scaledH = r.height * scale;
 
-    // centrer le rectangle
-    target.x = r.left - navR.left + r.width/2 - target.w/2;
-    target.y = r.top - navR.top + r.height/2 - target.h/2;
+  target.w = scaledW + padX * 2;
+  target.h = scaledH + padY * 2;
 
-    target.opacity = 1;
+  target.x = r.left - navR.left + r.width/2 - target.w/2;
+  target.y = r.top - navR.top + r.height/2 - target.h/2;
+
+  target.opacity = 1;
 }
 
   nav.addEventListener('mousemove', (e)=>{
-    if (window.matchMedia('(max-width:768px)').matches) return;
-    const item = e.target.closest('.nav-item');
-    if (item && nav.contains(item)){
-      setTarget(item);
-      hover.classList.add('visible');
-    } else {
-      target.opacity = 0;
-      hover.classList.remove('visible');
-    }
-  });
+  const item = e.target.closest('.nav-item');
+  if (item && nav.contains(item)){
+    // inclure scale pour centrer
+    const style = getComputedStyle(item);
+    const scale = parseFloat(style.transform.split('(')[1]) || 1;
+    setTarget(item, scale);
+  }
+});
 
   // Snap instantly when mouse enters a nav-item to remove initial lag
   nav.addEventListener('mouseenter', (e) => {
