@@ -30,50 +30,53 @@ body {
 }
 
 /* Navigation */
+/* -------------------------
+   Rectangle arrondi + effet loupe (desktop)
+   ------------------------- */
 .nav {
-  position: relative; /* obligatoire pour positionner le rectangle */
+  position: relative; /* nécessaire pour le rectangle */
 }
+
 @media (min-width: 769px) {
-  /* Le "puck" / rectangle qui suit la souris */
   .nav-hover {
     position: absolute;
     top: 0;
     left: 0;
     width: 0;
     height: 0;
-    border-radius: 30px;
-    background: rgba(0,0,0,0.045); /* léger remplissage pour le style */
-    border: 1px solid rgba(0,0,0,0.09);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    border-radius: 12px;
+    background: rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
     pointer-events: none;
-    transform: translate3d(0,0,0);
-    transition: box-shadow .25s ease;
+    transform-origin: center;
+    transform: translate3d(0,0,0) scale(1);
+    transition: box-shadow .22s ease;
     z-index: 0; /* derrière les liens */
     opacity: 0;
   }
-.nav-item {
-  text-decoration: none;
-  font-weight: 500;
-  color: #111;
-  position: relative;
-  transition: color 0.3s ease;
-  padding: 8px 4px; /* léger padding pour que le rectangle englobe proprement */
-}
-.nav-item:hover {
-  color: #555;
-}
-.nav-item.active {
-  font-weight: 700;
-  color: #000;
-}
-.nav-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: #000;
+
+  /* Les liens sont au-dessus pour que l'underline reste visible */
+  .nav-item {
+    position: relative;
+    z-index: 2;
+    padding: 8px 6px;
+    transition: transform .18s cubic-bezier(.2,.9,.2,1), color .18s;
+    display: inline-block;
+    will-change: transform;
+  }
+
+  /* Effet loupe léger sur le lien lui-même (garde la mise en forme) */
+  .nav-item:hover,
+  .nav-item:focus {
+    transform: scale(1.06);
+  }
+
+  /* On s'assure que l'underline active reste au-dessus du rectangle */
+  .nav-item.active::after {
+    z-index: 3;
+    position: absolute;
+  }
 }
 
 /* Conteneur des icônes et hamburger */
