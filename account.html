@@ -1009,10 +1009,19 @@
   (function lockUI(){ mainFrame.style.pointerEvents='none'; mainFrame.style.opacity='0.55'; authModal.classList.add('active'); authModal.setAttribute('aria-hidden','false'); })();
 
   auth.onAuthStateChanged(async (user) => {
-  // petit upgrade minimal : si utilisateur connecté + email vérifié + postLoginRedirect -> redirect
   if (user) {
     try { await user.reload(); } catch(e){ console.warn('user.reload failed', e); }
 
+    // 🔹 Ajouter utm_email si utilisateur connecté
+    if (user.email) {
+      const email = encodeURIComponent(user.email.trim().toLowerCase());
+      const url = new URL(window.location.href);
+      url.searchParams.set('utm_email', email);
+      history.replaceState(null, '', url.toString());
+      console.log('[Espace Client] utm_email ajouté à l’URL :', email);
+    }
+
+    // 🔹 Redirection après login si besoin
     if (user.emailVerified) {
       const stored = localStorage.getItem('postLoginRedirect');
       if (stored) {
@@ -1024,6 +1033,8 @@
       }
     }
   }
+});
+
 
   // Ensuite, conserve ton comportement existant (affichage / lock UI / load profile)
   // Si tu avais dans ton fichier la logique qui suit, laisse-la telle quelle.
@@ -1962,13 +1973,3 @@ window.addEventListener('load', () => {
 <script src="https://burbanofficial.com/public/includes/footer.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
