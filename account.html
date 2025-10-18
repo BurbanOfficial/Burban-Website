@@ -1013,6 +1013,16 @@
   if (user) {
     try { await user.reload(); } catch(e){ console.warn('user.reload failed', e); }
 
+    // --- AJOUT UTM_EMAIL POUR KLAVIYO ---
+    if (user.email) {
+      const email = encodeURIComponent(user.email.trim().toLowerCase());
+      const url = new URL(window.location.href);
+      url.searchParams.set('utm_email', email);
+      history.replaceState(null, '', url.toString());
+      console.log('[Espace Client] utm_email ajouté à l’URL :', email);
+    }
+    // -------------------------------------
+
     if (user.emailVerified) {
       const stored = localStorage.getItem('postLoginRedirect');
       if (stored) {
