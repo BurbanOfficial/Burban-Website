@@ -243,6 +243,7 @@ window.addEventListener('load', () => {
 });
 </script>
 <script>
+<script>
 (function(){
   const nav = document.querySelector('.nav');
   if(!nav) return;
@@ -252,11 +253,12 @@ window.addEventListener('load', () => {
   hover.className = 'nav-hover';
   nav.appendChild(hover);
 
-  // state
   let target = { x: 0, y: 0, w: 0, h: 0, opacity: 0, scale: 1, rotX: 0, rotY: 0, sheenX: 0 };
   let current = { x: 0, y: 0, w: 0, h: 0, opacity: 0, scale: 1, rotX: 0, rotY: 0, sheenX: 0 };
 
   const LERP = 0.16;
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 
   function setTargetFromEl(el, pointerX = null, pointerY = null) {
     const r = el.getBoundingClientRect();
@@ -268,22 +270,29 @@ window.addEventListener('load', () => {
     target.h = r.height + padY * 2;
     target.opacity = 1;
     target.scale = 1.02;
-    // compute small tilt based on pointer over element center if available
+
     if (pointerX !== null && pointerY !== null) {
       const cx = r.left + r.width/2;
       const cy = r.top + r.height/2;
-      const dx = (pointerX - cx) / r.width; // -0.5..0.5
+      const dx = (pointerX - cx) / r.width;
       const dy = (pointerY - cy) / r.height;
-      target.rotY = clamp(dx * 12, -12, 12); // degrees
+      target.rotY = clamp(dx * 12, -12, 12);
       target.rotX = clamp(-dy * 8, -8, 8);
-      // sheen position 0..1 from left to right
-      target.sheenX = (pointerX - r.left) / r.width;
+      target.sheenX = clamp((pointerX - r.left) / r.width, 0, 1);
     } else {
       target.rotX = 0; target.rotY = 0; target.sheenX = 0.5;
     }
   }
 
-  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  // trigger ripple safely (throttled by adding & removing class)
+  function triggerRipple() {
+    hover.classList.remove('ripple');
+    // force reflow
+    void hover.offsetWidth;
+    hover.classList.add('ripple');
+    // remove class after animation to allow retrigger later
+    setTimeout(()=> hover.classList.remove('ripple'), 500);
+  }
 
   nav.addEventListener('mousemove', (e) => {
     if (window.matchMedia('(max-width: 768px)').matches) {
@@ -293,8 +302,6 @@ window.addEventListener('load', () => {
     if (item && nav.contains(item)) {
       setTargetFromEl(item, e.clientX, e.clientY);
       hover.classList.add('visible','soft-scale','show-ripple');
-      // move sheen faster
-      hover.style.setProperty('--sheen', 'active');
     } else {
       target.opacity = 0;
       hover.classList.remove('show-ripple');
@@ -306,13 +313,14 @@ window.addEventListener('load', () => {
     hover.classList.remove('show-ripple');
   });
 
-  // keyboard accessibility / focus
+  // keyboard accessibility & enter/hover triggers
   const items = nav.querySelectorAll('.nav-item');
   items.forEach(it => {
     it.addEventListener('focus', (ev) => {
       if (window.matchMedia('(max-width: 768px)').matches) return;
       setTargetFromEl(it);
-      hover.classList.add('visible','soft-scale');
+      hover.classList.add('visible','soft-scale','show-ripple');
+      triggerRipple();
     });
     it.addEventListener('blur', () => {
       target.opacity = 0;
@@ -322,10 +330,11 @@ window.addEventListener('load', () => {
       if (window.matchMedia('(max-width: 768px)').matches) return;
       setTargetFromEl(it, ev.clientX, ev.clientY);
       hover.classList.add('visible','soft-scale','show-ripple');
+      triggerRipple();
     });
   });
 
-  // animate loop with lerp
+  // animation loop
   function raf(){
     current.x += (target.x - current.x) * LERP;
     current.y += (target.y - current.y) * LERP;
@@ -337,46 +346,27 @@ window.addEventListener('load', () => {
     current.rotY += (target.rotY - current.rotY) * (LERP * 1.6);
     current.sheenX += (target.sheenX - current.sheenX) * (LERP * 2.2);
 
-    // apply transform (translate then rotate then scale)
     const transform = `translate3d(${current.x}px, ${current.y}px, 0) rotateX(${current.rotX}deg) rotateY(${current.rotY}deg) scale(${current.scale})`;
     hover.style.transform = transform;
-
     hover.style.width = Math.max(0, current.w) + 'px';
     hover.style.height = Math.max(0, current.h) + 'px';
     hover.style.opacity = String(current.opacity);
 
-    // move sheen pseudo-element by updating before transform via translate on ::before
-    // We'll pass the sheen position as a CSS variable to control translateX in CSS
-    hover.style.setProperty('--sheen-pos', (current.sheenX * 100) + '%');
-    // update ::before transform using inline style (via style.transform is not available for pseudo; instead update background position)
-    // We'll emulate by shifting background via background-position using another CSS variable
+    // update sheen CSS vars (used by ::before and ::after)
     hover.style.setProperty('--sheen-translate', ((current.sheenX - 0.5) * 60) + '%');
+    hover.style.setProperty('--sheen-pos', (current.sheenX * 100) + '%');
 
     requestAnimationFrame(raf);
   }
   raf();
 
-  // keep pseudo-element responsive: update its transform from CSS on each frame using the variable
-  // (add a small CSS rule to use --sheen-translate; but fallback if not supported, the sheen still looks good)
-
-  // hide on resize if needed
+  // hide on resize for mobile fallback
   window.addEventListener('resize', () => {
     if (window.matchMedia('(max-width: 768px)').matches) {
       target.opacity = 0;
       hover.classList.remove('visible','soft-scale','show-ripple');
     }
   });
-
-  // small helper to set the ::before transform using mutation of style.sheet
-  // We'll append a dynamic style that reads --sheen-translate to move the ::before
-  const styleTag = document.createElement('style');
-  styleTag.textContent = `
-    .nav-hover::before {
-      transform: rotate(-12deg) translateX(var(--sheen-translate, 0%));
-      transition: transform .28s cubic-bezier(.2,.9,.2,1);
-    }
-  `;
-  document.head.appendChild(styleTag);
 
 })();
 </script>
