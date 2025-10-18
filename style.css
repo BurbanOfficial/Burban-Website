@@ -36,96 +36,81 @@ body {
 /* ---------- Nav rectangle + underline hover propre (desktop) ---------- */
 /* ------------------ Liquid glass puck (desktop) ------------------ */
 /* ---------- Liquid glass puck (renforcé) ---------- */
+/* --------- Nav + Liquid glass puck (version debug visible) --------- */
 .nav { position: relative; }
 
 /* Forcer couleur lien (pas de bleu) */
-.nav-item,
-.nav-item:visited { color: #111 !important; text-decoration: none; }
+.nav-item, .nav-item:visited { color: #111 !important; text-decoration: none; }
 
 /* underline stays above puck */
-.nav-item { position: relative; z-index: 6; padding: 10px 6px; display:inline-block; transition: color .18s ease; }
+.nav-item { position: relative; z-index: 8; padding: 10px 6px; display:inline-block; transition: color .18s ease; }
 .nav-item::after {
   content: '';
   position: absolute;
-  left: 0;
-  bottom: -6px;
-  height: 3px;
-  width: 0%;
-  background: #000;
-  border-radius: 3px;
+  left: 0; bottom: -6px; height: 3px; width: 0%;
+  background: #000; border-radius: 3px;
   transition: width .22s cubic-bezier(.2,.9,.2,1);
-  z-index: 7; /* au-dessus de tout */
+  z-index: 9;
 }
-.nav-item:hover::after,
-.nav-item:focus::after,
-.nav-item.active::after { width: 100%; color: #000; }
+.nav-item:hover::after, .nav-item:focus::after, .nav-item.active::after { width: 100%; }
 
-/* Desktop only: puck plus visible, glass renforcé */
+/* Desktop only: stronger, visible liquid glass puck */
 @media (min-width: 769px) {
   .nav-hover {
-    position: absolute;
-    top: 0; left: 0;
-    width: 0; height: 0;
-    border-radius: 14px;
-    pointer-events: none;
-    z-index: 2; /* derrière .nav-item */
-    opacity: 0;
+    position: absolute; top: 0; left: 0;
+    width: 0; height: 0; border-radius: 14px;
+    pointer-events: none; z-index: 5; opacity: 0;
     transform-origin: center;
-    /* stronger glass look */
-    background: linear-gradient(180deg, rgba(255,255,255,0.20), rgba(255,255,255,0.06));
-    border: 1px solid rgba(255,255,255,0.20);
+    /* reinforced glass */
+    background: linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0.08));
+    border: 1px solid rgba(255,255,255,0.24);
     box-shadow:
-      0 18px 48px rgba(10,15,20,0.18),      /* plus d'ombre externe */
-      inset 0 1px 0 rgba(255,255,255,0.32),  /* inner highlight marqué */
-      inset 0 -10px 30px rgba(0,0,0,0.10);   /* shading plus profond */
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+      0 28px 64px rgba(6,10,15,0.26),
+      inset 0 1px 0 rgba(255,255,255,0.38),
+      inset 0 -12px 36px rgba(0,0,0,0.12);
+    backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
     transition: box-shadow .25s ease, background .25s ease, opacity .18s ease, transform .18s ease;
     overflow: hidden;
   }
 
-  /* sheen (reflet) plus prononcé */
+  /* sheen (reflet) pronounced */
   .nav-hover::before {
     content: '';
-    position: absolute;
-    top: -50%;
-    left: -80%;
-    width: 260%;
-    height: 220%;
+    position: absolute; top: -50%; left: -80%;
+    width: 260%; height: 220%;
     background: linear-gradient(120deg,
-      rgba(255,255,255,0.35),
-      rgba(255,255,255,0.12) 28%,
-      rgba(255,255,255,0.04) 55%,
+      rgba(255,255,255,0.45),
+      rgba(255,255,255,0.18) 28%,
+      rgba(255,255,255,0.06) 55%,
       rgba(255,255,255,0)
     );
     transform: rotate(-12deg) translateX(0%);
-    filter: blur(14px);
-    opacity: 0.92;
-    transition: transform .55s cubic-bezier(.2,.9,.2,1), opacity .35s;
+    filter: blur(14px); opacity: 0.96;
+    transition: transform .45s cubic-bezier(.2,.9,.2,1), opacity .35s;
     pointer-events: none;
   }
 
-  /* subtle inner moving glow to give depth */
   .nav-hover::after {
     content: '';
-    position: absolute;
-    inset: 6px;
-    border-radius: 10px;
+    position: absolute; inset: 6px; border-radius: 10px;
     background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
-    pointer-events: none;
-    opacity: .9;
-    mix-blend-mode: overlay;
+    pointer-events: none; opacity: .9; mix-blend-mode: overlay;
   }
 
-  /* classes togglées par JS */
   .nav-hover.visible { opacity: 1; }
   .nav-hover.show-ripple {
     box-shadow:
-      0 24px 64px rgba(6,10,15,0.22),
-      inset 0 1px 0 rgba(255,255,255,0.36),
-      inset 0 -12px 36px rgba(0,0,0,0.12);
+      0 34px 92px rgba(6,10,15,0.28),
+      inset 0 1px 0 rgba(255,255,255,0.40),
+      inset 0 -14px 40px rgba(0,0,0,0.14);
   }
   .nav-hover.soft-scale { transition: transform .20s cubic-bezier(.2,.9,.2,1); }
+
+  /* DEBUG: force a visible border/glow so tu vois l'effet (retire en prod) */
+  .nav-hover.debug-visible {
+    outline: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 34px 92px rgba(6,10,15,0.32);
+  }
 }
 
 /* Conteneur des icônes et hamburger */
