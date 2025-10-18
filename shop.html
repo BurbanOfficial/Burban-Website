@@ -164,6 +164,17 @@
   </aside>
 
   <script>
+    // ----- Hamburger / overlay menu -----
+    const hamburger = document.querySelector('.hamburger');
+    const overlay = document.getElementById('overlayMenu');
+    const closeBtn = overlay ? overlay.querySelector('.close-btn') : null;
+
+    if (hamburger && overlay && closeBtn) {
+      hamburger.addEventListener('click', () => overlay.classList.add('open'));
+      closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
+    }
+  </script>
+  <script>
     // Année automatique
     document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -244,4 +255,5 @@ window.addEventListener('load', () => {
 <script src="script.js"></script>
 <script src="https://burbanofficial.com/public/includes/footer.js"></script>
 </body>
+
 </html>
