@@ -600,22 +600,20 @@ async function getUserPoints(){
 /* ---------- Voucher UI ---------- */
 function updateVoucherOptions(){
   const div = document.getElementById('voucher-options');
-  if (!div) return;
-
   if (!auth.currentUser) {
-    div.innerHTML = `<p style="font-style:italic;color:#a00;">Log in to view your coupons.</p>`;
+    div.innerHTML = `<p style="font-style:italic;color:#a00;">
+                       Log in to view your coupons.
+                     </p>`;
     return;
   }
 
   getUserPoints().then(points => {
-    const sub = parseFloat((document.getElementById('subTotal')?.innerText || '0').replace('€','').replace(',','.')) || 0;
-    // shipping and tax text may contain words; try to parse numbers
-    let shipping = 0;
-    const shipText = document.getElementById('shipping')?.innerText || '';
-    const sMatch = shipText.replace(',','.').match(/(\d+(\.\d+)?)/);
-    if (sMatch) shipping = parseFloat(sMatch[0]);
+    // 1️⃣ On récupère les trois composants du total
+    const sub      = parseFloat(document.getElementById('subTotal').innerText.replace('€','')) || 0;
+    const shipping = parseFloat(document.getElementById('shipping').innerText.replace('€','')) || 0;
+    const tax      = parseFloat(document.getElementById('tax').innerText.replace('€','')) || 0;
 
-    const tax = parseFloat((document.getElementById('tax')?.innerText || '0').replace('€','').replace(',','.')) || 0;
+    // 2️⃣ On calcule le vrai total du panier
     const total = sub + shipping + tax;
 
     const vouchers = [
@@ -624,6 +622,9 @@ function updateVoucherOptions(){
       { points: 2000, value: 20, min: 80 },
       { points: 2500, value: 30, min: 100 },
     ];
+
+    // compute cart subtotal (safe)
+    const sub = parseFloat((document.getElementById('subTotal') || {innerText:'0€'}).innerText.replace('€','')) || 0;
 
     let html = '';
     vouchers.forEach(v => {
@@ -639,13 +640,13 @@ function updateVoucherOptions(){
                 data-points="${v.points}"
               >
               <label for="v${v.value}" style="cursor:pointer;">
-                €${v.value} coupon (cost ${v.points} pts)
+                €${v.value} coupon (cost ${v.points} pts)
               </label>
             </div>`;
         } else {
           html += `
             <div style="margin-bottom:8px;color:#aaa;">
-              €${v.value} coupon (min. ${v.min}€ – cost ${v.points} pts)
+              €${v.value} coupon (min. ${v.min}€ – cost ${v.points} pts)
               <em>Inapplicable</em>
             </div>`;
         }
@@ -658,19 +659,25 @@ function updateVoucherOptions(){
   });
 }
 
-function addVoucherCheckboxListeners(){
+// add listeners
   const cbs = document.querySelectorAll('input.voucher-checkbox');
   cbs.forEach(cb => cb.addEventListener('click', function(){
-    if (this.checked){
+    if (this.checked) {
       cbs.forEach(o => { if (o !== this) o.checked = false; });
     } else {
       this.checked = false;
     }
-    // nouveau : rafraîchir immédiatement le calcul des points / totals
-    updateLoyaltyPoints();
-    // update totals to reflect discount
-    updateTotal();
+    // force recalcul du total et affichage points
+    if (typeof updateTotal === 'function') updateTotal();
+    if (typeof updateLoyaltyPoints === 'function') updateLoyaltyPoints();
   }));
+}
+
+// call once to render (safe if functions run multiple times)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', updateVoucherOptions);
+} else {
+  updateVoucherOptions();
 }
 
 /* ---------- Stripe Checkout flow ---------- */
