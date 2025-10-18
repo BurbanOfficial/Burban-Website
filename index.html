@@ -247,23 +247,19 @@ window.addEventListener('load', () => {
   const nav = document.querySelector('.nav');
   if(!nav) return;
 
-  // Création du rectangle
+  // création du puck
   const hover = document.createElement('div');
   hover.className = 'nav-hover';
   nav.appendChild(hover);
 
-  // Valeurs de target et current pour lerp
-  let target = { x: 0, y: 0, w: 0, h: 0, opacity: 0 };
-  let current = { x: 0, y: 0, w: 0, h: 0, opacity: 0 };
+  let target = { x: 0, y: 0, w: 0, h: 0, opacity: 0, scale: 1 };
+  let current = { x: 0, y: 0, w: 0, h: 0, opacity: 0, scale: 1 };
 
-  // facteur de "lag" : plus petit = plus lent
   const LERP = 0.15;
 
-  // Utility pour mettre à jour la target à partir d'un élément
   function setTargetFromEl(el) {
     const r = el.getBoundingClientRect();
     const navR = nav.getBoundingClientRect();
-    // marge intérieure autour du lien
     const padX = 10;
     const padY = 6;
     target.x = (r.left - navR.left) - padX;
@@ -271,13 +267,14 @@ window.addEventListener('load', () => {
     target.w = r.width + padX * 2;
     target.h = r.height + padY * 2;
     target.opacity = 1;
+    // loupe seulement sur le puck
+    target.scale = 1.04;
   }
 
-  // Evénements souris
   nav.addEventListener('mousemove', (e) => {
-    // Ne rien faire sur petits écrans
     if (window.matchMedia('(max-width: 768px)').matches) {
       target.opacity = 0;
+      target.scale = 1;
       return;
     }
     const item = e.target.closest('.nav-item');
@@ -285,36 +282,40 @@ window.addEventListener('load', () => {
       setTargetFromEl(item);
     } else {
       target.opacity = 0;
+      target.scale = 1;
     }
   });
 
   nav.addEventListener('mouseleave', () => {
     target.opacity = 0;
+    target.scale = 1;
   });
 
-  // Accessible : focus/blur pour navigation clavier
+  // focus / blur pour clavier
   const items = nav.querySelectorAll('.nav-item');
   items.forEach(it => {
     it.addEventListener('focus', () => {
       if (window.matchMedia('(max-width: 768px)').matches) return;
       setTargetFromEl(it);
     });
-    it.addEventListener('blur', () => { target.opacity = 0; });
-    // support hover par enter/space (au cas où)
-    it.addEventListener('mouseenter', () => { if (!window.matchMedia('(max-width: 768px)').matches) setTargetFromEl(it); });
+    it.addEventListener('blur', () => {
+      target.opacity = 0;
+      target.scale = 1;
+    });
+    it.addEventListener('mouseenter', () => {
+      if (!window.matchMedia('(max-width: 768px)').matches) setTargetFromEl(it);
+    });
   });
 
-  // Animation loop (lerp)
   function raf() {
-    // lerp each property
     current.x += (target.x - current.x) * LERP;
     current.y += (target.y - current.y) * LERP;
     current.w += (target.w - current.w) * LERP;
     current.h += (target.h - current.h) * LERP;
     current.opacity += (target.opacity - current.opacity) * (LERP * 1.2);
+    current.scale += (target.scale - current.scale) * (LERP * 1.6);
 
-    // apply styles
-    hover.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
+    hover.style.transform = `translate3d(${current.x}px, ${current.y}px, 0) scale(${current.scale})`;
     hover.style.width = Math.max(0, current.w) + 'px';
     hover.style.height = Math.max(0, current.h) + 'px';
     hover.style.opacity = String(current.opacity);
@@ -323,19 +324,14 @@ window.addEventListener('load', () => {
   }
   raf();
 
-  // Recalcule sur resize (pour éviter offset incorrect)
   window.addEventListener('resize', () => {
-    // masquer si on devient mobile
     if (window.matchMedia('(max-width: 768px)').matches) {
       target.opacity = 0;
-    } else {
-      // forcera recalcul au prochain mousemove/focus
+      target.scale = 1;
     }
   });
-
 })();
 </script>
-
 
 <script src="https://burbanofficial.com/public/includes/footer.js"></script>
 <script async type='text/javascript' src='https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=Sg3qFU'></script>
