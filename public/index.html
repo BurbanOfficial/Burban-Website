@@ -597,8 +597,10 @@ async function getUserPoints(){
   }
 }
 
-/* ---------- Voucher UI ---------- */
-function updateVoucherOptions(){
+// --- Bons de réduction ---
+    async function getUserPoints(){try{const u=auth.currentUser;if(u){const d=await db.collection('users').doc(u.uid).get();return d.exists?d.data().points||0:0;}return 0;}catch(e){console.error(e);return 0;}}
+    
+    function updateVoucherOptions(){
   const div = document.getElementById('voucher-options');
   if (!auth.currentUser) {
     div.innerHTML = `<p style="font-style:italic;color:#a00;">
@@ -622,9 +624,6 @@ function updateVoucherOptions(){
       { points: 2000, value: 20, min: 80 },
       { points: 2500, value: 30, min: 100 },
     ];
-
-    // compute cart subtotal (safe)
-    const sub = parseFloat((document.getElementById('subTotal') || {innerText:'0€'}).innerText.replace('€','')) || 0;
 
     let html = '';
     vouchers.forEach(v => {
@@ -659,26 +658,23 @@ function updateVoucherOptions(){
   });
 }
 
-// add listeners
-  const cbs = document.querySelectorAll('input.voucher-checkbox');
-  cbs.forEach(cb => cb.addEventListener('click', function(){
-    if (this.checked) {
-      cbs.forEach(o => { if (o !== this) o.checked = false; });
-    } else {
-      this.checked = false;
+    
+    function addVoucherCheckboxListeners(){
+      const cbs = document.querySelectorAll('input.voucher-checkbox');
+      cbs.forEach(cb => cb.addEventListener('click', function(){
+        if (this.checked){
+          cbs.forEach(o => o!==this && (o.checked = false));
+        } else {
+          this.checked = false;
+        }
+    +   // **nouveau** : rafraîchir immédiatement le calcul des points
+    +   updateLoyaltyPoints();
+      }));
     }
-    // force recalcul du total et affichage points
-    if (typeof updateTotal === 'function') updateTotal();
-    if (typeof updateLoyaltyPoints === 'function') updateLoyaltyPoints();
-  }));
-}
 
-// call once to render (safe if functions run multiple times)
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', updateVoucherOptions);
-} else {
-  updateVoucherOptions();
-}
+    // --- Total & TVA ---
+    function updateTotal(){const items=JSON.parse(localStorage.getItem('cartItems'))||[];const sum=items.reduce((a,i)=>a+i.price*i.quantity,0);document.getElementById('subTotal').innerText=sum.toFixed(2)+'€';document.getElementById('tax').innerText=(sum*0.2).toFixed(2)+'€';document.getElementById('shipping').innerText='To be determined at checkout';document.getElementById('total').innerText=(sum*1.2).toFixed(2)+'€';updateVoucherOptions();}
+    function resetButton(){const b=document.getElementById('checkout-btn');const t=document.getElementById('checkout-btn-text');const l=document.getElementById('loader2');const c=document.getElementById('card-icon');b.disabled=false;t.style.display='inline';l.style.display='none';c.style.display='inline-block';}
 
 /* ---------- Stripe Checkout flow ---------- */
 function resetButton(){
