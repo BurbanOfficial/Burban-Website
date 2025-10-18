@@ -245,26 +245,24 @@ window.addEventListener('load', () => {
 <script>
 (function(){
   const nav = document.querySelector('.nav');
-  if(!nav) return;
-  
-  // supprime anciens rectangles
-  const old = nav.querySelector('.nav-hover');
-  if (old) old.remove();
-  
-  // crée le nouveau rectangle
+  if(!nav) return console.warn('Puck: .nav introuvable');
+
+  // remove any existing nav-hover to avoid duplicates
+  const existing = nav.querySelector('.nav-hover');
+  if (existing) existing.remove();
+
   const hover = document.createElement('div');
   hover.className = 'nav-hover';
   nav.appendChild(hover);
-  
+
   let target = { x:0, y:0, w:0, h:0, opacity:0 };
   let current = { x:0, y:0, w:0, h:0, opacity:0 };
-  const LERP = 0.30;
-  
-  function setTarget(el) {
+  const LERP = 0.36; // beaucoup plus réactif
+
+  function setTarget(el){
     const r = el.getBoundingClientRect();
     const navR = nav.getBoundingClientRect();
-    const padX = 6; // rectangle plus fin
-    const padY = 3;
+    const padX = 6, padY = 3;
     target.x = (r.left - navR.left) - padX;
     target.y = (r.top - navR.top) - padY;
     target.w = r.width + padX * 2;
@@ -275,32 +273,85 @@ window.addEventListener('load', () => {
   nav.addEventListener('mousemove', (e)=>{
     if (window.matchMedia('(max-width:768px)').matches) return;
     const item = e.target.closest('.nav-item');
-    if (item) {
+    if (item && nav.contains(item)){
       setTarget(item);
       hover.classList.add('visible');
+    } else {
+      target.opacity = 0;
+      hover.classList.remove('visible');
     }
   });
+
+  // Snap instantly when mouse enters a nav-item to remove initial lag
+  nav.addEventListener('mouseenter', (e) => {
+    const item = e.target.closest('.nav-item');
+    if (item && nav.contains(item)){
+      setTarget(item);
+      // instant snap to target to feel immediate, then lerp takes over
+      current.x = target.x;
+      current.y = target.y;
+      current.w = target.w;
+      current.h = target.h;
+      current.opacity = target.opacity;
+      hover.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
+      hover.style.width = current.w + 'px';
+      hover.style.height = current.h + 'px';
+      hover.style.opacity = current.opacity;
+      hover.classList.add('visible');
+    }
+  }, true);
 
   nav.addEventListener('mouseleave', ()=>{
     target.opacity = 0;
     hover.classList.remove('visible');
   });
 
+  // also snap on direct mouseenter of each item (safer)
+  const items = nav.querySelectorAll('.nav-item');
+  items.forEach(it=>{
+    it.addEventListener('mouseenter', (ev) => {
+      if (window.matchMedia('(max-width:768px)').matches) return;
+      setTarget(it);
+      current.x = target.x;
+      current.y = target.y;
+      current.w = target.w;
+      current.h = target.h;
+      current.opacity = target.opacity;
+      hover.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
+      hover.style.width = current.w + 'px';
+      hover.style.height = current.h + 'px';
+      hover.style.opacity = current.opacity;
+      hover.classList.add('visible');
+    });
+    it.addEventListener('blur', ()=>{ target.opacity = 0; hover.classList.remove('visible'); });
+  });
+
   function raf(){
+    // lerp toward target
     current.x += (target.x - current.x) * LERP;
     current.y += (target.y - current.y) * LERP;
     current.w += (target.w - current.w) * LERP;
     current.h += (target.h - current.h) * LERP;
-    current.opacity += (target.opacity - current.opacity) * (LERP * 1.5);
-    
-    hover.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
-    hover.style.width = current.w + 'px';
-    hover.style.height = current.h + 'px';
-    hover.style.opacity = current.opacity;
-    
+    // speed up opacity interpolation a bit
+    current.opacity += (target.opacity - current.opacity) * (LERP * 1.6);
+
+    // apply
+    hover.style.transform = `translate3d(${Math.round(current.x)}px, ${Math.round(current.y)}px, 0)`;
+    hover.style.width = Math.round(current.w) + 'px';
+    hover.style.height = Math.round(current.h) + 'px';
+    hover.style.opacity = String(current.opacity);
+
     requestAnimationFrame(raf);
   }
   raf();
+
+  // on resize hide on mobile
+  window.addEventListener('resize', ()=>{
+    if (window.matchMedia('(max-width:768px)').matches){
+      target.opacity = 0;
+      hover.classList.remove('visible');
+    }
+  });
 })();
 </script>
 
