@@ -897,73 +897,125 @@
   function clearMessage(){ authMessages.innerHTML=''; }
   function setAvatarInitials(name){ const parts = (name||'').split(' '); const initials = (parts[0]||'').charAt(0) + ((parts[1]||'').charAt(0)||''); avatar.textContent = (initials||'G').toUpperCase(); }
 
+/* ---------- Helper : polling pour verification email ---------- */
+async function startEmailVerificationPolling({ interval = 3000, maxTries = 40 } = {}) {
+  let tries = 0;
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    // Message UX
+    showMessage('Verification email sent. Vérifiez votre boîte mail — la redirection se fera automatiquement après validation.', true);
+  } catch(e){}
+
+  const poll = setInterval(async () => {
+    tries++;
+    try {
+      await user.reload();
+      const fresh = auth.currentUser;
+      if (fresh && fresh.emailVerified) {
+        clearInterval(poll);
+        // cleanup flags
+        try { localStorage.removeItem('requireEmailVerified'); } catch(e){}
+        const redirectTarget = localStorage.getItem('postLoginRedirect') || DEFAULT_POST_LOGIN;
+        try { localStorage.removeItem('postLoginRedirect'); } catch(e){}
+        // redirect
+        window.location.href = redirectTarget;
+      } else {
+        if (tries >= maxTries) {
+          clearInterval(poll);
+          showMessage('Vérification non détectée. Si vous avez vérifié votre email, reconnectez-vous. (timeout)', false);
+        }
+      }
+    } catch (err) {
+      console.error('Polling error', err);
+      if (tries >= maxTries) clearInterval(poll);
+    }
+  }, interval);
+}
+
   // -------------------- Auth actions --------------------
-  btnRegister.addEventListener('click', async ()=>{
+  btnRegister.addEventListener('click', async () => {
+  clearMessage();
+  const first = regFirstname.value.trim();
+  const last = regLastname.value.trim();
+  const email = regEmail.value.trim();
+  const pass = regPassword.value;
+  const birthday = regBirthday.value || '';
+  if (!first || !last || !email || pass.length < 6) {
+    showMessage('Please fill all fields and use a password of at least 6 characters.');
+    return;
+  }
+  try {
+    // 1) creer l'utilisateur
+    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+
+    // 2) envoyer email de verification
+    await cred.user.sendEmailVerification();
+
+    // 3) creer le doc utilisateur (utilise ta fonction existante)
+    await createUserDocWithExtras(cred.user.uid, first, last, email, birthday);
+
+    // 4) set localStorage flags pour redirection post-verif
+    try {
+      // si postLoginRedirect existe déjà on le garde, sinon on pose la page panier par défaut
+      if (!localStorage.getItem('postLoginRedirect')) {
+        localStorage.setItem('postLoginRedirect', DEFAULT_POST_LOGIN);
+      }
+      localStorage.setItem('requireEmailVerified', 'true');
+    } catch (e) { console.warn('localStorage not available', e); }
+
+    // 5) on garde l'utilisateur connecté et on démarre le polling pour détecter la vérification
+    // (cela permettra de rediriger automatiquement dès que Firebase marque l'email comme vérifié)
+    startEmailVerificationPolling({ interval: 3000, maxTries: 40 });
+
+    // UX : informer l'utilisateur
+    showMessage('Compte créé — un e-mail de vérification vient d’être envoyé. Vérifiez votre boîte mail pour valider votre adresse.', true);
+
+    // basculer sur l'onglet login (facultatif)
+    document.querySelector('.auth-tab[data-mode="login"]').click();
+
+  } catch (err) {
+    console.error(err);
+    showMessage(err.message || 'Registration error');
+  }
+});
+
+  btnLogin.addEventListener('click', async () => {
+  clearMessage();
+  const email = loginEmail.value.trim();
+  const pass = loginPassword.value;
+  if (!email || !pass) { showMessage('Please enter email and password.'); return; }
+
+  try {
+    const cred = await auth.signInWithEmailAndPassword(email, pass);
+    // Assure la fraicheur
+    await cred.user.reload();
+    if (!cred.user.emailVerified) {
+      // Si l'email non vérifié : on dégage et on demande la vérif
+      try { await auth.signOut(); } catch(e){ console.warn(e); }
+      showMessage('Please verify your email before logging in.');
+      return;
+    }
+
+    // Si on arrive ici => email vérifié
+    // Redirection si postLoginRedirect défini
+    const stored = localStorage.getItem('postLoginRedirect');
+    if (stored) {
+      try { localStorage.removeItem('postLoginRedirect'); } catch(e){}
+      try { localStorage.removeItem('requireEmailVerified'); } catch(e){}
+      window.location.href = stored;
+      return;
+    }
+
+    // Sinon : on ferme modal / continue normal (auth.onAuthStateChanged va gérer le rendu)
     clearMessage();
-    const first = regFirstname.value.trim();
-    const last = regLastname.value.trim();
-    const email = regEmail.value.trim();
-    const pass = regPassword.value;
-    const birthday = regBirthday.value || '';
-    if(!first || !last || !email || pass.length < 6){ showMessage('Please fill all fields and use a password of at least 6 characters.'); return; }
-    try{
-      const cred = await auth.createUserWithEmailAndPassword(email, pass);
-      await cred.user.sendEmailVerification();
 
-      // create user doc with phone + newsletter from registration toggles/inputs
-      const code = regCountryCode ? regCountryCode.value : '+33';
-      const phoneE164 = (regPhone && regPhone.value) ? buildE164(code, regPhone.value) : '';
-      const newsletterState = regNewsletterToggle ? regNewsletterToggle.classList.contains('on') : true;
-
-      await db.collection('users').doc(cred.user.uid).set({
-        firstname: first,
-        lastname: last,
-        email,
-        phone: phoneE164,
-        birthday: birthday,
-        newsletter: !!newsletterState,
-        country: getCountryFromCode(code), // <-- ajouté : champ "country"
-        favorites: [],
-        points: 200,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      // Important: force sign out so the user must verify email before logging in
-      try { await auth.signOut(); } catch(e){ console.warn('signOut after register failed', e); }
-
-      showMessage('Account created. Verification email sent. Please verify before logging in.', true);
-      // switch to login tab
-      document.querySelector('.auth-tab[data-mode="login"]').click();
-    }catch(err){ console.error(err); showMessage(err.message || 'Registration error'); }
-  });
-
-  btnLogin.addEventListener('click', async ()=>{
-    clearMessage();
-    const email = loginEmail.value.trim();
-    const pass = loginPassword.value;
-    if(!email || !pass){ showMessage('Please enter email and password.'); return; }
-    try{
-      const cred = await auth.signInWithEmailAndPassword(email, pass);
-      // double-check verification status immediately and sign out if not verified
-      await cred.user.reload();
-      if(!cred.user.emailVerified){ await auth.signOut(); showMessage('Please verify your email before logging in.'); return; }
-      // modal will be closed by onAuthStateChanged
-      clearMessage();
-    }catch(err){ console.error(err); showMessage(err.message || 'Login error'); }
-  });
-
-  // forgot password
-  document.getElementById('forgotBtn').addEventListener('click', async ()=>{
-    const email = loginEmail.value.trim() || prompt('Please enter your email for password reset:');
-    if(!email) return;
-    try{ await auth.sendPasswordResetEmail(email); showMessage('Password reset email sent.', true); }catch(err){ showMessage(err.message); }
-  });
-
-  // sign out
-  logoutSmall.addEventListener('click', async ()=>{
-    await auth.signOut();
-    // onAuthStateChanged will re-open auth modal
-  });
+  } catch (err) {
+    console.error(err);
+    showMessage(err.message || 'Login error');
+  }
+});
 
   // -------------------- Auth state handling: gate logic --------------------
   // Ensure the auth modal is shown before content when not authenticated
@@ -971,33 +1023,63 @@
   (function lockUI(){ mainFrame.style.pointerEvents='none'; mainFrame.style.opacity='0.55'; authModal.classList.add('active'); authModal.setAttribute('aria-hidden','false'); })();
 
   auth.onAuthStateChanged(async (user) => {
-    if(user){
-      // reload user to ensure emailVerified is fresh (important)
-      try { await user.reload(); } catch(e){ console.warn('user.reload failed', e); }
-      // require verified
-      if(!user.emailVerified){
-        showMessage('Please verify your email.');
-        try { await auth.signOut(); } catch(e){ console.warn('signOut in onAuthStateChanged failed', e); }
-        return;
-      }
-      // hide auth modal and unlock main
-      authModal.classList.remove('active'); authModal.setAttribute('aria-hidden','true');
-      mainFrame.style.pointerEvents='auto'; mainFrame.style.opacity='1';
+  if (user) {
+    // refresh
+    try { await user.reload(); } catch (e) { console.warn('user.reload failed', e); }
 
-      openAuth.classList.add('hidden'); logoutSmall.classList.remove('hidden');
-      // load profile
-      loadUserProfile(user);
-      loadUserFavorites(user);
-      loadUserAdvantages(user);
-    }else{
-      // no user: show modal and lock main
-      authModal.classList.add('active'); authModal.setAttribute('aria-hidden','false');
-      mainFrame.style.pointerEvents='none'; mainFrame.style.opacity='0.55';
-      openAuth.classList.remove('hidden'); logoutSmall.classList.add('hidden');
-      // clear UI
-      userName.textContent = 'Guest'; userEmail.textContent = '—'; setAvatarInitials('Guest'); pointsEl.textContent='0'; progressFill.style.width='0%'; coins.textContent='0'; loyaltyFill.style.width='0%'; createdAt.textContent='—'; favList.innerHTML='';
+    const needVerify = localStorage.getItem('requireEmailVerified') === 'true';
+    const storedRedirect = localStorage.getItem('postLoginRedirect');
+
+    if (needVerify && !user.emailVerified) {
+      // On attend la verification sans déconnecter l'utilisateur (poll)
+      showMessage('Veuillez vérifier votre e-mail. La redirection se fera automatiquement après validation.', true);
+      // Démarrer le polling si on ne l'a pas déjà fait
+      startEmailVerificationPolling({ interval: 3000, maxTries: 40 });
+      // On ne lock/disable pas l'accès mais on montre le message
+      return;
     }
-  });
+
+    // Si l'utilisateur est connecté ET vérifié
+    if (user.emailVerified) {
+      // nettoyage flags et redirection si nécessaire
+      try {
+        if (storedRedirect) {
+          localStorage.removeItem('postLoginRedirect');
+          localStorage.removeItem('requireEmailVerified');
+          if (window.location.href !== storedRedirect) {
+            window.location.href = storedRedirect;
+            return;
+          }
+        }
+      } catch (e) { console.warn('post-login redirect error', e); }
+
+      // comportement normal : débloquer UI et charger profil
+      try {
+        authModal.classList.remove('active'); authModal.setAttribute('aria-hidden','true');
+        mainFrame.style.pointerEvents = 'auto'; mainFrame.style.opacity = '1';
+        openAuth.classList.add('hidden'); logoutSmall.classList.remove('hidden');
+        loadUserProfile(user);
+        loadUserFavorites(user);
+        loadUserAdvantages(user);
+      } catch(e){ console.warn(e); }
+      return;
+    }
+
+    // Si ici : user connecté mais non vérifié et on n'attendait pas de vérif : on déconnecte (comportement antérieur)
+    try { await auth.signOut(); } catch(e){ console.warn('signOut in onAuthStateChanged failed', e); }
+    showMessage('Please verify your email.');
+    return;
+  } else {
+    // pas d'utilisateur -> afficher modal + lock UI (comportement antérieur)
+    try {
+      authModal.classList.add('active'); authModal.setAttribute('aria-hidden','false');
+      mainFrame.style.pointerEvents = 'none'; mainFrame.style.opacity = '0.55';
+      openAuth.classList.remove('hidden'); logoutSmall.classList.add('hidden');
+      userName.textContent = 'Guest'; userEmail.textContent = '—';
+      setAvatarInitials('Guest'); pointsEl.textContent='0'; progressFill.style.width='0%'; coins.textContent='0'; loyaltyFill.style.width='0%'; createdAt.textContent='—'; favList.innerHTML='';
+    } catch(e){ console.warn(e); }
+  }
+});
 
   // -------------------- Loaders --------------------
   async function loadUserProfile(user){
