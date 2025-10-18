@@ -838,19 +838,16 @@ function attachLoginRedirectListeners() {
   const btnSaveCart = document.getElementById('modalSaveCart');
   const modalPoints = document.getElementById('modalPoints');
 
-  (function(){
-  // assuming modal, modalClose, btnGoAccount, btnContinueGuest, btnSaveCart, modalPoints are defined earlier
-
   function showModal() {
     if (modalPoints) {
       const total = parseDisplayedTotal();
       const pts = computePointsFromTotal(total);
       modalPoints.innerText = `${pts} point${pts > 1 ? 's' : ''}`;
     }
-
     if (!modal) {
       // fallback: if modal missing, directly open account page for non-auth or run guest checkout
       if (!auth.currentUser) {
+        // Show a basic confirm
         const goAccount = confirm('You are not logged in. Connect or create an account to earn points and get WELCOME10. OK = connect / Cancel = pay as guest.');
         if (goAccount) {
           localStorage.setItem('postLoginRedirect', 'https://burbanofficial.com/public/index.html');
@@ -864,55 +861,25 @@ function attachLoginRedirectListeners() {
       }
       return;
     }
-
-    // show modal as flex so it's centered and responsive
     modal.setAttribute('aria-hidden', 'false');
-    modal.style.display = 'flex';
-    document.body.classList.add('modal-open'); // CSS should set body.modal-open { overflow: hidden; }
-    // ensure modal content starts at top and is focusable (for keyboard users)
-    const content = modal.querySelector('.modal-content');
-    if (content) {
-      content.scrollTop = 0;
-      content.setAttribute('tabindex', '-1');
-      try { content.focus({ preventScroll: true }); } catch(e){}
-    }
-
-    // prevent body touchmove but allow scroll inside modal-content
-    document.addEventListener('touchmove', _blockBodyTouchMove, { passive: false });
-
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
     setTimeout(()=>{ btnGoAccount && btnGoAccount.focus(); }, 120);
   }
-
   function closeModal() {
     if (!modal) return;
     modal.setAttribute('aria-hidden', 'true');
     modal.style.display = 'none';
-    document.body.classList.remove('modal-open');
-    document.removeEventListener('touchmove', _blockBodyTouchMove, { passive: false });
-  }
-
-  // helper to block touchmove except when target is inside .modal-content
-  function _blockBodyTouchMove(e) {
-    try {
-      const content = modal && modal.querySelector('.modal-content');
-      if (content && e.target && e.target.closest && e.target.closest('.modal-content')) {
-        // allow scroll inside modal content
-        return;
-      }
-    } catch (err) {
-      // fallback: block
-    }
-    e.preventDefault();
+    document.body.style.overflow = 'auto';
   }
 
   if (modalClose) modalClose.addEventListener('click', closeModal);
-
   if (modal) {
     modal.addEventListener('click', function(e){
       if (e.target === modal) closeModal();
     });
     document.addEventListener('keydown', function(e){
-      if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+      if (e.key === 'Escape' && modal.style.display === 'block') closeModal();
     });
   }
 
@@ -932,7 +899,7 @@ function attachLoginRedirectListeners() {
         else alert('Payment function not available.');
       } catch (err) {
         console.error(err);
-        alert('An error has occured — please try again.');
+        alert('An error as occured — please try again.');
       }
     });
   }
@@ -942,7 +909,7 @@ function attachLoginRedirectListeners() {
       try {
         const items = JSON.parse(localStorage.getItem('cartItems')) || [];
         localStorage.setItem('savedCartBackup', JSON.stringify({items, date: new Date().toISOString()}));
-        alert('Cart saved locally. Log in later to find it.');
+        alert('Cart save locally. Log in later to find it.');
       } catch(e) { console.warn(e); alert('Unable to save the cart.'); }
     });
   }
@@ -964,11 +931,11 @@ function attachLoginRedirectListeners() {
     });
   }
 
-  // Update modal points when #total changes (only while modal open)
+  // Update modal points when #total changes
   const totalEl = document.getElementById('total');
   if (totalEl && modalPoints) {
     const obs = new MutationObserver(() => {
-      if (modal && modal.style.display === 'flex') {
+      if (modal && modal.style.display === 'block') {
         const total = parseDisplayedTotal();
         const pts = computePointsFromTotal(total);
         modalPoints.innerText = `${pts} point${pts > 1 ? 's' : ''}`;
@@ -977,7 +944,6 @@ function attachLoginRedirectListeners() {
     obs.observe(totalEl, { childList: true, subtree: true, characterData: true });
   }
 })();
-
 </script>
 
 <script>
