@@ -35,15 +35,14 @@ body {
    ------------------------- */
 /* ---------- Nav rectangle + underline hover propre (desktop) ---------- */
 /* ------------------ Liquid glass puck (desktop) ------------------ */
-/* ---------- Liquid glass puck (plus prononcé + tint + ripple) ---------- */
 .nav { position: relative; }
 
-/* Forcer couleur lien (pas de bleu/violine) */
+/* Forcer couleur lien (pas de bleu) */
 .nav-item,
 .nav-item:visited { color: #111 !important; text-decoration: none; }
 
 /* underline stays above puck */
-.nav-item { position: relative; z-index: 6; padding: 10px 6px; display:inline-block; transition: color .18s ease; }
+.nav-item { position: relative; z-index: 4; padding: 10px 6px; display:inline-block; transition: color .18s ease; }
 .nav-item::after {
   content: '';
   position: absolute;
@@ -54,15 +53,13 @@ body {
   background: #000;
   border-radius: 3px;
   transition: width .22s cubic-bezier(.2,.9,.2,1);
-  z-index: 7; /* au-dessus de tout */
+  z-index: 5; /* au-dessus de tout */
 }
 .nav-item:hover::after,
 .nav-item:focus::after,
 .nav-item.active::after { width: 100%; }
-.nav-item:hover,
-.nav-item:focus { color: #000; outline: none; }
 
-/* Puck (desktop only) */
+/* Liquid glass puck style (desktop only) */
 @media (min-width: 769px) {
   .nav-hover {
     position: absolute;
@@ -70,23 +67,23 @@ body {
     width: 0; height: 0;
     border-radius: 14px;
     pointer-events: none;
-    z-index: 3; /* derrière liens (6) et underline (7) */
+    z-index: 2; /* derrière .nav-item (z-index:4) et underline (z-index:5) */
     opacity: 0;
     transform-origin: center;
-    /* stronger glass + subtle tint */
-    background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(240,235,255,0.04));
-    border: 1px solid rgba(255,255,255,0.18);
+    /* glass look */
+    background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
+    border: 1px solid rgba(255,255,255,0.15);
     box-shadow:
-      0 18px 40px rgba(15,20,25,0.14),
-      inset 0 1px 0 rgba(255,255,255,0.22),
-      inset 0 -10px 28px rgba(0,0,0,0.08);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    transition: box-shadow .25s ease, background .25s ease, opacity .18s ease;
+      0 8px 30px rgba(15, 20, 25, 0.12),      /* outer shadow */
+      inset 0 1px 0 rgba(255,255,255,0.18),    /* top inner highlight */
+      inset 0 -6px 18px rgba(0,0,0,0.06);      /* bottom inner shading */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: box-shadow .25s ease, background .25s ease, opacity .2s ease;
     overflow: hidden;
   }
 
-  /* sheen highlight (pseudo-element moved by --sheen-translate) */
+  /* sheen layer (moving highlight) */
   .nav-hover::before {
     content: '';
     position: absolute;
@@ -94,48 +91,29 @@ body {
     left: -60%;
     width: 220%;
     height: 200%;
-    background: linear-gradient(120deg,
-      rgba(255,255,255,0.20),
-      rgba(255,255,255,0.06) 30%,
-      rgba(255,255,255,0.02) 60%,
-      rgba(255,255,255,0) 100%);
-    transform: rotate(-12deg) translateX(var(--sheen-translate, 0%));
-    filter: blur(14px);
-    opacity: 0.75;
-    pointer-events: none;
-    transition: transform .42s cubic-bezier(.2,.9,.2,1), opacity .3s;
-  }
-
-  /* tiny ripple: pseudo ::after expands and fades */
-  .nav-hover::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: radial-gradient(circle at var(--sheen-pos, 50%) 40%, rgba(255,255,255,0.06), rgba(255,255,255,0.02) 30%, transparent 60%);
-    opacity: 0;
-    transform: scale(0.96);
+    background: linear-gradient(120deg, rgba(255,255,255,0.18), rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0));
+    transform: rotate(-12deg) translateX(0%);
+    filter: blur(12px);
+    opacity: 0.7;
+    transition: transform .6s cubic-bezier(.2,.9,.2,1);
     pointer-events: none;
   }
-  /* when .ripple applied, animate pseudo ::after */
-  .nav-hover.ripple::after {
-    animation: puck-ripple 420ms cubic-bezier(.2,.9,.2,1) forwards;
+
+  /* subtle ripple when hover appears */
+  .nav-hover.show-ripple {
+    box-shadow:
+      0 14px 40px rgba(15, 20, 25, 0.14),
+      inset 0 1px 0 rgba(255,255,255,0.2),
+      inset 0 -8px 26px rgba(0,0,0,0.07);
   }
 
-  @keyframes puck-ripple {
-    0%   { transform: scale(0.94); opacity: 0; }
-    20%  { transform: scale(1.02); opacity: 0.12; }
-    100% { transform: scale(1.03); opacity: 0; }
-  }
-
-  /* visible / ripple classes */
+  /* small grow when visible */
   .nav-hover.visible { opacity: 1; }
-  .nav-hover.show-ripple { box-shadow:
-      0 22px 48px rgba(15,20,25,0.16),
-      inset 0 1px 0 rgba(255,255,255,0.24),
-      inset 0 -12px 34px rgba(0,0,0,0.09);
+
+  /* optional: tiny scale on active hover for more 'liquid' presence */
+  .nav-hover.soft-scale {
+    transition: transform .22s cubic-bezier(.2,.9,.2,1);
   }
-  .nav-hover.soft-scale { transition: transform .22s cubic-bezier(.2,.9,.2,1); }
 }
 
 /* Conteneur des icônes et hamburger */
