@@ -275,6 +275,10 @@
   box-sizing: border-box;
 }
 
+#checkoutAuthModal .checkout-card.solid {
+  border: 1px solid #e6e6e6;
+}
+
 /* si tu veux conserver le style dashed sur la 2e carte */
 #checkoutAuthModal .checkout-card.dashed {
   border: 1px dashed #e6e6e6;
@@ -295,9 +299,10 @@
   border: 0;
   cursor: pointer;
   font-weight: 600;
-  width: 100%;
+  width: auto;
   max-width: 220px;
   text-align: center;
+  margin: 0 auto;         /* sécurité pour centrer si besoin */
 }
 
 /* style du bouton invité */
@@ -496,7 +501,7 @@
 
     <!-- wrapper remplacé pour aligner les boutons -->
     <div class="checkout-grid">
-      <div class="checkout-card">
+      <div class="checkout-card solid">
         <h3 style="margin:0 0 8px;">Log in / Sign up</h3>
         <p style="margin:0 0 12px;font-size:14px;color:#666;">
           Create an account toi earn loyalty points and benefit from a welcome promo code.
