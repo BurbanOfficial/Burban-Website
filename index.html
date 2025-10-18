@@ -332,18 +332,22 @@ window.addEventListener('load', () => {
     const dw = target.w - current.w;
     const dh = target.h - current.h;
 
+    // calculer la vitesse proportionnelle à la distance
+    const speed = Math.min(1, Math.sqrt(dx*dx + dy*dy)/100);
+
     // si l'écart est grand, snap directement pour éviter le lag
     if(Math.abs(dx) > 50) current.x = target.x;
     if(Math.abs(dy) > 50) current.y = target.y;
     if(Math.abs(dw) > 50) current.w = target.w;
     if(Math.abs(dh) > 50) current.h = target.h;
     
-    // lerp toward target
-    current.x += (target.x - current.x) * LERP;
-    current.y += (target.y - current.y) * LERP;
-    current.w += (target.w - current.w) * LERP;
-    current.h += (target.h - current.h) * LERP;
-    // speed up opacity interpolation a bit
+    // lerp avec speed pour x et y
+    current.x += dx * LERP * speed;
+    current.y += dy * LERP * speed;
+
+    // lerp normal pour largeur, hauteur et opacity
+    current.w += dw * LERP;
+    current.h += dh * LERP;
     current.opacity += (target.opacity - current.opacity) * (LERP * 1.6);
 
     // apply
