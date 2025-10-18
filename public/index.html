@@ -255,41 +255,61 @@
   }
 }
 
-/* Optional improvements for the checkout modal */
-#checkoutAuthModal[aria-hidden="false"] { display:block; }
-#checkoutAuthModal .modal-content:focus { outline: none; }
-#checkoutAuthModal .close { font-size:22px; }
-
-/* Aligne parfaitement les boutons du modal checkout */
-.checkout-btn-wrapper {
+/* TARGET: modal checkout alignment */
+#checkoutAuthModal .checkout-grid {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: stretch; /* important : force les colonnes à égaler leur hauteur */
+}
+
+/* chaque card = colonne verticale, on pousse le contenu (bouton) au bas */
+#checkoutAuthModal .checkout-card {
+  flex: 1 1 260px;
+  min-width: 260px;
+  padding: 16px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* <-- pousse le bouton en bas */
+  box-sizing: border-box;
+}
+
+/* si tu veux conserver le style dashed sur la 2e carte */
+#checkoutAuthModal .checkout-card.dashed {
+  border: 1px dashed #e6e6e6;
+}
+
+/* boutons */
+#checkoutAuthModal .checkout-btn-wrapper {
+  display: flex;
+  justify-content: flex-start; /* ou center si tu préfères centré */
+  gap: 10px;
   margin-top: 12px;
 }
 
-.checkout-btn-wrapper .btn {
-  background: #000;
-  color: #fff;
-  padding: 10px 16px;
+/* contrôle largeur/visuel des boutons */
+#checkoutAuthModal .checkout-btn-wrapper .btn {
+  padding: 10px 14px;
   border-radius: 8px;
-  border: none;
+  border: 0;
   cursor: pointer;
+  font-weight: 600;
   width: 100%;
   max-width: 220px;
   text-align: center;
-  font-weight: 600;
-  transition: all 0.25s ease;
 }
 
-.checkout-btn-wrapper .btn:hover {
-  transform: translateY(-2px);
-  opacity: 0.9;
-}
-
-/* Spécifique au bouton invité */
-.checkout-btn-wrapper .btn.guest {
+/* style du bouton invité */
+#checkoutAuthModal .checkout-btn-wrapper .btn.guest {
   background: #0b74de;
+  color: #fff;
+}
+
+/* style du bouton login (si tu veux un look différent) */
+#checkoutAuthModal .checkout-btn-wrapper .btn#modalGoAccount {
+  background: #000;
+  color: #fff;
 }
 
   </style>
@@ -474,8 +494,9 @@
       To finalize your order, you can create an account, log in or pay as a guest.
     </p>
 
-    <div style="display:flex;gap:18px;flex-wrap:wrap;">
-      <div style="flex:1;min-width:260px;padding:16px;border-radius:10px;border:1px solid #eee;background:#fafafa;">
+    <!-- wrapper remplacé pour aligner les boutons -->
+    <div class="checkout-grid">
+      <div class="checkout-card">
         <h3 style="margin:0 0 8px;">Log in / Sign up</h3>
         <p style="margin:0 0 12px;font-size:14px;color:#666;">
           Create an account toi earn loyalty points and benefit from a welcome promo code.
@@ -484,20 +505,23 @@
           <li>First order promo code : <strong>WELCOME10</strong></li>
           <li id="modalPointsLine">Points that you will win : <strong id="modalPoints">—</strong></li>
         </ul>
+
+        <!-- bouton positionné en bas grâce à .checkout-card (flex column + space-between) -->
         <div class="checkout-btn-wrapper">
-          <button id="modalGoAccount" class="btn" style="background:#000;color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;">Log in / Sign up</button>
-          <!-- <button id="modalLearnMore" class="btn" style="background:transparent;border:1px solid #ddd;padding:10px 14px;border-radius:8px;cursor:pointer;">Plus d'infos</button> -->
+          <button id="modalGoAccount" class="btn">Log in / Sign up</button>
+          <!-- <button id="modalLearnMore" class="btn">Plus d'infos</button> -->
         </div>
       </div>
 
-      <div style="flex:1;min-width:260px;padding:16px;border-radius:10px;border:1px dashed #e6e6e6;">
+      <div class="checkout-card dashed">
         <h3 style="margin:0 0 8px;">Pay as a guest</h3>
         <p style="margin:0 0 12px;font-size:14px;color:#666;">
           Paying as a guest will not create an account. You will earn points only if you link an account before payment.
         </p>
+
         <div class="checkout-btn-wrapper">
-          <button id="modalContinueGuest" class="btn" style="background:#0b74de;color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;">Continue as a guest</button>
-          <!-- <button id="modalSaveCart" class="btn" style="background:transparent;border:1px solid #ddd;padding:10px 14px;border-radius:8px;cursor:pointer;">Save the cart</button> -->
+          <button id="modalContinueGuest" class="btn guest">Continue as a guest</button>
+          <!-- <button id="modalSaveCart" class="btn">Save the cart</button> -->
         </div>
       </div>
     </div>
