@@ -287,7 +287,7 @@ window.addEventListener('load', () => {
 
   function setTarget(el){
     const navR = nav.getBoundingClientRect();
-    const padX = 8, padY = 6; // padding visuel autour du texte (ajuste si besoin)
+    const padX = 12, padY = 8; // <-- augmenté légèrement pour un rectangle plus large
 
     const tRect = measureTextRect(el);
 
@@ -305,16 +305,18 @@ window.addEventListener('load', () => {
   function setTargetFollowMouse(clientX){
     const navR = nav.getBoundingClientRect();
     const mouseXInside = clientX - navR.left;
+    const padX = 12, padY = 8; // <-- garder mêmes valeurs pour la cohérence
+
     // garder largeur/hauteur actuelle pour éviter jump visuel, mais si 0 fallback sur first item
     if (current.w <= 0 || current.h <= 0) {
       // fallback : mesurer premier item
       const first = nav.querySelector('.nav-item');
       if (first) {
         const tr = measureTextRect(first);
-        current.w = tr.width + 8*2;
-        current.h = tr.height + 6*2;
+        current.w = tr.width + padX * 2;
+        current.h = tr.height + padY * 2;
       } else {
-        current.w = 80; current.h = 32;
+        current.w = 100; current.h = 40;
       }
     }
     target.w = current.w;
@@ -322,7 +324,6 @@ window.addEventListener('load', () => {
     // centrer le puck sur la souris
     target.x = mouseXInside - (target.w / 2);
     // vertical: garder la ligne du centre nav (on centre verticalement dans le header)
-    // on calcule la hauteur standard basée sur nav rect pour position stable
     const navMidY = (nav.getBoundingClientRect().height / 2);
     target.y = navMidY - (target.h / 2);
     target.opacity = 1;
@@ -366,7 +367,6 @@ window.addEventListener('load', () => {
     } else {
       // si on n'est sur aucun item,on suit la souris en douceur (utile lorsqu'on traverse espaces)
       setTargetFollowMouse(e.clientX);
-      // mais si on veut masquer quand hors nav area, on pourrait set opacity 0 ; on garde visible pour fluidité
       hover.classList.add('visible');
     }
   });
