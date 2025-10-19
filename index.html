@@ -294,17 +294,12 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     target.y = tRect.top - navR.top + (tRect.height/2) - (target.h/2);
     target.opacity = 1;
 
-    // Mettre à jour le rectangle actif si l'item est actif
+    // Si item actif, on ajuste le fond renfoncé
     if(el.classList.contains('active')){
-      let activeBg = el.querySelector('.active-bg');
-      if(!activeBg){
-        activeBg = document.createElement('div');
-        activeBg.className = 'active-bg';
-        el.prepend(activeBg);
-      }
-      activeBg.style.width = `${target.w}px`;
-      activeBg.style.height = `${target.h}px`;
-      activeBg.style.transform = `translate(${target.x}px, ${target.y}px)`;
+      el.style.setProperty('--active-x', `${target.x}px`);
+      el.style.setProperty('--active-y', `${target.y}px`);
+      el.style.setProperty('--active-w', `${target.w}px`);
+      el.style.setProperty('--active-h', `${target.h}px`);
     }
   }
 
@@ -350,15 +345,13 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     hover.style.height = `${current.h}px`;
     hover.style.opacity = current.opacity;
 
-    // Appliquer au fond actif de l'item actif
+    // Si un item actif, on applique les mêmes dimensions à son fond renfoncé
     const active = nav.querySelector('.nav-item.active');
     if(active){
-      const activeBg = active.querySelector('.active-bg');
-      if(activeBg){
-        activeBg.style.width = `${current.w}px`;
-        activeBg.style.height = `${current.h}px`;
-        activeBg.style.transform = `translate(${current.x}px, ${current.y}px)`;
-      }
+      active.style.setProperty('--active-x', `${current.x}px`);
+      active.style.setProperty('--active-y', `${current.y}px`);
+      active.style.setProperty('--active-w', `${current.w}px`);
+      active.style.setProperty('--active-h', `${current.h}px`);
     }
   }
 
