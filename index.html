@@ -275,14 +275,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
   if(existingIndicator) existingIndicator.remove();
   const indicator = document.createElement('div');
   indicator.className = 'nav-indicator';
-  // Défaut visuel (au cas où le CSS ne serait pas chargé immédiatement)
-  indicator.style.position = 'absolute';
-  indicator.style.height = '3px'; /* petit trait */
-  indicator.style.borderRadius = '2px';
-  indicator.style.pointerEvents = 'none';
-  indicator.style.transition = 'transform 0.22s cubic-bezier(.2,.9,.2,1), width 0.22s cubic-bezier(.2,.9,.2,1), opacity 0.22s';
-  indicator.style.zIndex = '8';
-  indicator.style.opacity = '0';
   nav.appendChild(indicator);
 
   let target = { x:0, y:0, w:0, h:0, opacity:0 };
@@ -353,28 +345,29 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     hover.style.opacity = current.opacity;
   }
 
-  // updateIndicator : place le trait JUSTE sous le rectangle du texte (mesuré)
   function updateIndicator(){
     const active = nav.querySelector('.nav-item.active');
     if(!active){
       indicator.style.opacity = '0';
       return;
     }
-
-    const textRect = measureTextRect(active); // précision au texte lui-même
+    const rect = active.getBoundingClientRect();
     const navRect = nav.getBoundingClientRect();
     const padX = 14;
 
-    // largeur = texte + padding (même logique que pour le hover)
-    const w = Math.round(textRect.width + padX*2);
-    // centre le trait sous le texte (on veut la même largeur que le rectangle Liquid Glass)
-    const x = Math.round(textRect.left - navRect.left + (textRect.width/2) - w/2);
+    // width = texte + padding (même logique que le hover)
+    const w = Math.round(rect.width + padX*2);
 
-    // position Y : juste en dessous du texte (on prend la bottom du texte puis + offset)
-    const offsetBelowText = 2; // en px — ajuste si nécessaire
-    const y = Math.round(textRect.bottom - navRect.top + offsetBelowText);
+    // center horizontally like le hover
+    const x = Math.round(rect.left - navRect.left + (rect.width/2) - w/2);
 
-    // applique les valeurs
+    // position Y : on place le top du trait juste sous la baseline du texte
+    // rect.bottom est le bas du texte; on ajoute un petit offset +2px pour un léger espace
+    // (on évite les valeurs trop grandes qui rendaient le trait trop bas auparavant)
+    const offsetBelowText = 2;
+    const y = Math.round(rect.bottom - navRect.top + offsetBelowText);
+
+    // apply
     indicator.style.width = `${w}px`;
     indicator.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     indicator.style.opacity = '1';
@@ -388,7 +381,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     current.h += (target.h - current.h) * LERP;
     current.opacity += (target.opacity - current.opacity) * LERP;
     applyCurrentToHover();
-    // l'indicator est statique par rapport à l'item actif — on le recalcule pour rester précis
     updateIndicator();
     requestAnimationFrame(raf);
   }
@@ -406,12 +398,12 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     item.addEventListener('click', ()=>{
       nav.querySelectorAll('.nav-item.active').forEach(a=>a.classList.remove('active'));
       item.classList.add('active');
-      // attendre frame pour garantir layout à jour
+      // calcule après repaints
       requestAnimationFrame(updateIndicator);
     });
   });
 
-  // recalculer l'indicator au resize / scroll
+  // Recalcule au resize/scroll pour rester aligné
   window.addEventListener('resize', () => requestAnimationFrame(updateIndicator));
   window.addEventListener('scroll', () => requestAnimationFrame(updateIndicator));
 
