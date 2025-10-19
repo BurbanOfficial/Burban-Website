@@ -275,7 +275,7 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
   if(existingIndicator) existingIndicator.remove();
   const indicator = document.createElement('div');
   indicator.className = 'nav-indicator';
-  // force top/left 0 pour que translate3d en JS marche proprement
+  // forcer origin pour translate3d propre
   indicator.style.top = '0';
   indicator.style.left = '0';
   nav.appendChild(indicator);
@@ -354,6 +354,7 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
       indicator.style.opacity = '0';
       return;
     }
+
     const rect = active.getBoundingClientRect();
     const navRect = nav.getBoundingClientRect();
     const padX = 14;
@@ -364,19 +365,17 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     // centre horizontale identique au hover
     const x = Math.round(rect.left - navRect.left + (rect.width/2) - w/2);
 
-    // calcul vertical : on veut que le trait soit juste sous le texte.
-    // on tient compte de la hauteur réelle de l'indicateur pour aligner correctement.
-    const indicatorH = indicator.offsetHeight || 4;
+    // hauteur dynamique du trait : on veut un petit "mini-rectangle" qui suit la proportion du texte
+    // ici on choisit une hauteur comprise entre 6px et 14px en fonction de la taille du texte
+    const dynamicH = Math.min(14, Math.max(6, Math.round(rect.height * 0.28)));
+    indicator.style.height = `${dynamicH}px`;
 
-    // offset réglable : si le trait est trop bas/haut, ajuste cette valeur (px)
+    // offset réglable pour coller le trait juste sous la baseline du texte :
     // positive -> plus bas, negative -> plus haut
-    const offsetBelowText = -2; // <<--- ajuste ici si besoin
+    const offsetBelowText = -2; // ajuste si besoin
 
-    // position top (relative à .nav)
-    // rect.bottom - navRect.top -> bas du texte par rapport à nav
-    // on retire indicatorH pour placer le top de l'indicator juste *au-dessus* de la baseline,
-    // puis on ajoute offsetBelowText pour affiner.
-    const y = Math.round(rect.bottom - navRect.top - indicatorH + offsetBelowText);
+    // calcul vertical relatif à .nav
+    const y = Math.round(rect.bottom - navRect.top - dynamicH + offsetBelowText);
 
     // applique
     indicator.style.width = `${w}px`;
@@ -407,7 +406,7 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     item.addEventListener('click', ()=>{
       nav.querySelectorAll('.nav-item.active').forEach(a=>a.classList.remove('active'));
       item.classList.add('active');
-      // faire le calcul après le repaint pour tenir compte du DOM
+      // recalculer après repaint
       requestAnimationFrame(updateIndicator);
     });
   });
