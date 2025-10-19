@@ -38,7 +38,7 @@ body {
 /* ---------- Liquid glass puck (renforcé) ---------- */
 /* --------- Nav + Liquid glass puck (version debug visible) --------- */
 /* --- NAV STYLE --- */
-.nav { position: relative; }
+.nav { position: relative; z-index: 50; }
 
 .nav-item, .nav-item:visited {
   color: #111 !important;
@@ -83,13 +83,36 @@ body {
   z-index: 5;
   opacity: 0;
   width: 0; height: 0;
-  border-radius: 12px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+  border-radius: 14px;
+  /* fond semi-transparent — la vraie distorsion sera via SVG filter */
+  background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.10));
   border: 1px solid rgba(255,255,255,0.25);
-  box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 10px 30px rgba(0,0,0,0.15);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.35);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  transition: opacity .22s ease, transform .22s ease;
+  will-change: transform, width, height, opacity;
+  /* appliquer la displacement map */
+  filter: url(#liquid) saturate(120%);
+}
+/* small shine highlight for realism */
+.nav-hover::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0.02));
+  mix-blend-mode: overlay;
+  opacity: 0.8;
+}
+/* fallback if filters not supported */
+@supports not (filter: url(#liquid)) {
+  .nav-hover{
+    background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
 }
 .nav-hover.visible {
   opacity: 1;
