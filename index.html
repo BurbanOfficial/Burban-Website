@@ -340,14 +340,35 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     hover.style.opacity = current.opacity;
   }
 
-  let turbBase = 0.008;
-  let lastFrame = performance.now();
-  const gooFilter = document.querySelector('#goo feGaussianBlur');
-  const gooMatrix = document.querySelector('#goo feColorMatrix');
+  // ---- Liquid Glass effect (SVG filters) ----
+  let gooFilter, gooMatrix;
+  function initGooSVG(){
+    let svg = document.querySelector('#goo');
+    if(!svg){
+      svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', '0'); svg.setAttribute('height', '0');
+      svg.innerHTML = `
+        <filter id="goo" x="0" y="0" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+          <feColorMatrix in="blur" mode="matrix"
+            values="1 0 0 0 0
+                    0 1 0 0 0
+                    0 0 1 0 0
+                    0 0 0 16 -8" result="goo"/>
+          <feBlend in="SourceGraphic" in2="goo"/>
+        </filter>
+      `;
+      document.body.appendChild(svg);
+    }
+    gooFilter = svg.querySelector('feGaussianBlur');
+    gooMatrix = svg.querySelector('feColorMatrix');
+
+    hover.style.filter = 'url(#goo)';
+  }
+  initGooSVG();
 
   function updateGooEffect(speed){
     if(!gooFilter || !gooMatrix) return;
-    // speed -> stdDeviation 6-20
     const deviation = gsap.utils.clamp(6, 20, speed*1.2 + 8);
     const alpha = gsap.utils.clamp(8, 20, speed*0.2 + 16);
     gsap.set(gooFilter, { attr: { stdDeviation: deviation } });
@@ -373,6 +394,7 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     requestAnimationFrame(raf);
   }
   raf();
+
 })();
 </script>
 
