@@ -351,10 +351,25 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 
   raf();
 
+  // ---- Initialiser le rectangle actif sur l'item déjà actif ----
+  const initActive = nav.querySelector('.nav-item.active');
+  if(initActive){
+    const navR = nav.getBoundingClientRect();
+    const padX = 14, padY = 10;
+    const tRect = measureTextRect(initActive);
+    const w = tRect.width + padX*2;
+    const h = tRect.height + padY*2;
+    const x = tRect.left - navR.left + (tRect.width/2) - w/2;
+    const y = tRect.top - navR.top + (tRect.height/2) - h/2;
+    initActive.style.setProperty('--active-w', `${w}px`);
+    initActive.style.setProperty('--active-h', `${h}px`);
+    initActive.style.setProperty('--active-x', `${x}px`);
+    initActive.style.setProperty('--active-y', `${y}px`);
+  }
+
   // ---- Mise à jour du rectangle actif uniquement au clic ----
   nav.querySelectorAll('.nav-item').forEach(item=>{
     item.addEventListener('click', ()=>{
-      // retirer active sur les autres
       nav.querySelectorAll('.nav-item.active').forEach(a=>a.classList.remove('active'));
       item.classList.add('active');
 
