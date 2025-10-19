@@ -44,6 +44,19 @@
 
 </head>
 <body>
+  <!-- SVG MENU (Grands Ecrans)-->
+  <svg style="position:absolute;width:0;height:0;">
+  <filter id="goo">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+    <feColorMatrix in="blur" mode="matrix"
+      values="1 0 0 0 0
+              0 1 0 0 0
+              0 0 1 0 0
+              0 0 0 16 -10" result="goo"/>
+    <feBlend in="SourceGraphic" in2="goo"/>
+  </filter>
+</svg>
+
   <!-- Loader -->
 <div id="loader">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2074 2156">
@@ -243,10 +256,12 @@ window.addEventListener('load', () => {
 });
 </script>
 <!-- Script : puck centré sur le texte (remplacer ton ancien bloc par celui-ci) -->
-<script>
+<script type="module">
+import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
+
 (function(){
   const nav = document.querySelector('.nav');
-  if(!nav) return console.warn('Puck: .nav introuvable');
+  if(!nav) return console.warn('Nav not found');
 
   // cleanup old hover
   const existing = nav.querySelector('.nav-hover');
@@ -256,22 +271,9 @@ window.addEventListener('load', () => {
   hover.className = 'nav-hover';
   nav.appendChild(hover);
 
-  // refs to SVG filter nodes
-  const feTurb = document.getElementById('feTurb');
-  const feDisp = document.getElementById('feDisp');
-
   let target = { x:0, y:0, w:0, h:0, opacity:0 };
   let current = { x:0, y:0, w:0, h:0, opacity:0 };
   const LERP = 0.36;
-
-  // fast movement detection
-  let lastMouseX = 0, lastMouseT = 0;
-  let fastMoving = false;
-  const FAST_THRESHOLD = 1400; // px/s
-  const FAST_TIMEOUT = 80; // ms
-  let fastTimer = null;
-
-  function now(){ return performance.now(); }
 
   function measureTextRect(el){
     try {
@@ -280,31 +282,26 @@ window.addEventListener('load', () => {
       const rect = range.getBoundingClientRect();
       if (!rect || rect.width === 0) return el.getBoundingClientRect();
       return rect;
-    } catch (err) {
-      return el.getBoundingClientRect();
-    }
+    } catch { return el.getBoundingClientRect(); }
   }
 
   function setTargetFromElement(el){
     const navR = nav.getBoundingClientRect();
-    const padX = 14, padY = 10; // tu avais demandé plus grand
+    const padX = 14, padY = 10;
     const tRect = measureTextRect(el);
-
-    target.w = tRect.width + padX * 2;
-    target.h = tRect.height + padY * 2;
-    target.x = tRect.left - navR.left + (tRect.width / 2) - (target.w / 2);
-    target.y = tRect.top - navR.top + (tRect.height / 2) - (target.h / 2);
+    target.w = tRect.width + padX*2;
+    target.h = tRect.height + padY*2;
+    target.x = tRect.left - navR.left + (tRect.width/2) - (target.w/2);
+    target.y = tRect.top - navR.top + (tRect.height/2) - (target.h/2);
     target.opacity = 1;
   }
 
   function setTargetFollowMouse(clientX){
     const navR = nav.getBoundingClientRect();
-    const mouseXInside = clientX - navR.left;
     const padX = 14, padY = 10;
-    // fallback size
-    if (current.w <= 0 || current.h <= 0) {
+    if (current.w <= 0 || current.h <= 0){
       const first = nav.querySelector('.nav-item');
-      if (first) {
+      if(first){
         const tr = measureTextRect(first);
         current.w = tr.width + padX*2;
         current.h = tr.height + padY*2;
@@ -314,164 +311,68 @@ window.addEventListener('load', () => {
     }
     target.w = current.w;
     target.h = current.h;
-    target.x = mouseXInside - (target.w / 2);
-    const navMidY = (nav.getBoundingClientRect().height / 2);
-    target.y = navMidY - (target.h / 2);
+    target.x = clientX - navR.left - target.w/2;
+    target.y = navR.height/2 - target.h/2;
     target.opacity = 1;
   }
 
-  // mousemove : gestion fast mode + updates targets
-  nav.addEventListener('mousemove', (e)=>{
-    if (window.matchMedia('(max-width:768px)').matches) return;
-    const nowT = now();
-    const dx = e.clientX - lastMouseX;
-    const dt = Math.max(1, nowT - (lastMouseT || nowT));
-    const speed = Math.abs(dx) / dt * 1000; // px/s
-
-    lastMouseX = e.clientX;
-    lastMouseT = nowT;
-
-    if (fastTimer) { clearTimeout(fastTimer); fastTimer = null; }
-
-    if (speed > FAST_THRESHOLD) {
-      fastMoving = true;
-      setTargetFollowMouse(e.clientX);
-      hover.classList.add('visible');
-      // schedule exit fast mode
-      fastTimer = setTimeout(()=>{ fastMoving = false; }, FAST_TIMEOUT);
-      // update displacement intensity immediately:
-      updateFilterIntensity(speed, true);
-      return;
-    }
-
-    // normal mode: snap to item under mouse
+  nav.addEventListener('mousemove', e=>{
+    if(window.matchMedia('(max-width:768px)').matches) return;
     const item = e.target.closest('.nav-item');
-    if (item && nav.contains(item)){
+    if(item && nav.contains(item)){
       setTargetFromElement(item);
-      hover.classList.add('visible');
     } else {
       setTargetFollowMouse(e.clientX);
-      hover.classList.add('visible');
     }
-    // update filter intensity softly
-    updateFilterIntensity(speed*0.8, false);
+    hover.classList.add('visible');
+    updateGooEffect(Math.abs(e.movementX));
   });
-
-  // snap on entry
-  nav.addEventListener('mouseenter', (e) => {
-    const item = e.target.closest('.nav-item');
-    if (item && nav.contains(item)){
-      setTargetFromElement(item);
-      current.x = target.x; current.y = target.y; current.w = target.w; current.h = target.h; current.opacity = target.opacity;
-      applyCurrentToHover();
-      hover.classList.add('visible');
-    }
-  }, true);
 
   nav.addEventListener('mouseleave', ()=>{
     target.opacity = 0;
     hover.classList.remove('visible');
   });
 
-  const items = Array.from(nav.querySelectorAll('.nav-item'));
-  items.forEach(it=>{
-    it.addEventListener('mouseenter', (ev) => {
-      if (window.matchMedia('(max-width:768px)').matches) return;
-      if (!fastMoving) {
-        setTargetFromElement(it);
-        current.x = target.x; current.y = target.y; current.w = target.w; current.h = target.h; current.opacity = target.opacity;
-        applyCurrentToHover();
-        hover.classList.add('visible');
-      }
-    });
-    it.addEventListener('blur', ()=>{ target.opacity = 0; hover.classList.remove('visible'); });
-  });
-
   function applyCurrentToHover(){
-    hover.style.transform = `translate3d(${Math.round(current.x)}px, ${Math.round(current.y)}px, 0)`;
-    hover.style.width = Math.round(current.w) + 'px';
-    hover.style.height = Math.round(current.h) + 'px';
-    hover.style.opacity = String(current.opacity);
+    hover.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
+    hover.style.width = `${current.w}px`;
+    hover.style.height = `${current.h}px`;
+    hover.style.opacity = current.opacity;
   }
 
-  // Filter animation variables
-  let turbBase = 0.008; // baseFrequency initial
-  let turbOffset = 0;
+  let turbBase = 0.008;
   let lastFrame = performance.now();
+  const gooFilter = document.querySelector('#goo feGaussianBlur');
+  const gooMatrix = document.querySelector('#goo feColorMatrix');
 
-  // update intensity of displacement based on velocity
-  function updateFilterIntensity(velocity, immediate){
-    if (!feDisp || !feTurb) return;
-    // map velocity to a scale value
-    const v = Math.min(1.8, Math.max(0.2, velocity / 900)); // ~0.2 -> 1.8
-    const scaleTarget = 6 + v * 24; // scale 6..approx 48
-    // for smoothness, write to dataset and lerp in raf
-    hover.dataset.dispTarget = scaleTarget;
-    if (immediate) {
-      feDisp.setAttribute('scale', String(Math.round(scaleTarget)));
-      feTurb.setAttribute('baseFrequency', (turbBase + v*0.01).toFixed(4) + ' ' + (turbBase*1.5 + v*0.012).toFixed(4));
-    }
+  function updateGooEffect(speed){
+    if(!gooFilter || !gooMatrix) return;
+    // speed -> stdDeviation 6-20
+    const deviation = gsap.utils.clamp(6, 20, speed*1.2 + 8);
+    const alpha = gsap.utils.clamp(8, 20, speed*0.2 + 16);
+    gsap.set(gooFilter, { attr: { stdDeviation: deviation } });
+    gsap.set(gooMatrix, { attr: { values: `
+      1 0 0 0 0
+      0 1 0 0 0
+      0 0 1 0 0
+      0 0 0 ${alpha} -10
+    ` }});
   }
 
-  // raf loop : move puck + animate filter smoothly
   function raf(){
     const dx = target.x - current.x;
     const dy = target.y - current.y;
     const dw = target.w - current.w;
     const dh = target.h - current.h;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    const speedFactor = Math.min(1, dist / 120) || 0.0001;
-
-    // snap large distances (prevents sticky behaviour)
-    if (Math.abs(dx) > 140) current.x = target.x;
-    if (Math.abs(dy) > 140) current.y = target.y;
-    if (Math.abs(dw) > 140) current.w = target.w;
-    if (Math.abs(dh) > 140) current.h = target.h;
-
-    current.x += dx * LERP * (0.6 + speedFactor * 0.8);
-    current.y += dy * LERP * (0.6 + speedFactor * 0.8);
-    current.w += dw * (LERP * 0.9 + speedFactor * 0.1);
-    current.h += dh * (LERP * 0.9 + speedFactor * 0.1);
-    current.opacity += (target.opacity - current.opacity) * (LERP * 1.6);
-
+    current.x += dx * LERP;
+    current.y += dy * LERP;
+    current.w += dw * LERP;
+    current.h += dh * LERP;
+    current.opacity += (target.opacity - current.opacity) * LERP;
     applyCurrentToHover();
-
-    // animate SVG turbulence over time for subtle breathing motion
-    const tNow = performance.now();
-    const dt = Math.max(1, tNow - lastFrame);
-    lastFrame = tNow;
-    turbOffset += dt * 0.00012; // slow drift
-    if (feTurb) {
-      // change baseFrequency slightly (micro-breath)
-      const wobble = Math.sin(tNow * 0.002) * 0.002;
-      feTurb.setAttribute('baseFrequency', (turbBase + wobble).toFixed(5) + ' ' + (turbBase * 1.6 + wobble*1.1).toFixed(5));
-      feTurb.setAttribute('seed', String(Math.floor(tNow % 10000)));
-    }
-
-    // lerp displacement scale toward target
-    if (feDisp) {
-      const curScale = parseFloat(feDisp.getAttribute('scale')) || 8;
-      const targetScale = parseFloat(hover.dataset.dispTarget) || 8;
-      const newScale = curScale + (targetScale - curScale) * 0.12;
-      feDisp.setAttribute('scale', String(newScale));
-    }
-
     requestAnimationFrame(raf);
   }
-  // initialize a reasonable target (optional)
-  hover.dataset.dispTarget = 8;
-  feDisp && feDisp.setAttribute('scale', '8');
-
   raf();
-
-  // responsive: hide on mobile
-  window.addEventListener('resize', ()=>{
-    if (window.matchMedia('(max-width:768px)').matches){
-      target.opacity = 0;
-      hover.classList.remove('visible');
-    }
-  });
-
 })();
 </script>
 
