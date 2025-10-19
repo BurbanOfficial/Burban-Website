@@ -266,14 +266,13 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
   // Création du hover Liquid Glass
   const existing = nav.querySelector('.nav-hover');
   if (existing) existing.remove();
-
   const hover = document.createElement('div');
   hover.className = 'nav-hover';
   nav.appendChild(hover);
 
   let target = { x:0, y:0, w:0, h:0, opacity:0 };
   let current = { x:0, y:0, w:0, h:0, opacity:0 };
-  const LERP = 0.99; // vitesse légèrement augmentée
+  const LERP = 0.99;
 
   function measureTextRect(el){
     try {
@@ -294,14 +293,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     target.x = tRect.left - navR.left + (tRect.width/2) - (target.w/2);
     target.y = tRect.top - navR.top + (tRect.height/2) - (target.h/2);
     target.opacity = 1;
-
-    const active = nav.querySelector('.nav-item.active');
-    if(active){
-      active.style.setProperty('--active-w', `${target.w}px`);
-      active.style.setProperty('--active-h', `${target.h}px`);
-      active.style.setProperty('--active-x', `${target.x}px`);
-      active.style.setProperty('--active-y', `${target.y}px`);
-    }
   }
 
   function setTargetFollowMouse(clientX){
@@ -359,6 +350,29 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
   }
 
   raf();
+
+  // ---- Mise à jour du rectangle actif uniquement au clic ----
+  nav.querySelectorAll('.nav-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      // retirer active sur les autres
+      nav.querySelectorAll('.nav-item.active').forEach(a=>a.classList.remove('active'));
+      item.classList.add('active');
+
+      const navR = nav.getBoundingClientRect();
+      const padX = 14, padY = 10;
+      const tRect = measureTextRect(item);
+      const w = tRect.width + padX*2;
+      const h = tRect.height + padY*2;
+      const x = tRect.left - navR.left + (tRect.width/2) - w/2;
+      const y = tRect.top - navR.top + (tRect.height/2) - h/2;
+
+      item.style.setProperty('--active-w', `${w}px`);
+      item.style.setProperty('--active-h', `${h}px`);
+      item.style.setProperty('--active-x', `${x}px`);
+      item.style.setProperty('--active-y', `${y}px`);
+    });
+  });
+
 })();
 </script>
 
