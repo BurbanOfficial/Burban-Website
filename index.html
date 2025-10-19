@@ -242,6 +242,7 @@ window.addEventListener('load', () => {
   }, 3000);
 });
 </script>
+<!-- Script : puck centré sur le texte (remplacer ton ancien bloc par celui-ci) -->
 <script>
 (function(){
   const nav = document.querySelector('.nav');
@@ -257,41 +258,58 @@ window.addEventListener('load', () => {
 
   let target = { x:0, y:0, w:0, h:0, opacity:0 };
   let current = { x:0, y:0, w:0, h:0, opacity:0 };
-  const LERP = 0.36; // beaucoup plus réactif
+  const LERP = 0.36; // réactivité de base
 
-  function setTarget(el, scale=1){
-  const r = el.getBoundingClientRect();
-  const navR = nav.getBoundingClientRect();
-  const padX = 6, padY = 3;
+  // mesure serrée du texte (Range) ; fallback sur l'élément si nécessaire
+  function measureTextRect(el){
+    try {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const rect = range.getBoundingClientRect();
+      // si le texte est vide ou rect.width === 0 on fallback sur el.getBoundingClientRect()
+      if (!rect || rect.width === 0) {
+        return el.getBoundingClientRect();
+      }
+      return rect;
+    } catch (err) {
+      return el.getBoundingClientRect();
+    }
+  }
 
-  const scaledW = r.width * scale;
-  const scaledH = r.height * scale;
+  function setTarget(el){
+    const navR = nav.getBoundingClientRect();
+    const padX = 8, padY = 6; // padding visuel autour du texte (ajuste si besoin)
 
-  target.w = scaledW + padX * 2;
-  target.h = scaledH + padY * 2;
+    // on mesure la boîte du texte (prend en compte scale/transform)
+    const tRect = measureTextRect(el);
 
-  target.x = r.left - navR.left + r.width/2 - target.w/2;
-  target.y = r.top - navR.top + r.height/2 - target.h/2;
+    target.w = tRect.width + padX * 2;
+    target.h = tRect.height + padY * 2;
 
-  target.opacity = 1;
-}
+    // centrer le puck sur le centre du texte
+    target.x = tRect.left - navR.left + (tRect.width / 2) - (target.w / 2);
+    target.y = tRect.top - navR.top + (tRect.height / 2) - (target.h / 2);
+
+    target.opacity = 1;
+  }
 
   nav.addEventListener('mousemove', (e)=>{
-  const item = e.target.closest('.nav-item');
-  if (item && nav.contains(item)){
-    // inclure scale pour centrer
-    const style = getComputedStyle(item);
-    const scale = parseFloat(style.transform.split('(')[1]) || 1;
-    setTarget(item, scale);
-  }
-});
+    if (window.matchMedia('(max-width:768px)').matches) return;
+    const item = e.target.closest('.nav-item');
+    if (item && nav.contains(item)){
+      setTarget(item);
+      hover.classList.add('visible');
+    } else {
+      target.opacity = 0;
+      hover.classList.remove('visible');
+    }
+  });
 
   // Snap instantly when mouse enters a nav-item to remove initial lag
   nav.addEventListener('mouseenter', (e) => {
     const item = e.target.closest('.nav-item');
     if (item && nav.contains(item)){
       setTarget(item);
-      // instant snap to target to feel immediate, then lerp takes over
       current.x = target.x;
       current.y = target.y;
       current.w = target.w;
@@ -336,25 +354,24 @@ window.addEventListener('load', () => {
     const dw = target.w - current.w;
     const dh = target.h - current.h;
 
-    // calculer la vitesse proportionnelle à la distance
-    const speed = Math.min(1, Math.sqrt(dx*dx + dy*dy)/100);
+    // vitesse proportionnelle à la distance (accélère lors des grands mouvements)
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const speed = Math.min(1, dist / 120) || 0.0001; // évite multiplication par 0
 
-    // si l'écart est grand, snap directement pour éviter le lag
-    if(Math.abs(dx) > 50) current.x = target.x;
-    if(Math.abs(dy) > 50) current.y = target.y;
-    if(Math.abs(dw) > 50) current.w = target.w;
-    if(Math.abs(dh) > 50) current.h = target.h;
-    
-    // lerp avec speed pour x et y
-    current.x += dx * LERP * speed;
-    current.y += dy * LERP * speed;
+    // snap si très loin pour éviter l'effet "traînée" douloureux
+    if (Math.abs(dx) > 120) current.x = target.x;
+    if (Math.abs(dy) > 120) current.y = target.y;
+    if (Math.abs(dw) > 120) current.w = target.w;
+    if (Math.abs(dh) > 120) current.h = target.h;
 
-    // lerp normal pour largeur, hauteur et opacity
-    current.w += dw * LERP;
-    current.h += dh * LERP;
+    // lerp pour mouvement fluide + réactif
+    current.x += dx * LERP * (0.6 + speed * 0.8); // combine réactivité et vitesse distance
+    current.y += dy * LERP * (0.6 + speed * 0.8);
+    current.w += dw * (LERP * 0.9 + speed * 0.1);
+    current.h += dh * (LERP * 0.9 + speed * 0.1);
     current.opacity += (target.opacity - current.opacity) * (LERP * 1.6);
 
-    // apply
+    // appliquer (arrondir pour éviter sous-pixels bizarres)
     hover.style.transform = `translate3d(${Math.round(current.x)}px, ${Math.round(current.y)}px, 0)`;
     hover.style.width = Math.round(current.w) + 'px';
     hover.style.height = Math.round(current.h) + 'px';
