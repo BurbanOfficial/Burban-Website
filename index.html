@@ -263,6 +263,7 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
   const nav = document.querySelector('.nav');
   if(!nav) return console.warn('Nav not found');
 
+  // Création du hover Liquid Glass
   const existing = nav.querySelector('.nav-hover');
   if (existing) existing.remove();
 
@@ -293,14 +294,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     target.x = tRect.left - navR.left + (tRect.width/2) - (target.w/2);
     target.y = tRect.top - navR.top + (tRect.height/2) - (target.h/2);
     target.opacity = 1;
-
-    // Si item actif, on ajuste le fond renfoncé
-    if(el.classList.contains('active')){
-      el.style.setProperty('--active-x', `${target.x}px`);
-      el.style.setProperty('--active-y', `${target.y}px`);
-      el.style.setProperty('--active-w', `${target.w}px`);
-      el.style.setProperty('--active-h', `${target.h}px`);
-    }
   }
 
   function setTargetFollowMouse(clientX){
@@ -344,15 +337,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     hover.style.width = `${current.w}px`;
     hover.style.height = `${current.h}px`;
     hover.style.opacity = current.opacity;
-
-    // Si un item actif, on applique les mêmes dimensions à son fond renfoncé
-    const active = nav.querySelector('.nav-item.active');
-    if(active){
-      active.style.setProperty('--active-x', `${current.x}px`);
-      active.style.setProperty('--active-y', `${current.y}px`);
-      active.style.setProperty('--active-w', `${current.w}px`);
-      active.style.setProperty('--active-h', `${current.h}px`);
-    }
   }
 
   function raf(){
