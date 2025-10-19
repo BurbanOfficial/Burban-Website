@@ -257,6 +257,7 @@ window.addEventListener('load', () => {
 </script>
 <!-- Script : puck centré sur le texte (remplacer ton ancien bloc par celui-ci) -->
 <!-- ---------- JS (module) ---------- -->
+<!-- ---------- JS (module) ---------- -->
 <script type="module">
 import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 
@@ -270,13 +271,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
   const hover = document.createElement('div');
   hover.className = 'nav-hover';
   nav.appendChild(hover);
-
-  // Création / cleanup du trait actif (indicator)
-  const existingIndicator = nav.querySelector('.nav-indicator');
-  if(existingIndicator) existingIndicator.remove();
-  const indicator = document.createElement('div');
-  indicator.className = 'nav-indicator';
-  nav.appendChild(indicator);
 
   let target = { x:0, y:0, w:0, h:0, opacity:0 };
   let current = { x:0, y:0, w:0, h:0, opacity:0 };
@@ -345,38 +339,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     hover.style.opacity = current.opacity;
   }
 
-  // met à jour le petit trait sous l'item actif
-  function updateIndicator(){
-    const active = nav.querySelector('.nav-item.active');
-    if(!active){
-      indicator.style.opacity = '0';
-      return;
-    }
-
-    const tRect = measureTextRect(active);
-    const navRect = nav.getBoundingClientRect();
-
-    // largeur = texte + même padding que le hover
-    const w = tRect.width + padX*2;
-
-    // left : centré comme le hover
-    const x = tRect.left - navRect.left + (tRect.width/2) - w/2;
-
-    // hauteur du trait (modifiable ici)
-    const indicatorHeight = 8; // px (si tu veux plus fin : 4)
-    indicator.style.height = `${indicatorHeight}px`;
-
-    // offset vertical : combien de pixels sous le texte (ajuste si besoin)
-    const offsetBelowText = 6; // px
-
-    // top = bottom du texte dans coordonnées de nav (top-left du indicator)
-    const y = Math.round(tRect.bottom - navRect.top + offsetBelowText);
-
-    indicator.style.width = `${w}px`;
-    indicator.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
-    indicator.style.opacity = '1';
-  }
-
   function raf(){
     const easeFactor = 0.99;
     current.x += (target.x - current.x) * LERP;
@@ -385,28 +347,62 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     current.h += (target.h - current.h) * LERP;
     current.opacity += (target.opacity - current.opacity) * LERP;
     applyCurrentToHover();
-    updateIndicator();
     requestAnimationFrame(raf);
   }
 
   raf();
 
-  // ---- Initialisation de l'item actif ----
+  // ---- Initialiser le rectangle actif sur l'item déjà actif ----
   const initActive = nav.querySelector('.nav-item.active');
-  if(initActive) updateIndicator();
+  if(initActive){
+    const navR = nav.getBoundingClientRect();
+    const tRect = measureTextRect(initActive);
+    const w = tRect.width + padX*2;
+    const h = tRect.height + padY*2;
+    const x = tRect.left - navR.left + (tRect.width/2) - w/2;
+    const y = tRect.top - navR.top + (tRect.height/2) - h/2;
+    initActive.style.setProperty('--active-w', `${w}px`);
+    initActive.style.setProperty('--active-h', `${h}px`);
+    initActive.style.setProperty('--active-x', `${x}px`);
+    initActive.style.setProperty('--active-y', `${y}px`);
+  }
 
-  // ---- Gestion du clic sur un item ----
+  // ---- Mise à jour du rectangle actif uniquement au clic ----
   nav.querySelectorAll('.nav-item').forEach(item=>{
     item.addEventListener('click', ()=>{
       nav.querySelectorAll('.nav-item.active').forEach(a=>a.classList.remove('active'));
       item.classList.add('active');
-      requestAnimationFrame(updateIndicator);
+
+      const navR = nav.getBoundingClientRect();
+      const tRect = measureTextRect(item);
+      const w = tRect.width + padX*2;
+      const h = tRect.height + padY*2;
+      const x = tRect.left - navR.left + (tRect.width/2) - w/2;
+      const y = tRect.top - navR.top + (tRect.height/2) - h/2;
+
+      item.style.setProperty('--active-w', `${w}px`);
+      item.style.setProperty('--active-h', `${h}px`);
+      item.style.setProperty('--active-x', `${x}px`);
+      item.style.setProperty('--active-y', `${y}px`);
     });
   });
 
-  // Recalcule au resize/scroll pour rester aligné
-  window.addEventListener('resize', () => requestAnimationFrame(updateIndicator));
-  window.addEventListener('scroll', () => requestAnimationFrame(updateIndicator));
+  // Recalage sur resize/scroll (pour que l'active reste bien positionné si layout change)
+  window.addEventListener('resize', () => {
+    const active = nav.querySelector('.nav-item.active');
+    if(active){
+      const navR = nav.getBoundingClientRect();
+      const tRect = measureTextRect(active);
+      const w = tRect.width + padX*2;
+      const h = tRect.height + padY*2;
+      const x = tRect.left - navR.left + (tRect.width/2) - w/2;
+      const y = tRect.top - navR.top + (tRect.height/2) - h/2;
+      active.style.setProperty('--active-w', `${w}px`);
+      active.style.setProperty('--active-h', `${h}px`);
+      active.style.setProperty('--active-x', `${x}px`);
+      active.style.setProperty('--active-y', `${y}px`);
+    }
+  });
 
 })();
 </script>
