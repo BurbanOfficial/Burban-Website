@@ -78,98 +78,33 @@ body {
   z-index: 5;
   opacity: 0;
   width: 0; height: 0;
-  border-radius: 12px;
 
-  /* ==== Liquid Glass Style ajouté ==== */
-  background: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
-  border: 1px solid rgba(255,255,255,0.25);
-  box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 10px 30px rgba(0,0,0,0.15);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 2rem;
+
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),
+              inset 0 4px 20px rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
-
-  transform-style: preserve-3d;
-  overflow: hidden;
-  filter: url(#goo);
 }
-
 .nav-hover.visible {
   opacity: 1;
 }
-
-/* ==== Shadow & Track pour Liquid Glass ==== */
-.nav-hover .liquid__shadow {
-  position: absolute;
-  inset: 0;
-  box-shadow: inset 0px 0px 3px 4px rgba(255,255,255,0.5),
-              inset 4px 0px 3px 4px rgba(255,255,255,0.3);
-  border-radius: 12px;
-}
-
-.nav-hover .indicator__liquid {
-  position: absolute;
-  height: calc(100% - 2px);
-  width: calc(60% - 2px);
-  top: 50%;
-  left: 1px;
-  border-radius: 12px;
-  background: #0000;
-}
-
-.nav-hover .indicator__liquid .shadow {
-  opacity: 0;
+.nav-hover::after {
   content: '';
   position: absolute;
-  inset: 0;
-  border-radius: 12px;
-  box-shadow: 1px -1px 2px hsl(0 0% 100% / 0.5) inset,
-              0px -1px 2px hsl(0 0% 100% / 0.5) inset,
-              -1px -1px 2px hsl(0 0% 100% / 0.5) inset,
-              1px 1px 2px hsl(0 0% 30% / 0.15),
-              -2px -1px 2px hsl(0 0% 100% / 0.25) inset;
-  z-index: 20;
-}
-
-.nav-hover .indicator__liquid .cover {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: white;
-  border-radius: 12px;
-}
-
-/* ==== Wrapper & Overflow ==== */
-.nav-hover .wrapper {
-  position: absolute;
-  inset: 0;
-  border-radius: 12px;
-}
-
-.nav-hover .liquids {
-  position: absolute;
-  inset: 0;
-  border-radius: 12px;
-  overflow: hidden;
-  transform: translate3d(0,0,0);
-}
-
-.nav-hover .liquids .liquid__track {
-  content: '';
-  height: 100%;
-  width: 100%;
-  background: rgba(255,255,255,0.2);
-  border-radius: 12px;
-  position: absolute;
-  top: 50%;
-}
-
-/* ==== Transitions Fluides ==== */
-.nav-hover,
-.nav-hover .liquid__shadow,
-.nav-hover .indicator__liquid,
-.nav-hover .indicator__liquid .shadow,
-.nav-hover .indicator__liquid .cover {
-  transition: all 0.25s ease, opacity 0.3s ease, transform 0.25s ease;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2rem;
+  backdrop-filter: blur(1px);
+  box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, 1),
+              inset 0px -9px 0px -8px rgba(255, 255, 255, 1);
+  opacity: 0.6;
+  z-index: -1;
+  filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
 }
 
 /* Conteneur des icônes et hamburger */
