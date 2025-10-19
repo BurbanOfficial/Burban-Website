@@ -212,3 +212,4 @@ document.querySelectorAll(".accordion-toggle").forEach(button => {
     leafIcon.style.color         = color;
 
   });
+
