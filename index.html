@@ -263,18 +263,26 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
   const nav = document.querySelector('.nav');
   if(!nav) return console.warn('Nav not found');
 
-  // Création du hover Liquid Glass
+  // -- Création / nettoyage du hover Liquid Glass
   const existingHover = nav.querySelector('.nav-hover');
-  if(existingHover) existingHover.remove();
+  if (existingHover) existingHover.remove();
   const hover = document.createElement('div');
   hover.className = 'nav-hover';
   nav.appendChild(hover);
 
-  // Création du trait actif
+  // -- Création / nettoyage du trait actif (indicator)
   const existingIndicator = nav.querySelector('.nav-indicator');
-  if(existingIndicator) existingIndicator.remove();
+  if (existingIndicator) existingIndicator.remove();
   const indicator = document.createElement('div');
   indicator.className = 'nav-indicator';
+  // garantis en ligne (au cas où le CSS ne soit pas chargé)
+  indicator.style.position = 'absolute';
+  indicator.style.height = '4px';
+  indicator.style.borderRadius = '2px';
+  indicator.style.transition = 'all 0.22s cubic-bezier(.2,.9,.2,1)';
+  indicator.style.pointerEvents = 'none';
+  indicator.style.zIndex = '8';
+  indicator.style.opacity = '0';
   nav.appendChild(indicator);
 
   let target = { x:0, y:0, w:0, h:0, opacity:0 };
@@ -339,23 +347,36 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
   });
 
   function applyCurrentToHover(){
+    // apply Liquid Glass hover rectangle
     hover.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
     hover.style.width = `${current.w}px`;
     hover.style.height = `${current.h}px`;
     hover.style.opacity = current.opacity;
   }
 
+  // update indicator (small liquid-glass styled line) under the active item
   function updateIndicator(){
     const active = nav.querySelector('.nav-item.active');
-    if(!active) return;
+    if(!active){
+      // hide indicator if none
+      indicator.style.opacity = '0';
+      return;
+    }
+
     const rect = active.getBoundingClientRect();
     const navRect = nav.getBoundingClientRect();
     const padX = 14;
-    const w = rect.width + padX*2;
-    const x = rect.left - navRect.left + (rect.width/2) - w/2;
-    const y = rect.bottom - navRect.top + 4; // position du petit trait juste sous le texte
-    indicator.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    // same width logic as hover rectangle (text width + same padding)
+    const w = Math.round(rect.width + padX*2);
+    // center the indicator under the text and align width like the hover
+    const x = Math.round(rect.left - navRect.left + (rect.width/2) - w/2);
+    // place indicator slightly below the text baseline (a few px)
+    const y = Math.round(rect.bottom - navRect.top + 6);
+
+    // set styles (use transform for subpixel-smooth movement)
     indicator.style.width = `${w}px`;
+    indicator.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    indicator.style.opacity = '1';
   }
 
   function raf(){
@@ -366,26 +387,38 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     current.h += (target.h - current.h) * LERP;
     current.opacity += (target.opacity - current.opacity) * LERP;
     applyCurrentToHover();
+    // keep indicator synced to the (static) active item
     updateIndicator();
     requestAnimationFrame(raf);
   }
 
   raf();
 
-  // ---- Initialisation de l'item actif ----
+  // ---- Initialisation : si un item est déjà actif au chargement ----
   const initActive = nav.querySelector('.nav-item.active');
   if(initActive){
     updateIndicator();
   }
 
-  // ---- Gestion du clic sur un item ----
+  // ---- Gestion du clic sur un item : active + mise à jour indicator ----
   nav.querySelectorAll('.nav-item').forEach(item=>{
-    item.addEventListener('click', ()=>{
+    item.addEventListener('click', (e)=>{
+      // prevent default navigation for demo/testing? (optional)
+      // e.preventDefault();
+
       nav.querySelectorAll('.nav-item.active').forEach(a=>a.classList.remove('active'));
       item.classList.add('active');
-      updateIndicator();
+      // micro time to allow layout to settle before computing rect
+      requestAnimationFrame(()=> updateIndicator());
     });
   });
+
+  // ---- recalculer l'indicator au resize / scroll (si la nav change de position) ----
+  window.addEventListener('resize', () => requestAnimationFrame(updateIndicator));
+  window.addEventListener('scroll', () => requestAnimationFrame(updateIndicator));
+
+  // expose for debugging (optionnel)
+  window.__navHover = { hover, indicator, updateIndicator };
 
 })();
 </script>
