@@ -51,6 +51,10 @@ body {
   z-index: 10;
 }
 
+.nav-item {
+  transform-origin: center center;
+}
+
 /* Soulignement (garde ton hover classique) */
 .nav-item::after {
   content: '';
