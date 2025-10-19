@@ -273,7 +273,7 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 
   let target = { x:0, y:0, w:0, h:0, opacity:0 };
   let current = { x:0, y:0, w:0, h:0, opacity:0 };
-  const LERP = 0.36;
+  const LERP = 0.48; // vitesse légèrement augmentée
 
   function measureTextRect(el){
     try {
@@ -347,7 +347,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 
   function updateGooEffect(speed){
     if(!gooFilter || !gooMatrix) return;
-    // speed -> stdDeviation 6-20
     const deviation = gsap.utils.clamp(6, 20, speed*1.2 + 8);
     const alpha = gsap.utils.clamp(8, 20, speed*0.2 + 16);
     gsap.set(gooFilter, { attr: { stdDeviation: deviation } });
@@ -360,18 +359,17 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
   }
 
   function raf(){
-    const dx = target.x - current.x;
-    const dy = target.y - current.y;
-    const dw = target.w - current.w;
-    const dh = target.h - current.h;
-    current.x += dx * LERP;
-    current.y += dy * LERP;
-    current.w += dw * LERP;
-    current.h += dh * LERP;
+    // lerp avec easing pour lisser l'arrivée
+    const easeFactor = 0.65; // lissage final
+    current.x += (target.x - current.x) * LERP;
+    current.y += (target.y - current.y) * LERP * easeFactor;
+    current.w += (target.w - current.w) * LERP;
+    current.h += (target.h - current.h) * LERP;
     current.opacity += (target.opacity - current.opacity) * LERP;
     applyCurrentToHover();
     requestAnimationFrame(raf);
   }
+
   raf();
 })();
 </script>
