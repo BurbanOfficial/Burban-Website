@@ -42,6 +42,8 @@ body {
 /* Container du menu */
 /* ---------- CSS ---------- */
 
+/* ---------- CSS: menu & liquid hover ---------- */
+
 .nav { 
   position: relative; 
 }
@@ -62,13 +64,14 @@ body {
   transform-origin: center center;
 }
 
-/* Fond renfoncé pour l'item actif (statique) */
+/* Couleur différente pour l'item sélectionné (texte) */
 .nav-item.active {
   position: relative;
   z-index: 10;
-  color: #111;
+  color: #0b76ff !important; /* <-- couleur du texte sélectionné (modifiable) */
 }
 
+/* Fond renfoncé pour l'item actif (statique) */
 .nav-item.active::before {
   content: '';
   position: absolute;
@@ -126,43 +129,6 @@ body {
   opacity: 0.6;
   z-index: -1;
   filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
-}
-
-/* ---------- nav-indicator (trait actif) ---------- */
-/* reprend le look du nav-hover mais en "mini-rectangle" */
-.nav-indicator {
-  position: absolute;
-  left: 0;
-  top: 0;
-  pointer-events: none;
-  z-index: 6; /* au-dessus du hover (5) et sous le texte (10) */
-  width: 0;
-  height: 8px;                /* hauteur du trait (modifiable) */
-  border-radius: 2rem;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.12),
-              inset 0 4px 12px rgba(255, 255, 255, 0.25);
-  transition: transform 0.22s cubic-bezier(.2,.9,.2,1), width 0.22s, opacity 0.22s;
-  will-change: transform, width, opacity, height;
-  opacity: 0;
-  overflow: visible;
-}
-
-/* petite overlay comme pour nav-hover */
-.nav-indicator::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 2rem;
-  background: rgba(255,255,255,0.08);
-  mix-blend-mode: screen;
-  pointer-events: none;
-  z-index: -1;
-  filter: blur(0.6px);
-  opacity: 0.9;
 }
 
 /* Conteneur des icônes et hamburger */
