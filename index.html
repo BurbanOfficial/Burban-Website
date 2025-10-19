@@ -360,7 +360,7 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 
   function raf(){
     // lerp avec easing pour lisser l'arrivée
-    const easeFactor = 0.65; // lissage final
+    const easeFactor = 0.99; // lissage final
     current.x += (target.x - current.x) * LERP;
     current.y += (target.y - current.y) * LERP * easeFactor;
     current.w += (target.w - current.w) * LERP;
