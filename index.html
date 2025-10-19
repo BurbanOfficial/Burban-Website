@@ -263,7 +263,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
   const nav = document.querySelector('.nav');
   if(!nav) return console.warn('Nav not found');
 
-  // cleanup old hover
   const existing = nav.querySelector('.nav-hover');
   if (existing) existing.remove();
 
@@ -294,6 +293,14 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     target.x = tRect.left - navR.left + (tRect.width/2) - (target.w/2);
     target.y = tRect.top - navR.top + (tRect.height/2) - (target.h/2);
     target.opacity = 1;
+
+    // Si item actif, on ajuste le fond renfoncé
+    if(el.classList.contains('active')){
+      el.style.setProperty('--active-x', `${target.x}px`);
+      el.style.setProperty('--active-y', `${target.y}px`);
+      el.style.setProperty('--active-w', `${target.w}px`);
+      el.style.setProperty('--active-h', `${target.h}px`);
+    }
   }
 
   function setTargetFollowMouse(clientX){
@@ -325,7 +332,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
       setTargetFollowMouse(e.clientX);
     }
     hover.classList.add('visible');
-    updateGooEffect(Math.abs(e.movementX));
   });
 
   nav.addEventListener('mouseleave', ()=>{
@@ -338,29 +344,19 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     hover.style.width = `${current.w}px`;
     hover.style.height = `${current.h}px`;
     hover.style.opacity = current.opacity;
-  }
 
-  let turbBase = 0.008;
-  let lastFrame = performance.now();
-  const gooFilter = document.querySelector('#goo feGaussianBlur');
-  const gooMatrix = document.querySelector('#goo feColorMatrix');
-
-  function updateGooEffect(speed){
-    if(!gooFilter || !gooMatrix) return;
-    const deviation = gsap.utils.clamp(6, 20, speed*1.2 + 8);
-    const alpha = gsap.utils.clamp(8, 20, speed*0.2 + 16);
-    gsap.set(gooFilter, { attr: { stdDeviation: deviation } });
-    gsap.set(gooMatrix, { attr: { values: `
-      1 0 0 0 0
-      0 1 0 0 0
-      0 0 1 0 0
-      0 0 0 ${alpha} -10
-    ` }});
+    // Si un item actif, on applique les mêmes dimensions à son fond renfoncé
+    const active = nav.querySelector('.nav-item.active');
+    if(active){
+      active.style.setProperty('--active-x', `${current.x}px`);
+      active.style.setProperty('--active-y', `${current.y}px`);
+      active.style.setProperty('--active-w', `${current.w}px`);
+      active.style.setProperty('--active-h', `${current.h}px`);
+    }
   }
 
   function raf(){
-    // lerp avec easing pour lisser l'arrivée
-    const easeFactor = 0.99; // lissage final
+    const easeFactor = 0.99;
     current.x += (target.x - current.x) * LERP;
     current.y += (target.y - current.y) * LERP * easeFactor;
     current.w += (target.w - current.w) * LERP;
