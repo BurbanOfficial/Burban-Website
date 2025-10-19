@@ -260,13 +260,22 @@ window.addEventListener('load', () => {
   let current = { x:0, y:0, w:0, h:0, opacity:0 };
   const LERP = 0.36; // réactivité de base
 
+  // variables pour la détection de vitesse
+  let lastMouseX = 0, lastMouseT = 0;
+  let fastMoving = false;
+  const FAST_THRESHOLD = 1400; // px/s (ajuste si nécessaire)
+  const FAST_TIMEOUT = 80;     // ms : durée après laquelle on considère la fin d'un mouvement rapide
+
+  let fastTimer = null;
+
+  function now(){ return performance.now(); }
+
   // mesure serrée du texte (Range) ; fallback sur l'élément si nécessaire
   function measureTextRect(el){
     try {
       const range = document.createRange();
       range.selectNodeContents(el);
       const rect = range.getBoundingClientRect();
-      // si le texte est vide ou rect.width === 0 on fallback sur el.getBoundingClientRect()
       if (!rect || rect.width === 0) {
         return el.getBoundingClientRect();
       }
@@ -280,7 +289,6 @@ window.addEventListener('load', () => {
     const navR = nav.getBoundingClientRect();
     const padX = 8, padY = 6; // padding visuel autour du texte (ajuste si besoin)
 
-    // on mesure la boîte du texte (prend en compte scale/transform)
     const tRect = measureTextRect(el);
 
     target.w = tRect.width + padX * 2;
@@ -293,15 +301,73 @@ window.addEventListener('load', () => {
     target.opacity = 1;
   }
 
+  // util: suivre la souris (position X) pour le mode fast
+  function setTargetFollowMouse(clientX){
+    const navR = nav.getBoundingClientRect();
+    const mouseXInside = clientX - navR.left;
+    // garder largeur/hauteur actuelle pour éviter jump visuel, mais si 0 fallback sur first item
+    if (current.w <= 0 || current.h <= 0) {
+      // fallback : mesurer premier item
+      const first = nav.querySelector('.nav-item');
+      if (first) {
+        const tr = measureTextRect(first);
+        current.w = tr.width + 8*2;
+        current.h = tr.height + 6*2;
+      } else {
+        current.w = 80; current.h = 32;
+      }
+    }
+    target.w = current.w;
+    target.h = current.h;
+    // centrer le puck sur la souris
+    target.x = mouseXInside - (target.w / 2);
+    // vertical: garder la ligne du centre nav (on centre verticalement dans le header)
+    // on calcule la hauteur standard basée sur nav rect pour position stable
+    const navMidY = (nav.getBoundingClientRect().height / 2);
+    target.y = navMidY - (target.h / 2);
+    target.opacity = 1;
+  }
+
+  // mousemove handler avec détection de vitesse
   nav.addEventListener('mousemove', (e)=>{
     if (window.matchMedia('(max-width:768px)').matches) return;
+    const nowT = now();
+    const dx = e.clientX - lastMouseX;
+    const dt = Math.max(1, nowT - (lastMouseT || nowT)); // ms
+    const speed = Math.abs(dx) / dt * 1000; // px/s
+
+    // update last mouse
+    lastMouseX = e.clientX;
+    lastMouseT = nowT;
+
+    // clear previous fast timer
+    if (fastTimer) { clearTimeout(fastTimer); fastTimer = null; }
+
+    if (speed > FAST_THRESHOLD) {
+      // mode "fast" : le puck suit la souris sans se verrouiller sur l'item intermédiaire
+      fastMoving = true;
+      setTargetFollowMouse(e.clientX);
+      hover.classList.add('visible');
+
+      // on planifie la sortie du mode fast si pas de mouvements rapides ensuite
+      fastTimer = setTimeout(()=>{
+        fastMoving = false;
+      }, FAST_TIMEOUT);
+
+      return;
+    }
+
+    // si pas en fast mode, on snap sur l'item sous la souris (ou nearest)
     const item = e.target.closest('.nav-item');
     if (item && nav.contains(item)){
+      // petit délai naturel : on met à jour immédiatement car vitesse faible
       setTarget(item);
       hover.classList.add('visible');
     } else {
-      target.opacity = 0;
-      hover.classList.remove('visible');
+      // si on n'est sur aucun item,on suit la souris en douceur (utile lorsqu'on traverse espaces)
+      setTargetFollowMouse(e.clientX);
+      // mais si on veut masquer quand hors nav area, on pourrait set opacity 0 ; on garde visible pour fluidité
+      hover.classList.add('visible');
     }
   });
 
@@ -329,21 +395,24 @@ window.addEventListener('load', () => {
   });
 
   // also snap on direct mouseenter of each item (safer)
-  const items = nav.querySelectorAll('.nav-item');
+  const items = Array.from(nav.querySelectorAll('.nav-item'));
   items.forEach(it=>{
     it.addEventListener('mouseenter', (ev) => {
       if (window.matchMedia('(max-width:768px)').matches) return;
-      setTarget(it);
-      current.x = target.x;
-      current.y = target.y;
-      current.w = target.w;
-      current.h = target.h;
-      current.opacity = target.opacity;
-      hover.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
-      hover.style.width = current.w + 'px';
-      hover.style.height = current.h + 'px';
-      hover.style.opacity = current.opacity;
-      hover.classList.add('visible');
+      // si on n'est pas en fastMoving, snap direct ; si en fastMoving on ignore ce snap (evite sauts)
+      if (!fastMoving) {
+        setTarget(it);
+        current.x = target.x;
+        current.y = target.y;
+        current.w = target.w;
+        current.h = target.h;
+        current.opacity = target.opacity;
+        hover.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
+        hover.style.width = current.w + 'px';
+        hover.style.height = current.h + 'px';
+        hover.style.opacity = current.opacity;
+        hover.classList.add('visible');
+      }
     });
     it.addEventListener('blur', ()=>{ target.opacity = 0; hover.classList.remove('visible'); });
   });
@@ -356,7 +425,7 @@ window.addEventListener('load', () => {
 
     // vitesse proportionnelle à la distance (accélère lors des grands mouvements)
     const dist = Math.sqrt(dx*dx + dy*dy);
-    const speed = Math.min(1, dist / 120) || 0.0001; // évite multiplication par 0
+    const speed = Math.min(1, dist / 120) || 0.0001;
 
     // snap si très loin pour éviter l'effet "traînée" douloureux
     if (Math.abs(dx) > 120) current.x = target.x;
@@ -365,7 +434,7 @@ window.addEventListener('load', () => {
     if (Math.abs(dh) > 120) current.h = target.h;
 
     // lerp pour mouvement fluide + réactif
-    current.x += dx * LERP * (0.6 + speed * 0.8); // combine réactivité et vitesse distance
+    current.x += dx * LERP * (0.6 + speed * 0.8);
     current.y += dy * LERP * (0.6 + speed * 0.8);
     current.w += dw * (LERP * 0.9 + speed * 0.1);
     current.h += dh * (LERP * 0.9 + speed * 0.1);
