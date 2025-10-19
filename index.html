@@ -44,6 +44,32 @@
 
 </head>
 <body>
+  <!-- SVG FILTERS: paste this inside <body> (start or end) -->
+<svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden;">
+  <defs>
+    <!-- Turbulence + displacement for the liquid look -->
+    <filter id="liquid" x="-40%" y="-40%" width="180%" height="180%" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+      <!-- noise texture -->
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="5" stitchTiles="stitch" result="noise"/>
+      <!-- soften the noise -->
+      <feGaussianBlur in="noise" stdDeviation="0.45" result="noiseBlur"/>
+      <!-- map noise to displacement -->
+      <feDisplacementMap in="SourceGraphic" in2="noiseBlur" scale="6" xChannelSelector="R" yChannelSelector="G" result="distorted"/>
+      <!-- slight chromatic shift to simulate thin-film -->
+      <feColorMatrix in="distorted" type="matrix" values="1 0 0 0 0
+                                                         0 1 0 0 0
+                                                         0 0 1 0 0
+                                                         0 0 0 1 0" result="colormat"/>
+      <!-- a subtle specular highlight layer (merged) -->
+      <feMerge>
+        <feMergeNode in="colormat"/>
+      </feMerge>
+      <!-- animate the turbulence slowly for life (SMIL) -->
+      <animate xlink:href="#liquid feTurbulence" attributeName="baseFrequency" dur="6s" values="0.7;0.85;0.7" repeatCount="indefinite" />
+    </filter>
+  </defs>
+</svg>
+
   <!-- Loader -->
 <div id="loader">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2074 2156">
@@ -255,6 +281,10 @@ window.addEventListener('load', () => {
   const hover = document.createElement('div');
   hover.className = 'nav-hover';
   nav.appendChild(hover);
+
+  const edge = document.createElement('div');
+  edge.className = 'edge';
+  hover.appendChild(edge);
 
   // refs to SVG filter nodes
   const feTurb = document.getElementById('feTurb');
@@ -477,21 +507,6 @@ window.addEventListener('load', () => {
 
 <script src="https://burbanofficial.com/public/includes/footer.js"></script>
 <script async type='text/javascript' src='https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=Sg3qFU'></script>
-
-<!-- Liquid glass SVG filter (insert before </body>) -->
-<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden;">
-  <defs>
-    <filter id="liquid" x="-20%" y="-20%" width="140%" height="140%" primitiveUnits="objectBoundingBox">
-      <!-- turbulence génère le bruit -->
-      <feTurbulence id="feTurb" type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" stitchTiles="stitch" result="noise"/>
-      <!-- légèrement flouter le bruit pour des déformations plus douces -->
-      <feGaussianBlur stdDeviation="0.6" in="noise" result="noiseBlur"/>
-      <!-- displacement map — la valeur `scale` sera ajustée par JS -->
-      <feDisplacementMap id="feDisp" in="SourceGraphic" in2="noiseBlur" scale="8" xChannelSelector="R" yChannelSelector="G"/>
-      <!-- ajoute un léger contraste sur le résultat si besoin -->
-    </filter>
-  </defs>
-</svg>
 
 </body>
 </html>
