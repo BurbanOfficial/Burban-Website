@@ -342,6 +342,19 @@
   <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
+  <!-- SVG MENU (Grands Ecrans)-->
+  <svg style="position:absolute;width:0;height:0;">
+  <filter id="goo">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+    <feColorMatrix in="blur" mode="matrix"
+      values="1 0 0 0 0
+              0 1 0 0 0
+              0 0 1 0 0
+              0 0 0 16 -10" result="goo"/>
+    <feBlend in="SourceGraphic" in2="goo"/>
+  </filter>
+</svg>
+  
   <!-- Loader -->
 <div id="loader">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2074 2156">
@@ -1314,6 +1327,150 @@ document.addEventListener('DOMContentLoaded', () => {
   loadCart();
 });
 </script>
+<!-- Script : puck centré sur le texte (remplacer ton ancien bloc par celui-ci) -->
+<!-- ---------- JS (module) ---------- -->
+<!-- ---------- JS (module) : hover Liquid Glass + active text color ---------- -->
+<script type="module">
+import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
+
+(function(){
+  const nav = document.querySelector('.nav');
+  if(!nav) return console.warn('Nav not found');
+
+  // Création / cleanup du hover Liquid Glass
+  const existingHover = nav.querySelector('.nav-hover');
+  if (existingHover) existingHover.remove();
+  const hover = document.createElement('div');
+  hover.className = 'nav-hover';
+  nav.appendChild(hover);
+
+  // état cible / actuel pour le "puck"
+  let target = { x:0, y:0, w:0, h:0, opacity:0 };
+  let current = { x:0, y:0, w:0, h:0, opacity:0 };
+
+  // LERP pour interpolation (vitesse)
+  const LERP = 0.99; // augmentez légèrement pour un déplacement plus réactif
+  const padX = 14, padY = 10; // padding autour du texte -> définit taille du rectangle
+
+  function measureTextRect(el){
+    try {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const rect = range.getBoundingClientRect();
+      if (!rect || rect.width === 0) return el.getBoundingClientRect();
+      return rect;
+    } catch {
+      return el.getBoundingClientRect();
+    }
+  }
+
+  function setTargetFromElement(el){
+    const navR = nav.getBoundingClientRect();
+    const tRect = measureTextRect(el);
+    target.w = tRect.width + padX*2;
+    target.h = tRect.height + padY*2;
+    target.x = tRect.left - navR.left + (tRect.width/2) - (target.w/2);
+    target.y = tRect.top - navR.top + (tRect.height/2) - (target.h/2);
+    target.opacity = 1;
+  }
+
+  function setTargetFollowMouse(clientX){
+    const navR = nav.getBoundingClientRect();
+    // si on n'a encore aucune taille calculée, on prend la première nav-item comme fallback
+    if (current.w <= 0 || current.h <= 0){
+      const first = nav.querySelector('.nav-item');
+      if(first){
+        const tr = measureTextRect(first);
+        current.w = tr.width + padX*2;
+        current.h = tr.height + padY*2;
+      } else {
+        current.w = 120; current.h = 44;
+      }
+    }
+    target.w = current.w;
+    target.h = current.h;
+    target.x = clientX - navR.left - target.w/2;
+    target.y = navR.height/2 - target.h/2;
+    target.opacity = 1;
+  }
+
+  // Events
+  nav.addEventListener('mousemove', e=>{
+    if(window.matchMedia('(max-width:768px)').matches) return;
+    const item = e.target.closest('.nav-item');
+    if(item && nav.contains(item)){
+      setTargetFromElement(item);
+    } else {
+      setTargetFollowMouse(e.clientX);
+    }
+    hover.classList.add('visible');
+  });
+
+  nav.addEventListener('mouseleave', ()=>{
+    target.opacity = 0;
+    hover.classList.remove('visible');
+  });
+
+  // click => changer uniquement la classe active (change la couleur du texte)
+  nav.querySelectorAll('.nav-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      nav.querySelectorAll('.nav-item.active').forEach(a=>a.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  function applyCurrentToHover(){
+    hover.style.transform = `translate3d(${Math.round(current.x)}px, ${Math.round(current.y)}px, 0)`;
+    hover.style.width = `${Math.round(current.w)}px`;
+    hover.style.height = `${Math.round(current.h)}px`;
+    hover.style.opacity = String(current.opacity);
+  }
+
+  function raf(){
+    const easeFactor = 0.99;
+    current.x += (target.x - current.x) * LERP;
+    current.y += (target.y - current.y) * LERP * easeFactor;
+    current.w += (target.w - current.w) * LERP;
+    current.h += (target.h - current.h) * LERP;
+    current.opacity += (target.opacity - current.opacity) * LERP;
+    applyCurrentToHover();
+    requestAnimationFrame(raf);
+  }
+
+  raf();
+
+  // Recalage simple au resize (évite que hover soit mal positionné après redim)
+  window.addEventListener('resize', () => {
+    const active = nav.querySelector('.nav-item.active');
+    if (active) {
+      // repositionne le hover si la souris est au-dessus
+      const itemUnderMouse = document.elementFromPoint(window.innerWidth/2, window.innerHeight/2)?.closest?.('.nav-item');
+      // on force un update minimal : si active existe, calcule sa cible pour garder fallback propre
+      setTargetFromElement(active);
+      // et réinitialise current pour éviter glitchs visuels extrêmes
+      current.w = target.w; current.h = target.h;
+      current.x = target.x; current.y = target.y;
+      applyCurrentToHover();
+    }
+  });
+
+})();
+</script>
+
+  <!-- Liquid glass SVG filter (insert before </body>) -->
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden;">
+  <defs>
+    <filter id="liquid" x="-20%" y="-20%" width="140%" height="140%" primitiveUnits="objectBoundingBox">
+      <!-- turbulence génère le bruit -->
+      <feTurbulence id="feTurb" type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" stitchTiles="stitch" result="noise"/>
+      <!-- légèrement flouter le bruit pour des déformations plus douces -->
+      <feGaussianBlur stdDeviation="0.6" in="noise" result="noiseBlur"/>
+      <!-- displacement map — la valeur `scale` sera ajustée par JS -->
+      <feDisplacementMap id="feDisp" in="SourceGraphic" in2="noiseBlur" scale="8" xChannelSelector="R" yChannelSelector="G"/>
+      <!-- ajoute un léger contraste sur le résultat si besoin -->
+    </filter>
+  </defs>
+</svg>
 
 <script src="https://burbanofficial.com/public/includes/footer.js"></script>
 <!-- END SCRIPTS -->
