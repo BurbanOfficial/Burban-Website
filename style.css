@@ -70,17 +70,17 @@ body {
 .nav-item.active::before {
   content: '';
   position: absolute;
-  top: -10px; /* ajuste pour centrer verticalement */
-  left: -14px; /* padding horizontal */
-  width: calc(100% + 14*2px);   /* = 28px */
-  height: calc(100% + 10*2px);  /* = 20px */
-  border-radius: 2rem; /* même arrondi que Liquid Glass */
+  top: 0; left: 0;
+  width: var(--active-w, 0);
+  height: var(--active-h, 0);
+  transform: translate(var(--active-x, 0), var(--active-y, 0));
+  border-radius: 2rem; /* même que le hover */
   background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1));
   border: 1px solid rgba(255,255,255,0.25);
   box-shadow: inset 0 4px 6px rgba(0,0,0,0.2), inset 0 -2px 4px rgba(255,255,255,0.2);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  z-index: 0; /* derrière le texte */
+  z-index: 0;
   pointer-events: none;
 }
 
