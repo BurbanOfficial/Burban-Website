@@ -294,6 +294,14 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     target.x = tRect.left - navR.left + (tRect.width/2) - (target.w/2);
     target.y = tRect.top - navR.top + (tRect.height/2) - (target.h/2);
     target.opacity = 1;
+
+    const active = nav.querySelector('.nav-item.active');
+    if(active){
+      active.style.setProperty('--active-w', `${target.w}px`);
+      active.style.setProperty('--active-h', `${target.h}px`);
+      active.style.setProperty('--active-x', `${target.x}px`);
+      active.style.setProperty('--active-y', `${target.y}px`);
+    }
   }
 
   function setTargetFollowMouse(clientX){
