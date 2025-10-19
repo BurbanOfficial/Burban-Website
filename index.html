@@ -336,31 +336,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     hover.style.width = `${current.w}px`;
     hover.style.height = `${current.h}px`;
     hover.style.opacity = current.opacity;
-    updateHoverBorderRadius();
-  }
-
-  // ---- Bord dynamique pour épouser le rectangle actif ----
-  function updateHoverBorderRadius(){
-    const active = nav.querySelector('.nav-item.active');
-    if(!active){
-      hover.style.borderRadius = '2rem';
-      return;
-    }
-
-    const navR = nav.getBoundingClientRect();
-    const padX = 14, padY = 10;
-    const aRect = measureTextRect(active);
-    const activeX = aRect.left - navR.left + (aRect.width/2) - ((aRect.width + padX*2)/2);
-    const activeW = aRect.width + padX*2;
-
-    const dxLeft = current.x - activeX;
-    const dxRight = (activeX + activeW) - (current.x + current.w);
-
-    const factor = 0.3; // ajuste la progressivité du bord
-    const leftRadius = Math.min(32, Math.max(8, 32 * (dxLeft / current.w) * factor));
-    const rightRadius = Math.min(32, Math.max(8, 32 * (dxRight / current.w) * factor));
-
-    hover.style.borderRadius = `${leftRadius}px ${rightRadius}px ${rightRadius}px ${leftRadius}px`;
   }
 
   function raf(){
