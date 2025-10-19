@@ -40,11 +40,8 @@ body {
 /* --- NAV STYLE --- */
 /* Container du menu */
 /* Container du menu */
-.nav { 
-  position: relative; 
-}
+.nav { position: relative; }
 
-/* Liens du menu */
 .nav-item, .nav-item:visited {
   color: #111 !important;
   text-decoration: none;
@@ -60,7 +57,7 @@ body {
   transform-origin: center center;
 }
 
-/* Fond renfoncé pour l'item actif (statique) */
+/* Fond renfoncé pour l'item actif (même taille que Liquid Glass) */
 .nav-item.active {
   position: relative;
   z-index: 10;
@@ -70,26 +67,26 @@ body {
 .nav-item.active::before {
   content: '';
   position: absolute;
-  top: -10px; /* ajuste pour centrer verticalement */
-  left: -14px; /* padding horizontal */
-  width: calc(100% + 28px);
-  height: calc(100% + 20px);
-  border-radius: 2rem; /* même arrondi que Liquid Glass */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 2rem; /* identique au Liquid Glass */
   background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1));
   border: 1px solid rgba(255,255,255,0.25);
   box-shadow: inset 0 4px 6px rgba(0,0,0,0.2), inset 0 -2px 4px rgba(255,255,255,0.2);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  z-index: 0; /* derrière le texte */
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  z-index: -1; /* derrière le texte */
   pointer-events: none;
 }
 
-/* On supprime le soulignement classique */
+/* Soulignement supprimé car remplacé par le fond actif */
 .nav-item::after {
   display: none;
 }
 
-/* Rectangle Liquid Glass hover */
+/* Rectangle verre liquide */
 .nav-hover {
   position: absolute;
   top: 0; left: 0;
@@ -101,18 +98,16 @@ body {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255,255,255,0.25);
   border-radius: 2rem;
 
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),
               inset 0 4px 20px rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
 }
-
 .nav-hover.visible {
   opacity: 1;
 }
-
 .nav-hover::after {
   content: '';
   position: absolute;
