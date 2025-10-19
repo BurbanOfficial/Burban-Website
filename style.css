@@ -67,8 +67,9 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: var(--active-w, 0);
+  height: var(--active-h, 0);
+  transform: translate(var(--active-x,0), var(--active-y,0));
   border-radius: 12px;
   background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1));
   border: 1px solid rgba(255,255,255,0.25);
