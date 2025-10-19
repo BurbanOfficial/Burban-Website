@@ -55,15 +55,31 @@ body {
   transform-origin: center center;
 }
 
-/* Soulignement (garde ton hover classique) */
-.nav-item::after {
+.nav-item.active {
+  position: relative; /* pour positionner pseudo-element si besoin */
+  color: #111; /* couleur texte */
+}
+
+.nav-item.active::before {
   content: '';
   position: absolute;
-  left: 0; bottom: -6px;
-  width: 0%; height: 2px;
-  background: #000;
-  border-radius: 3px;
-  transition: width 0.25s cubic-bezier(.2,.9,.2,1);
+  top: -6px; /* ajuster pour centrer verticalement par rapport au texte */
+  left: -14px; /* même padding que le hover */
+  width: calc(100% + 28px); /* texte + padding horizontal */
+  height: calc(100% + 20px); /* texte + padding vertical */
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1));
+  border: 1px solid rgba(255,255,255,0.25);
+  box-shadow: inset 0 4px 6px rgba(0,0,0,0.2), inset 0 -2px 4px rgba(255,255,255,0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 0; /* derrière le texte */
+  pointer-events: none;
+}
+
+/* Soulignement (garde ton hover classique) */
+.nav-item::after {
+  display: none;
 }
 .nav-item:hover::after,
 .nav-item.active::after {
