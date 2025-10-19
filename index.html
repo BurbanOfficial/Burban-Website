@@ -338,6 +338,38 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     hover.style.opacity = current.opacity;
   }
 
+  // ---- Nouvelle fonction pour adapter les coins du hover quand chevauche l'item actif ----
+  function updateHoverBorderRadius(){
+    const active = nav.querySelector('.nav-item.active');
+    if(!active) {
+      hover.style.borderRadius = '2rem';
+      return;
+    }
+
+    const padX = 14, padY = 10;
+    const navR = nav.getBoundingClientRect();
+    const aRect = measureTextRect(active);
+    const activeX = aRect.left - navR.left + (aRect.width/2) - ((aRect.width + padX*2)/2);
+    const activeY = aRect.top - navR.top + (aRect.height/2) - ((aRect.height + padY*2)/2);
+    const activeW = aRect.width + padX*2;
+    const activeH = aRect.height + padY*2;
+
+    let tl=32, tr=32, br=32, bl=32;
+
+    // Chevauchement à gauche
+    if(current.x < activeX + activeW && current.x + current.w > activeX){
+      tl = 4;
+      bl = 4;
+    }
+    // Chevauchement à droite
+    if(current.x + current.w > activeX && current.x < activeX + activeW){
+      tr = 4;
+      br = 4;
+    }
+
+    hover.style.borderRadius = `${tl}px ${tr}px ${br}px ${bl}px`;
+  }
+
   function raf(){
     const easeFactor = 0.99;
     current.x += (target.x - current.x) * LERP;
@@ -346,6 +378,7 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     current.h += (target.h - current.h) * LERP;
     current.opacity += (target.opacity - current.opacity) * LERP;
     applyCurrentToHover();
+    updateHoverBorderRadius();
     requestAnimationFrame(raf);
   }
 
