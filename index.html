@@ -248,37 +248,59 @@ window.addEventListener('load', () => {
   const nav = document.querySelector('.nav');
   if(!nav) return console.warn('Puck: .nav introuvable');
 
-  // remove any existing nav-hover to avoid duplicates
+  // remove any existing nav-hover/stamp to avoid duplicates
   const existing = nav.querySelector('.nav-hover');
   if (existing) existing.remove();
+  const existingStamp = nav.querySelector('.nav-hover-stamp');
+  if (existingStamp) existingStamp.remove();
 
+  // create hover puck
   const hover = document.createElement('div');
   hover.className = 'nav-hover';
   nav.appendChild(hover);
 
+  // create persistent stamp (trace laissée après click)
+  const stamp = document.createElement('div');
+  stamp.className = 'nav-hover-stamp';
+  nav.appendChild(stamp);
+  stamp.style.opacity = 0; // invisible until click
+
+  // helper to create an svg rect inside a container
+  function createOutlineSVG(container, rx=12, ry=12){
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    const rect = document.createElementNS(SVG_NS, 'rect');
+    rect.setAttribute('rx', rx);
+    rect.setAttribute('ry', ry);
+    rect.setAttribute('x', 1); rect.setAttribute('y', 1);
+    rect.setAttribute('width', '100%'); rect.setAttribute('height', '100%');
+    // stroke attributes will be updated dynamically
+    svg.appendChild(rect);
+    container.appendChild(svg);
+    return { svg, rect };
+  }
+
+  const hoverSVG = createOutlineSVG(hover, 12, 12);
+  const stampSVG = createOutlineSVG(stamp, 12, 12);
+
   let target = { x:0, y:0, w:0, h:0, opacity:0 };
   let current = { x:0, y:0, w:0, h:0, opacity:0 };
-  const LERP = 0.36; // réactivité de base
+  const LERP = 0.36;
 
-  // variables pour la détection de vitesse
-  let lastMouseX = 0, lastMouseT = 0;
+  // fast movement detection
+  let lastMouseX = 0, lastMouseT = 0, fastTimer = null;
   let fastMoving = false;
-  const FAST_THRESHOLD = 1400; // px/s (ajuste si nécessaire)
-  const FAST_TIMEOUT = 80;     // ms : durée après laquelle on considère la fin d'un mouvement rapide
-
-  let fastTimer = null;
+  const FAST_THRESHOLD = 1400;
+  const FAST_TIMEOUT = 80;
 
   function now(){ return performance.now(); }
 
-  // mesure serrée du texte (Range) ; fallback sur l'élément si nécessaire
   function measureTextRect(el){
     try {
       const range = document.createRange();
       range.selectNodeContents(el);
       const rect = range.getBoundingClientRect();
-      if (!rect || rect.width === 0) {
-        return el.getBoundingClientRect();
-      }
+      if (!rect || rect.width === 0) return el.getBoundingClientRect();
       return rect;
     } catch (err) {
       return el.getBoundingClientRect();
@@ -287,29 +309,27 @@ window.addEventListener('load', () => {
 
   function setTarget(el){
     const navR = nav.getBoundingClientRect();
-    const padX = 12, padY = 8; // <-- augmenté légèrement pour un rectangle plus large
+    const padX = 12, padY = 8;
 
     const tRect = measureTextRect(el);
 
     target.w = tRect.width + padX * 2;
     target.h = tRect.height + padY * 2;
 
-    // centrer le puck sur le centre du texte
     target.x = tRect.left - navR.left + (tRect.width / 2) - (target.w / 2);
     target.y = tRect.top - navR.top + (tRect.height / 2) - (target.h / 2);
 
     target.opacity = 1;
+    // update hover svg sizing / stroke
+    updateOutline(hoverSVG, target.w, target.h);
   }
 
-  // util: suivre la souris (position X) pour le mode fast
   function setTargetFollowMouse(clientX){
     const navR = nav.getBoundingClientRect();
     const mouseXInside = clientX - navR.left;
-    const padX = 12, padY = 8; // <-- garder mêmes valeurs pour la cohérence
+    const padX = 12, padY = 8;
 
-    // garder largeur/hauteur actuelle pour éviter jump visuel, mais si 0 fallback sur first item
     if (current.w <= 0 || current.h <= 0) {
-      // fallback : mesurer premier item
       const first = nav.querySelector('.nav-item');
       if (first) {
         const tr = measureTextRect(first);
@@ -321,70 +341,79 @@ window.addEventListener('load', () => {
     }
     target.w = current.w;
     target.h = current.h;
-    // centrer le puck sur la souris
     target.x = mouseXInside - (target.w / 2);
-    // vertical: garder la ligne du centre nav (on centre verticalement dans le header)
     const navMidY = (nav.getBoundingClientRect().height / 2);
     target.y = navMidY - (target.h / 2);
     target.opacity = 1;
+    updateOutline(hoverSVG, target.w, target.h);
   }
 
-  // mousemove handler avec détection de vitesse
+  // update the svg rect size & stroke-dasharray for animation
+  function updateOutline(svgObj, w, h){
+    const { svg, rect } = svgObj;
+    // set svg viewbox / size
+    svg.setAttribute('width', Math.max(1, Math.round(w)));
+    svg.setAttribute('height', Math.max(1, Math.round(h)));
+    svg.style.width = Math.round(w) + 'px';
+    svg.style.height = Math.round(h) + 'px';
+    // compute approximate perimeter (rounded rect approx -> use 2*(w+h))
+    const stroke = parseFloat(rect.getAttribute('stroke-width')) || 2.5;
+    const perim = 2 * (w + h);
+    rect.setAttribute('width', Math.max(1, Math.round(w - 2)));
+    rect.setAttribute('height', Math.max(1, Math.round(h - 2)));
+    // set dasharray and dashoffset so we can animate draw
+    rect.style.strokeDasharray = perim;
+    // if this svg is the hover (transient), we start with dashoffset = perim (hidden)
+    if (svgObj === hoverSVG) {
+      rect.style.strokeDashoffset = perim;
+      // small delay to allow CSS transition when we set visible class
+      // actual draw happens when .nav-hover.visible is applied: CSS sets stroke-dashoffset:0
+    } else {
+      // for stamp, ensure drawn
+      rect.style.strokeDashoffset = 0;
+    }
+  }
+
+  // on mousemove : detect fast motion and follow mouse or target item
   nav.addEventListener('mousemove', (e)=>{
     if (window.matchMedia('(max-width:768px)').matches) return;
     const nowT = now();
     const dx = e.clientX - lastMouseX;
-    const dt = Math.max(1, nowT - (lastMouseT || nowT)); // ms
-    const speed = Math.abs(dx) / dt * 1000; // px/s
+    const dt = Math.max(1, nowT - (lastMouseT || nowT));
+    const speed = Math.abs(dx) / dt * 1000;
 
-    // update last mouse
     lastMouseX = e.clientX;
     lastMouseT = nowT;
 
-    // clear previous fast timer
     if (fastTimer) { clearTimeout(fastTimer); fastTimer = null; }
 
     if (speed > FAST_THRESHOLD) {
-      // mode "fast" : le puck suit la souris sans se verrouiller sur l'item intermédiaire
       fastMoving = true;
       setTargetFollowMouse(e.clientX);
       hover.classList.add('visible');
-
-      // on planifie la sortie du mode fast si pas de mouvements rapides ensuite
-      fastTimer = setTimeout(()=>{
-        fastMoving = false;
-      }, FAST_TIMEOUT);
-
+      fastTimer = setTimeout(()=>{ fastMoving = false; }, FAST_TIMEOUT);
       return;
     }
 
-    // si pas en fast mode, on snap sur l'item sous la souris (ou nearest)
     const item = e.target.closest('.nav-item');
     if (item && nav.contains(item)){
-      // petit délai naturel : on met à jour immédiatement car vitesse faible
       setTarget(item);
       hover.classList.add('visible');
     } else {
-      // si on n'est sur aucun item,on suit la souris en douceur (utile lorsqu'on traverse espaces)
       setTargetFollowMouse(e.clientX);
       hover.classList.add('visible');
     }
   });
 
-  // Snap instantly when mouse enters a nav-item to remove initial lag
+  // snap on enter (unless fastMoving)
   nav.addEventListener('mouseenter', (e) => {
     const item = e.target.closest('.nav-item');
     if (item && nav.contains(item)){
       setTarget(item);
-      current.x = target.x;
-      current.y = target.y;
-      current.w = target.w;
-      current.h = target.h;
+      current.x = target.x; current.y = target.y;
+      current.w = target.w; current.h = target.h;
       current.opacity = target.opacity;
-      hover.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
-      hover.style.width = current.w + 'px';
-      hover.style.height = current.h + 'px';
-      hover.style.opacity = current.opacity;
+      applyCurrentToHover();
       hover.classList.add('visible');
     }
   }, true);
@@ -394,28 +423,67 @@ window.addEventListener('load', () => {
     hover.classList.remove('visible');
   });
 
-  // also snap on direct mouseenter of each item (safer)
   const items = Array.from(nav.querySelectorAll('.nav-item'));
   items.forEach(it=>{
     it.addEventListener('mouseenter', (ev) => {
       if (window.matchMedia('(max-width:768px)').matches) return;
-      // si on n'est pas en fastMoving, snap direct ; si en fastMoving on ignore ce snap (evite sauts)
       if (!fastMoving) {
         setTarget(it);
-        current.x = target.x;
-        current.y = target.y;
-        current.w = target.w;
-        current.h = target.h;
+        current.x = target.x; current.y = target.y;
+        current.w = target.w; current.h = target.h;
         current.opacity = target.opacity;
-        hover.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
-        hover.style.width = current.w + 'px';
-        hover.style.height = current.h + 'px';
-        hover.style.opacity = current.opacity;
+        applyCurrentToHover();
         hover.classList.add('visible');
       }
     });
     it.addEventListener('blur', ()=>{ target.opacity = 0; hover.classList.remove('visible'); });
   });
+
+  // on click: create/move the persistent stamp around the clicked item
+  nav.addEventListener('click', (e) => {
+    const item = e.target.closest('.nav-item');
+    if (!item || !nav.contains(item)) return;
+    // compute target for item and then place stamp at that position
+    const tRect = measureTextRect(item);
+    const navR = nav.getBoundingClientRect();
+    const padX = 12, padY = 8;
+    const sw = tRect.width + padX * 2;
+    const sh = tRect.height + padY * 2;
+    const sx = tRect.left - navR.left + (tRect.width / 2) - (sw / 2);
+    const sy = tRect.top - navR.top + (tRect.height / 2) - (sh / 2);
+
+    // size and position stamp
+    stamp.style.width = Math.round(sw) + 'px';
+    stamp.style.height = Math.round(sh) + 'px';
+    stamp.style.transform = `translate3d(${Math.round(sx)}px, ${Math.round(sy)}px, 0)`;
+    stamp.style.opacity = 1;
+    // update stamp svg outline to match size (will be rendered drawn)
+    updateOutline(stampSVG, sw, sh);
+    // ensure stamp rect is instantly drawn
+    stampSVG.rect.style.strokeDashoffset = 0;
+    // also keep hover hidden briefly then visible (avoid visual clash)
+    hover.classList.remove('visible');
+  });
+
+  function applyCurrentToHover(){
+    hover.style.transform = `translate3d(${Math.round(current.x)}px, ${Math.round(current.y)}px, 0)`;
+    hover.style.width = Math.round(current.w) + 'px';
+    hover.style.height = Math.round(current.h) + 'px';
+    hover.style.opacity = String(current.opacity);
+    // ensure svg reflects size
+    updateOutline(hoverSVG, current.w, current.h);
+    // if visible, trigger draw: set strokeDashoffset -> 0 after update (CSS transition runs)
+    const rect = hoverSVG.rect;
+    const perim = parseFloat(rect.style.strokeDasharray) || (2*(current.w + current.h));
+    // set dashoffset to perim so CSS transition animates to 0 when .visible present
+    rect.style.strokeDashoffset = perim;
+    // small timeout ensures the browser registers the dashoffset before visible toggles
+    requestAnimationFrame(()=> {
+      if (hover.classList.contains('visible')) {
+        rect.style.strokeDashoffset = 0;
+      }
+    });
+  }
 
   function raf(){
     const dx = target.x - current.x;
@@ -423,29 +491,21 @@ window.addEventListener('load', () => {
     const dw = target.w - current.w;
     const dh = target.h - current.h;
 
-    // vitesse proportionnelle à la distance (accélère lors des grands mouvements)
     const dist = Math.sqrt(dx*dx + dy*dy);
     const speed = Math.min(1, dist / 120) || 0.0001;
 
-    // snap si très loin pour éviter l'effet "traînée" douloureux
     if (Math.abs(dx) > 120) current.x = target.x;
     if (Math.abs(dy) > 120) current.y = target.y;
     if (Math.abs(dw) > 120) current.w = target.w;
     if (Math.abs(dh) > 120) current.h = target.h;
 
-    // lerp pour mouvement fluide + réactif
     current.x += dx * LERP * (0.6 + speed * 0.8);
     current.y += dy * LERP * (0.6 + speed * 0.8);
     current.w += dw * (LERP * 0.9 + speed * 0.1);
     current.h += dh * (LERP * 0.9 + speed * 0.1);
     current.opacity += (target.opacity - current.opacity) * (LERP * 1.6);
 
-    // appliquer (arrondir pour éviter sous-pixels bizarres)
-    hover.style.transform = `translate3d(${Math.round(current.x)}px, ${Math.round(current.y)}px, 0)`;
-    hover.style.width = Math.round(current.w) + 'px';
-    hover.style.height = Math.round(current.h) + 'px';
-    hover.style.opacity = String(current.opacity);
-
+    applyCurrentToHover();
     requestAnimationFrame(raf);
   }
   raf();
@@ -465,9 +525,3 @@ window.addEventListener('load', () => {
 
 </body>
 </html>
-
-
-
-
-
-
