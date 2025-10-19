@@ -275,6 +275,9 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
   if(existingIndicator) existingIndicator.remove();
   const indicator = document.createElement('div');
   indicator.className = 'nav-indicator';
+  // force top/left 0 pour que translate3d en JS marche proprement
+  indicator.style.top = '0';
+  indicator.style.left = '0';
   nav.appendChild(indicator);
 
   let target = { x:0, y:0, w:0, h:0, opacity:0 };
@@ -355,19 +358,27 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     const navRect = nav.getBoundingClientRect();
     const padX = 14;
 
-    // width = texte + padding (même logique que le hover)
+    // largeur = texte + padding (même logique que le hover)
     const w = Math.round(rect.width + padX*2);
 
-    // center horizontally like le hover
+    // centre horizontale identique au hover
     const x = Math.round(rect.left - navRect.left + (rect.width/2) - w/2);
 
-    // position Y : on place le top du trait juste sous la baseline du texte
-    // rect.bottom est le bas du texte; on ajoute un petit offset +2px pour un léger espace
-    // (on évite les valeurs trop grandes qui rendaient le trait trop bas auparavant)
-    const offsetBelowText = 2;
-    const y = Math.round(rect.bottom - navRect.top + offsetBelowText);
+    // calcul vertical : on veut que le trait soit juste sous le texte.
+    // on tient compte de la hauteur réelle de l'indicateur pour aligner correctement.
+    const indicatorH = indicator.offsetHeight || 4;
 
-    // apply
+    // offset réglable : si le trait est trop bas/haut, ajuste cette valeur (px)
+    // positive -> plus bas, negative -> plus haut
+    const offsetBelowText = -2; // <<--- ajuste ici si besoin
+
+    // position top (relative à .nav)
+    // rect.bottom - navRect.top -> bas du texte par rapport à nav
+    // on retire indicatorH pour placer le top de l'indicator juste *au-dessus* de la baseline,
+    // puis on ajoute offsetBelowText pour affiner.
+    const y = Math.round(rect.bottom - navRect.top - indicatorH + offsetBelowText);
+
+    // applique
     indicator.style.width = `${w}px`;
     indicator.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     indicator.style.opacity = '1';
@@ -389,16 +400,14 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 
   // ---- Initialisation de l'item actif ----
   const initActive = nav.querySelector('.nav-item.active');
-  if(initActive){
-    updateIndicator();
-  }
+  if(initActive) updateIndicator();
 
   // ---- Gestion du clic sur un item ----
   nav.querySelectorAll('.nav-item').forEach(item=>{
     item.addEventListener('click', ()=>{
       nav.querySelectorAll('.nav-item.active').forEach(a=>a.classList.remove('active'));
       item.classList.add('active');
-      // calcule après repaints
+      // faire le calcul après le repaint pour tenir compte du DOM
       requestAnimationFrame(updateIndicator);
     });
   });
