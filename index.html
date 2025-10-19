@@ -336,32 +336,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     hover.style.width = `${current.w}px`;
     hover.style.height = `${current.h}px`;
     hover.style.opacity = current.opacity;
-    updateHoverCorners();
-  }
-
-  // ---- Dynamically adapt the hover corners to active rectangle ----
-  function updateHoverCorners(){
-    const active = nav.querySelector('.nav-item.active');
-    if(!active){
-      hover.style.borderRadius = '2rem';
-      return;
-    }
-
-    const navR = nav.getBoundingClientRect();
-    const padX = 14;
-    const aRect = measureTextRect(active);
-    const activeX = aRect.left - navR.left;
-    const activeW = aRect.width + padX*2;
-
-    // Calcul des chevauchements gauche/droite
-    const overlapLeft = Math.max(0, activeX + activeW - current.x - current.w);
-    const overlapRight = Math.max(0, current.x - activeX);
-
-    const baseRadius = 32; // coins normaux
-    const leftRadius = Math.max(8, baseRadius - overlapLeft*0.5);
-    const rightRadius = Math.max(8, baseRadius - overlapRight*0.5);
-
-    hover.style.borderRadius = `${leftRadius}px ${rightRadius}px ${rightRadius}px ${leftRadius}px`;
   }
 
   function raf(){
