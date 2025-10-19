@@ -53,7 +53,7 @@ body {
   display: inline-block;
   padding: 10px 8px;
   position: relative;
-  z-index: 10;
+  z-index: 10; /* texte au-dessus de tout */
 }
 
 .nav-item {
@@ -128,17 +128,22 @@ body {
   filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
 }
 
+/* Petit trait indicator (style Liquid Glass) */
 .nav-indicator {
   position: absolute;
-  height: 4px;
+  top: 0;
+  left: 0;
+  height: 4px;                 /* épaisseur du trait */
   border-radius: 2px;
-  background: rgba(255,255,255,0.25);
-  backdrop-filter: blur(12px) saturate(150%);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
-  box-shadow: 0 2px 8px rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.28);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  box-shadow: 0 2px 8px rgba(255,255,255,0.18), inset 0 1px 2px rgba(255,255,255,0.12);
   pointer-events: none;
-  transition: all 0.3s ease;
-  z-index: 8;
+  transition: transform 0.22s cubic-bezier(.2,.9,.2,1), width 0.22s cubic-bezier(.2,.9,.2,1), opacity 0.22s;
+  z-index: 9;                  /* entre hover (5) et texte (10) */
+  will-change: transform, width, opacity;
+  opacity: 0;
 }
 
 /* Conteneur des icônes et hamburger */
