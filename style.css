@@ -33,16 +33,7 @@ body {
 /* -------------------------
    Rectangle arrondi + effet loupe (desktop)
    ------------------------- */
-/* ---------- Nav rectangle + underline hover propre (desktop) ---------- */
 /* ------------------ Liquid glass puck (desktop) ------------------ */
-/* ---------- Liquid glass puck (renforcé) ---------- */
-/* --------- Nav + Liquid glass puck (version debug visible) --------- */
-/* --- NAV STYLE --- */
-/* Container du menu */
-/* Container du menu */
-/* ---------- CSS ---------- */
-
-/* ---------- CSS: menu & liquid hover ---------- */
 
 .nav { 
   position: relative; 
@@ -64,29 +55,11 @@ body {
   transform-origin: center center;
 }
 
-/* Couleur différente pour l'item sélectionné (texte) */
+/* Couleur différente pour l'item sélectionné (texte uniquement) */
 .nav-item.active {
   position: relative;
   z-index: 10;
-  color: #0b76ff !important; /* <-- couleur du texte sélectionné (modifiable) */
-}
-
-/* Fond renfoncé pour l'item actif (statique) */
-.nav-item.active::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: var(--active-w, 0);
-  height: var(--active-h, 0);
-  transform: translate(var(--active-x, 0), var(--active-y, 0));
-  border-radius: 2rem; /* même que le hover */
-  background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1));
-  border: 1px solid rgba(255,255,255,0.25);
-  box-shadow: inset 0 4px 6px rgba(0,0,0,0.2), inset 0 -2px 4px rgba(255,255,255,0.2);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  z-index: 0;
-  pointer-events: none;
+  color: #0b76ff !important; /* couleur du texte sélectionné (modifiable) */
 }
 
 /* On supprime le soulignement classique */
