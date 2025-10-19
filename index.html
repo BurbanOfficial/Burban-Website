@@ -275,11 +275,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
   let current = { x:0, y:0, w:0, h:0, opacity:0 };
   const LERP = 0.99; // vitesse légèrement augmentée
 
-  // Création du fond actif renfoncé
-  const activeBg = document.createElement('div');
-  activeBg.className = 'nav-active-bg';
-  nav.appendChild(activeBg);
-
   function measureTextRect(el){
     try {
       const range = document.createRange();
@@ -299,17 +294,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     target.x = tRect.left - navR.left + (tRect.width/2) - (target.w/2);
     target.y = tRect.top - navR.top + (tRect.height/2) - (target.h/2);
     target.opacity = 1;
-
-    // Si item actif, on positionne le fond renfoncé exactement sur le texte
-    const active = nav.querySelector('.nav-item.active');
-    if(active){
-      const aRect = measureTextRect(active);
-      activeBg.style.width = `${aRect.width + padX*2}px`;
-      activeBg.style.height = `${aRect.height + padY*2}px`;
-      activeBg.style.left = `${aRect.left - navR.left - padX}px`;
-      activeBg.style.top = `${aRect.top - navR.top - padY}px`;
-      activeBg.style.opacity = 1;
-    }
   }
 
   function setTargetFollowMouse(clientX){
