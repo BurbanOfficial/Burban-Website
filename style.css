@@ -72,8 +72,8 @@ body {
   position: absolute;
   top: -10px; /* ajuste pour centrer verticalement */
   left: -14px; /* padding horizontal */
-  width: calc(100% + 28px);
-  height: calc(100% + 20px);
+  width: calc(100% + 14*2px);   /* = 28px */
+  height: calc(100% + 10*2px);  /* = 20px */
   border-radius: 2rem; /* même arrondi que Liquid Glass */
   background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1));
   border: 1px solid rgba(255,255,255,0.25);
