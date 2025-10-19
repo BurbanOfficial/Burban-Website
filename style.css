@@ -38,64 +38,6 @@ body {
 /* ---------- Liquid glass puck (renforcé) ---------- */
 /* --------- Nav + Liquid glass puck (version debug visible) --------- */
 /* --- NAV STYLE --- */
-/* -------------------------------
-   THEME & APPLE-LIKE GLASS VARS
-   ------------------------------- */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,100..1000&display=swap');
-
-:root{
-  --c-glass: #bbbbbc;
-  --c-light: #fff;
-  --c-dark: #000;
-  --c-content: #224;
-  --c-action: #0052f5;
-  --c-bg: #E8E8E9;
-  --glass-reflex-dark: 1;
-  --glass-reflex-light: 1;
-  --saturation: 150%;
-  --nav-hover-radius: 14px;
-  --nav-hover-border: 1px;
-  --nav-hover-padding-x: 12px;
-  --nav-hover-padding-y: 8px;
-  --nav-hover-blur: 14px;
-  --nav-hover-shadow: 0 10px 30px rgba(0,0,0,0.18);
-  --nav-hover-transition: 180ms cubic-bezier(.2,.9,.2,1);
-}
-
-body{
-  font-family: "DM Sans", sans-serif;
-  font-optical-sizing: auto;
-  background: var(--c-bg);
-  color: var(--c-content);
-  transition: background 400ms cubic-bezier(1,0,0.4,1), color 400ms cubic-bezier(1,0,0.4,1);
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-}
-
-/* (optional) theme toggles from your example */
-body:has(input[value="dark"]:checked) {
-  --c-content: #e1e1e1;
-  --c-action: #03d5ff;
-  --c-bg: #1b1b1d;
-  --glass-reflex-dark: 2;
-  --glass-reflex-light: 0.3;
-  --saturation: 150%;
-}
-body:has(input[value="dim"]:checked) {
-  --c-light: #99deff;
-  --c-dark: #20001b;
-  --c-glass: hsl(335 250% 74% / 1);
-  --c-content: #d5dbe2;
-  --c-action: #ff48a9;
-  --c-bg: #152433;
-  --glass-reflex-dark: 2;
-  --glass-reflex-light: 0.7;
-  --saturation: 200%;
-}
-
-/* -------------------------------
-   NAV CORE (your base, kept names)
-   ------------------------------- */
 .nav { position: relative; z-index: 50; }
 
 .nav-item, .nav-item:visited {
@@ -113,7 +55,7 @@ body:has(input[value="dim"]:checked) {
   transform-origin: center center;
 }
 
-/* underline kept */
+/* Soulignement (garde ton hover classique) */
 .nav-item::after {
   content: '';
   position: absolute;
@@ -128,10 +70,7 @@ body:has(input[value="dim"]:checked) {
   width: 100%;
 }
 
-/* -------------------------------
-   NAV HOVER : Liquid glass puck
-   ------------------------------- */
-/* container */
+/* Rectangle verre liquide */
 .nav-hover {
   position: absolute;
   top: 0; left: 0;
@@ -139,94 +78,40 @@ body:has(input[value="dim"]:checked) {
   z-index: 5;
   opacity: 0;
   width: 0; height: 0;
-  border-radius: var(--nav-hover-radius);
-  overflow: visible;
-
-  /* layered glass base */
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--c-light) 16%, transparent), color-mix(in srgb, var(--c-light) 8%, transparent)),
-    linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.02));
-  border: var(--nav-hover-border) solid color-mix(in srgb, var(--c-light) 28%, transparent);
-  box-shadow:
-    inset 0 1px 1px rgba(255,255,255,0.35),
-    var(--nav-hover-shadow);
-  backdrop-filter: blur(var(--nav-hover-blur)) saturate(var(--saturation));
-  -webkit-backdrop-filter: blur(var(--nav-hover-blur)) saturate(var(--saturation));
-  transition:
-    opacity var(--nav-hover-transition),
-    transform var(--nav-hover-transition),
-    width var(--nav-hover-transition),
-    height var(--nav-hover-transition);
+  border-radius: 14px;
+  /* fond semi-transparent — la vraie distorsion sera via SVG filter */
+  background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.10));
+  border: 1px solid rgba(255,255,255,0.25);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.35);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  transition: opacity .22s ease, transform .22s ease;
   will-change: transform, width, height, opacity;
-
-  /* apply the displacement/texture filter */
+  /* appliquer la displacement map */
   filter: url(#liquid) saturate(120%);
 }
-
-/* large soft highlight for realism (soft top rim) */
-.nav-hover::before{
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background:
-    radial-gradient(60% 40% at 20% 18%, rgba(255,255,255,0.45), rgba(255,255,255,0.06) 18%, transparent 35%),
-    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.02));
-  mix-blend-mode: screen;
-  transform: translateZ(0);
-  opacity: 0.95;
-}
-
-/* thin glossy stripe and subtle chrome rim */
+/* small shine highlight for realism */
 .nav-hover::after{
   content: "";
   position: absolute;
-  left: 8%;
-  right: 8%;
-  top: 8%;
-  height: 28%;
-  border-radius: calc(var(--nav-hover-radius) - 4px);
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.08));
-  mix-blend-mode: overlay;
-  opacity: 0.9;
-  transform: translateZ(0);
-  filter: blur(0.5px);
-}
-
-/* subtle colored edge (chromatic-ish) */
-.nav-hover .edge {
-  position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(255,120,160,0.06), rgba(255,255,255,0), rgba(120,180,255,0.06));
-  mix-blend-mode: screen;
-  opacity: 0.9;
-  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0.02));
+  mix-blend-mode: overlay;
+  opacity: 0.8;
 }
-
-/* visible state */
-.nav-hover.visible {
-  opacity: 1;
-}
-
-/* fallback when SVG filters are unsupported */
+/* fallback if filters not supported */
 @supports not (filter: url(#liquid)) {
-  .nav-hover {
-    filter: none;
-    background:
-      linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06));
+  .nav-hover{
+    background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
-  .nav-hover::before{ opacity: 0.75; }
-  .nav-hover::after{ opacity: 0.8; }
 }
-
-/* small performance note: prefer translate3d pixel snaps in JS */
+.nav-hover.visible {
+  opacity: 1;
+}
 
 /* Conteneur des icônes et hamburger */
 .actions {
