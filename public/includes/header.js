@@ -148,60 +148,34 @@ function updateYearIfPresent() {
   if (y) y.textContent = new Date().getFullYear();
 }
 
-/* ---------- Active nav item detection (robuste, améliorée) ---------- */
+/* ---------- Active nav item detection (robuste) ---------- */
 function setActiveNavByPath() {
   const nav = document.querySelector('.nav');
   if (!nav) return;
   const items = Array.from(nav.querySelectorAll('.nav-item'));
   items.forEach(i => i.classList.remove('active'));
 
-  // normalise un chemin : retire query/hash, remplace '/' final par 'index.html'
-  function normalizePath(path) {
-    if (!path) return 'index.html';
-    let p = path.split('?')[0].split('#')[0];
-    if (p.endsWith('/')) p = p + 'index.html';
-    // si le path est juste '' ou '/', on veut index.html
-    if (p === '' || p === '/') return 'index.html';
-    return p;
-  }
-
-  const currentPathRaw = window.location.pathname || '/';
-  const currentPath = normalizePath(currentPathRaw).toLowerCase();
-  const currentFile = currentPath.split('/').pop();
-
-  // Premier essai : matcher le pathname absolu des <a> si possible
+  const currentPath = window.location.pathname || '/shop.html';
+  // try to match exact pathname first, else fallback to filename match
   let matched = items.find(a => {
     try {
-      const ahrefPath = normalizePath(new URL(a.href, window.location.origin).pathname).toLowerCase();
-      return ahrefPath === currentPath;
-    } catch (e) {
-      return false;
-    }
+      const ahref = new URL(a.href, window.location.origin).pathname;
+      return ahref === currentPath;
+    } catch { return false; }
   });
 
-  // Deuxième essai : matcher par nom de fichier (shop.html, index.html...)
   if (!matched) {
+    const file = currentPath.split('/').pop() || 'shop.html';
     matched = items.find(a => {
-      const href = (a.getAttribute('href') || '').split('?')[0].split('#')[0];
-      const hrefNorm = href.endsWith('/') ? href + 'index.html' : href;
-      const hrefFile = hrefNorm.split('/').pop().toLowerCase();
-      return hrefFile === currentFile;
+      const href = a.getAttribute('href') || '';
+      return href.endsWith(file) || href.includes(file);
     });
   }
 
-  // Troisième essai : matcher par présence du segment (ex: '/shop' vs '/shop.html' or '/shop/')
-  if (!matched) {
-    matched = items.find(a => {
-      const href = (a.getAttribute('href') || '').toLowerCase();
-      return href && (currentPath.includes(href) || href.includes(currentPath) || href.includes(currentFile));
-    });
-  }
-
-  if (matched) {
-    matched.classList.add('active');
-  } else {
+  if (matched) matched.classList.add('active');
+  else {
     // fallback: mark Home if nothing matched
-    const home = items.find(a => (a.getAttribute('href') || '').toLowerCase().endsWith('index.html'));
+    const home = items.find(a => (a.getAttribute('href') || '').endsWith('shop.html'));
     if (home) home.classList.add('active');
   }
 }
