@@ -155,53 +155,29 @@ function setActiveNavByPath() {
   const items = Array.from(nav.querySelectorAll('.nav-item'));
   items.forEach(i => i.classList.remove('active'));
 
-  const stripQueryHash = (p) => (p || '')
-    .split('?')[0].split('#')[0];
-
-  const normalize = (p) => {
-    p = stripQueryHash(p || '/');
-    // treat root and trailing-slash directories as index.html
-    if (p === '/' || p === '') return '/index.html';
-    // remove trailing slash except for root
-    if (p.endsWith('/') && p.length > 1) p = p.slice(0, -1);
-    return p;
-  };
-
-  const currentRaw = window.location.pathname || '/';
-  const currentPath = normalize(currentRaw);
-
-  // helper: get normalized pathname from anchor href
-  function hrefPath(a) {
+  const currentPath = window.location.pathname || '/index.html';
+  // try to match exact pathname first, else fallback to filename match
+  let matched = items.find(a => {
     try {
       const ahref = new URL(a.href, window.location.origin).pathname;
-      return normalize(ahref);
-    } catch {
-      // fallback to attribute if URL parsing fails
-      return normalize(a.getAttribute('href') || '');
-    }
-  }
-
-  // filename fallback e.g. index.html, shop.html
-  const currentFile = currentPath.split('/').pop();
-
-  let matched = items.find(a => {
-    const hp = hrefPath(a);
-
-    if (hp === currentPath) return true;               // exact match
-    if (hp.endsWith(currentFile)) return true;         // filename match
-    if (currentPath.startsWith(hp) && hp !== '/index.html') return true; // folder match (/shop vs /shop/...)
-    if (hp.startsWith(currentPath) && currentPath !== '/index.html') return true; // reverse folder match
-    return false;
+      return ahref === currentPath;
+    } catch { return false; }
   });
 
-  if (matched) {
-    matched.classList.add('active');
-    return;
+  if (!matched) {
+    const file = currentPath.split('/').pop() || 'index.html';
+    matched = items.find(a => {
+      const href = a.getAttribute('href') || '';
+      return href.endsWith(file) || href.includes(file);
+    });
   }
 
-  // fallback: mark Home if nothing matched
-  const home = items.find(a => (a.getAttribute('href') || '').endsWith('index.html') || (new URL(a.href, window.location.origin).pathname === '/'));
-  if (home) home.classList.add('active');
+  if (matched) matched.classList.add('active');
+  else {
+    // fallback: mark Home if nothing matched
+    const home = items.find(a => (a.getAttribute('href') || '').endsWith('index.html'));
+    if (home) home.classList.add('active');
+  }
 }
 
 /* ---------- Nav puck (liquid hover) ---------- */
