@@ -12,7 +12,7 @@ document.write(`
     <div class="footer-container">
       <div class="footer-brand">
         <img src="https://i.imgur.com/Nup8sfC.png" alt="Burban Logo">
-        <p>More than a brand, an identity.</p>
+        <p>More than a brand, an identity.</p><br><br>
         <img src="https://imgur.com/hOHypRr.png" alt="CB Paiements Sécurisé" class="payment-logo">
       </div>
       <div class="footer-links">
@@ -45,4 +45,5 @@ document.write(`
     document.getElementById('year').textContent = new Date().getFullYear();
   <\/script>
 `);
+
 
