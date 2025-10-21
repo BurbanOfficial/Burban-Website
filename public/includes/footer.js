@@ -4,7 +4,7 @@ document.write(`
     <style>
       /* style spécifique pour le logo CB (écran et impression) */
       .cb-logo {
-        width: 45px;
+        width: auto;
         min-width: 45px;
         height: auto;
         display: block;
