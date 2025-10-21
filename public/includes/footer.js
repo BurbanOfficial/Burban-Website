@@ -1,36 +1,11 @@
 // footer.js
 document.write(`
   <footer class="footer">
-    <style>
-      /* style spécifique pour le logo CB (écran et impression) */
-      .cb-logo {
-        width: 45px;
-        height: auto;
-        display: block;
-        margin: 8px auto 0; /* centré horizontalement avec marge en haut */
-      }
-      /* Pour l'impression : largeur minimale 16.8mm */
-      @media print {
-        .cb-logo {
-          width: 16.8mm !important;
-          min-width: 16.8mm !important;
-          height: auto;
-        }
-      }
-    </style>
-
     <div class="footer-container">
       <div class="footer-brand">
         <img src="https://i.imgur.com/Nup8sfC.png" alt="Burban Logo">
         <p>More than a brand, an identity.</p>
-        <!-- Logo CB paiement sécurisé — largeur d'affichage 45px (écran) / 16.8mm (print) -->
-        <img
-          src="https://imgur.com/hOHypRr.png"
-          alt="CB Paiement sécurisé"
-          class="cb-logo"
-          loading="lazy"
-          width="45"
-        >
+        <img src="https://imgur.com/hOHypRr.png" alt="CB Paiements Sécurisé" class="payment-logo">
       </div>
       <div class="footer-links">
         <div>
