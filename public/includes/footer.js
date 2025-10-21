@@ -4,7 +4,7 @@ document.write(`
     <style>
       .payment-logo {
         display: block;
-        margin-top: 12px; /* augmente ou diminue cette valeur pour ajuster l'espace */
+        margin-top: 30px; /* augmente ou diminue cette valeur pour ajuster l'espace */
         max-width: 140px;
         height: auto;
       }
@@ -45,3 +45,4 @@ document.write(`
     document.getElementById('year').textContent = new Date().getFullYear();
   <\/script>
 `);
+
