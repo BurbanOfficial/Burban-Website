@@ -1,6 +1,14 @@
 // footer.js
 document.write(`
   <footer class="footer">
+    <style>
+      .payment-logo {
+        display: block;
+        margin-top: 12px; /* augmente ou diminue cette valeur pour ajuster l'espace */
+        max-width: 140px;
+        height: auto;
+      }
+    </style>
     <div class="footer-container">
       <div class="footer-brand">
         <img src="https://i.imgur.com/Nup8sfC.png" alt="Burban Logo">
