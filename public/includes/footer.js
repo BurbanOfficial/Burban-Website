@@ -4,11 +4,10 @@ document.write(`
     <style>
       /* style spécifique pour le logo CB (écran et impression) */
       .cb-logo {
-        width: auto;
-        min-width: 45px;
+        width: 45px;
         height: auto;
         display: block;
-        margin-top: 8px;
+        margin: 8px auto 0; /* centré horizontalement avec marge en haut */
       }
       /* Pour l'impression : largeur minimale 16.8mm */
       @media print {
