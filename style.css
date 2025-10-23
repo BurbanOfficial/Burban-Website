@@ -18,7 +18,7 @@ body {
   justify-content: space-between;
   padding: 20px 40px;
   position: sticky;
-  top: var(--banner-height);
+  top: 0;
   background: #ffffff10;
   backdrop-filter: blur(80px);
   -webkit-backdrop-filter: blur(20px);
@@ -541,7 +541,6 @@ body {
 
 /* Headers réglages page shop*/
 :root {
-  --banner-height: 48px;       /* hauteur du bandeau (ajuste si besoin) */
   --main-header-height: 72px;   /* Hauteur de ton header principal */
   --shop-header-height: 80px;   /* Hauteur de ton header shop */
 }
@@ -675,62 +674,4 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   font-family: 'Poppins', sans-serif; /* ou autre police urbaine */
   z-index: 10;
-}
-
-/* --------- Bandeau défilant (ajoute ces règles dans style.css) --------- */
-.info-marquee{
-  position: sticky;
-  top: 0;
-  width: 100%;
-  height: var(--banner-height);
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-  backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  z-index: 1200;
-  padding: 0 14px;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-}
-
-/* viewport masque */
-.marquee-viewport{
-  width: 100%;
-  overflow: hidden;
-  display: block;
-}
-
-/* conteneur animé (la transform sera animée par CSS keyframes dynamiques) */
-.marquee-inner{
-  display: flex;
-  align-items: center;
-  gap: 40px;
-  white-space: nowrap;
-  will-change: transform;
-  /* animation properties populated dynamiquement by JS:
-     --marquee-duration : s
-     animation-name: marqueeAnim (injected)
-  */
-}
-
-/* chaque item */
-.marquee-item{
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-  color: inherit;
-  font-weight: 500;
-  font-size: 14px;
-  padding: 6px 0;
-  opacity: 0.95;
-}
-.marquee-item:hover{ text-decoration: underline; opacity: 1; }
-
-/* responsive tweaks */
-@media (max-width:420px){
-  .marquee-inner{ gap: 18px; }
-  .marquee-item{ font-size: 13px; }
 }
