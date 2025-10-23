@@ -678,7 +678,6 @@ body {
 }
 
 /* --------- Bandeau défilant (ajoute ces règles dans style.css) --------- */
-/* --------- Bandeau défilant (nouveau) --------- */
 .info-marquee{
   position: sticky;
   top: 0;
@@ -697,15 +696,21 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
-/* piste qui contient deux fois le contenu (pour boucle fluide) */
+/* viewport masque le débord */
+.marquee-viewport{
+  width: 100%;
+  overflow: hidden;
+  display: block;
+}
+
+/* piste contenant 2 copies (inline-flex) */
 .marquee-track{
   display: inline-flex;
   align-items: center;
   gap: 40px;
   white-space: nowrap;
   transform: translateX(0);
-  /* animation appliquée au conteneur entier (les deux copies se déplacent ensemble) */
-  animation: marqueeScroll 18s linear infinite;
+  will-change: transform;
   font-size: 14px;
   font-weight: 500;
   color: #111;
@@ -721,19 +726,9 @@ body {
   padding: 6px 0;
   opacity: 0.95;
 }
-.marquee-item:hover{
-  text-decoration: underline;
-  opacity: 1;
-}
+.marquee-item:hover{ text-decoration: underline; opacity: 1; }
 
-/* petites adaptations responsive */
 @media (max-width:420px){
   .info-marquee{ padding: 0 10px; }
   .marquee-track{ gap: 20px; font-size: 13px; }
-}
-
-/* keyframes : on déplace de 0 à -50% pour une boucle grâce à la duplication JS */
-@keyframes marqueeScroll{
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
 }
