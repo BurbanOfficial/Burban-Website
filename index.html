@@ -60,11 +60,9 @@
   </filter>
 </svg>
 
-<!-- Bandeau d'info défilant — version fluide RAF -->
+<!-- Bandeau d'info défilant (insérer juste après <body>) -->
 <div id="info-marquee" class="info-marquee" role="region" aria-label="Informations importantes" aria-live="polite">
-  <div class="marquee-viewport" aria-hidden="false">
-    <div class="marquee-track" id="marqueeTrack"></div>
-  </div>
+  <div class="marquee-track" id="marqueeTrack" aria-hidden="false"></div>
 </div>
 
 
@@ -398,20 +396,25 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 
 <script>
 (function(){
-  // === CONFIG : messages / liens ===
+  // === CONFIG - modifie les messages ici si besoin ===
   const messages = [
     { text: "Livraison gratuite en France à partir de 50€", url: "/shipping-info.html" },
     { text: "Nouveau drop — 10 novembre 2025 • Quantités limitées", url: "/shop.html" },
     { text: "Suivez-nous sur Instagram @burbanofficial", url: "https://instagram.com/burbanofficial" },
-    // ajoute d'autres messages si nécessaire
+    // Ajoute des messages si nécessaire
   ];
 
   const track = document.getElementById('marqueeTrack');
   if(!track) return;
 
-  // construit une copie des items (retourne fragment)
-  function buildFragment(){
-    const frag = document.createDocumentFragment();
+  // --- Build one "block" (single copy) of items ---
+  function buildBlock(){
+    const block = document.createElement('div');
+    block.className = 'marquee-block';
+    block.style.display = 'inline-flex';
+    block.style.alignItems = 'center';
+    block.style.gap = '40px';
+    block.style.whiteSpace = 'nowrap';
     messages.forEach(m => {
       const a = document.createElement('a');
       a.className = 'marquee-item';
@@ -421,127 +424,102 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
       }
-      frag.appendChild(a);
+      block.appendChild(a);
     });
-    return frag;
+    return block;
   }
 
-  // Remplir la piste avec 2 copies consécutives (pour wrapping)
-  function populate(){
-    track.innerHTML = '';
-    const frag1 = buildFragment();
-    const frag2 = buildFragment();
-    track.appendChild(frag1);
-    track.appendChild(frag2);
+  // Clear existing
+  track.innerHTML = '';
+
+  // Create at least 3 copies to avoid visible gaps on very wide screens / slow speeds
+  const blocks = [];
+  blocks.push(buildBlock());
+  blocks.push(buildBlock());
+  blocks.push(buildBlock());
+  blocks.forEach(b => track.appendChild(b));
+
+  // CSS safety: ensure track is inline-flex (already in your CSS), will-change for perf
+  track.style.willChange = 'transform';
+  track.style.display = 'flex';
+  track.style.alignItems = 'center';
+
+  // We'll manage x offset manually
+  let offset = 0;
+  let lastTime = performance.now();
+
+  // measure width of one block (we assume blocks[0] widths are same)
+  function blockWidth(){
+    const b = track.querySelector('.marquee-block');
+    return b ? b.getBoundingClientRect().width : 0;
   }
-  populate();
 
-  // Variables d'animation
-  let copyWidth = 0;    // largeur d'une seule copie de contenu
-  let pos = 0;          // position courante (px) : traduit la piste vers la gauche
-  let lastTime = null;
-  let rafId = null;
-  const speedPxPerSec = 110; // vitesse (px/s) — ajuste si tu veux plus vite ou plus lent
+  // adapt speed depending on viewport width to keep readable
+  function calcSpeedPxPerSecond(){
+    // base px/sec; augmente si contenu très large
+    const base = 110; // ajuste pour vitesse générale
+    const w = window.innerWidth;
+    // léger scaling for small screens
+    return Math.max(60, Math.round(base * (1024 / Math.max(w, 360))));
+  }
 
-  // calcule largeur d'une copie (et applique styles si besoin)
-  function recalc(){
-    // largeur totale de la piste / 2 = largeur d'une copie (on a 2 copies)
-    // si le contenu est trop court, on duplique encore pour éviter "vide"
-    const total = track.scrollWidth;
-    copyWidth = Math.floor(total / 2) || 0;
+  let speed = calcSpeedPxPerSecond();
 
-    // si copyWidth plus petit que viewport, dupliquer encore pour remplir
-    const viewport = track.parentElement.clientWidth;
-    if(copyWidth < viewport){
-      // on duplique dynamiquement jusqu'à dépasser le viewport * 1.5
-      const needed = Math.ceil((viewport * 1.5) / Math.max(copyWidth,1));
-      // recreate with many copies
-      track.innerHTML = '';
-      for(let i=0;i<needed;i++){
-        const frag = buildFragment();
-        track.appendChild(frag);
-      }
-      // maintenant recalculer
-      copyWidth = Math.floor(track.scrollWidth / needed) || track.scrollWidth;
+  // ensure there are enough blocks to fill 2x viewport (prevents gap on large screens)
+  function ensureBlocks(){
+    const single = blockWidth();
+    if(!single) return;
+    const needed = Math.ceil((window.innerWidth * 2) / single);
+    while(track.querySelectorAll('.marquee-block').length < Math.max(3, needed)){
+      track.appendChild(buildBlock());
     }
   }
 
-  // boucle RAF
-  function step(now){
-    if(lastTime === null) lastTime = now;
-    const delta = (now - lastTime) / 1000; // sec
+  ensureBlocks();
+  window.addEventListener('resize', () => {
+    ensureBlocks();
+    speed = calcSpeedPxPerSecond();
+  });
+
+  // main loop
+  function loop(now){
+    const dt = (now - lastTime) / 1000; // seconds
     lastTime = now;
+    // move left
+    offset -= speed * dt;
+    // width of one block to decide wrap
+    const w = blockWidth() || 1;
 
-    pos += speedPxPerSec * delta; // on avance vers la droite en pixels
-    // si on a dépassé la largeur d'une "séquence utile", on wrap sans saut
-    // find modulus relative to copyWidth (si copyWidth === 0 -> skip)
-    if(copyWidth > 0){
-      if(pos >= copyWidth){
-        // wrap : on retire copyWidth (équivalent à remettre la piste sans coupure)
-        pos = pos - copyWidth;
-      }
-      // on applique une translation négative (défilement vers la gauche)
-      track.style.transform = `translateX(${-pos}px)`;
-    } else {
-      // fallback
-      track.style.transform = `translateX(0px)`;
+    // When the first block fully left viewport, move it to the end and adjust offset
+    // We use integer math to avoid sub-pixel jumps causing visual seams
+    if (Math.abs(offset) >= w) {
+      // shift offset forward by width of one block (wrap)
+      offset += w;
+      // Move first child to the end
+      const first = track.querySelector('.marquee-block');
+      if (first) track.appendChild(first);
+      // no visual jump because offset adjusted
     }
 
-    rafId = requestAnimationFrame(step);
+    // apply transform
+    // translateX(offset px) where offset is negative to scroll left
+    track.style.transform = 'translateX(' + Math.round(offset) + 'px)';
+
+    // keep running
+    requestAnimationFrame(loop);
   }
 
-  // (re)start animation
-  function start(){
-    cancelAnimationFrame(rafId);
-    lastTime = null;
-    rafId = requestAnimationFrame(step);
-  }
+  // initialize lastTime and start
+  lastTime = performance.now();
+  requestAnimationFrame(loop);
 
-  // initial calc & start
-  function init(){
-    recalc();
-    // set small timeout to ensure DOM/CSS appliqués (safer)
-    setTimeout(()=> {
-      recalc();
-      start();
-    }, 50);
-  }
+  // accessibility: don't pause on focus/hover/click (explicitly block external scripts)
+  track.addEventListener('mouseenter', ()=> track.style.pointerEvents = 'auto');
+  track.addEventListener('mouseleave', ()=> track.style.pointerEvents = 'auto');
 
-  // resize observer pour recalculer si contenu / fenêtre change
-  let resizeTimer = null;
-  function onResize(){
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(()=>{
-      // rebuild and recalc to ensure seamless
-      populate();
-      recalc();
-      // reset position modulo new copyWidth to avoid jump
-      pos = pos % Math.max(copyWidth,1);
-    }, 80);
-  }
-  window.addEventListener('resize', onResize);
+  // defensive: if some external CSS/JS tries to pause animationPlayState, we don't use it.
+  // Keep transform-managed loop always running.
 
-  // Observers pour changements dynamiques
-  const mo = new MutationObserver(()=>{
-    // si messages changent dynamiquement, rebuild
-    populate();
-    recalc();
-  });
-  mo.observe(track, { childList: true, subtree: true });
-
-  // Lance tout
-  init();
-
-  // sécurité : si perte de visibilité (tab inactif) on garde RAF mais peut baisser fréquence naturellement
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-      // assure qu'on continue (et évite gros jump en recalculant)
-      recalc();
-      lastTime = performance.now();
-    }
-  });
-
-  // Pas de pause au hover/focus/clic — aucune logique de pause ici (toujours full)
 })();
 </script>
 
