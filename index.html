@@ -120,24 +120,8 @@
 
   <!-- Hero Banners -->
   <section class="hero-banners">
-    <a href="account.html" class="banner" style="position:relative; display:block;">
-      <video autoplay muted loop playsinline
-           style="width:100%; height:100%; display:block; object-fit:cover; border-radius:16px;">
-      <source src="https://remycormon20.wistia.com/medias/t3qxot5n4s" type="video/mp4">
-      Votre navigateur ne supporte pas la vidéo.
-    </video>
-      <!-- Overlay inline, centré au milieu de la bannière -->
-      <div id="simple-countdown-wrap"
-          style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none;">
-        <div id="simple-countdown-card"
-            style="pointer-events:none; text-align:center; padding:12px 18px; border-radius:12px;
-                    background: rgba(0,0,0,0.55); color:#fff; max-width:90%;">
-          <div id="simple-countdown-text"
-              style="font-weight:800; line-height:1; font-size:clamp(20px,6vw,60px);">
-            00j 00h 00m 00s
-          </div>
-        </div>
-      </div>
+    <a href="account.html" class="banner">
+      <img src="https://imgur.com/GJTJfEE.png" alt="New Drop">
     </a>
     <a href="account.html" class="banner">
       <img src="https://imgur.com/NG4FLAT.png" alt="Welcome Offers">
@@ -225,39 +209,6 @@
   document.getElementById('languageSelectorMobile').addEventListener('change', function () {
     handleLanguageChange(this.value);
   });
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  // <-- Change la date cible ici si besoin -->
-  const targetTime = new Date('Nov 10, 2025 00:00:00').getTime();
-
-  const out = document.getElementById('simple-countdown-text');
-  if (!out) return;
-
-  function pad(n){ return String(n).padStart(2,'0'); }
-
-  function updateCountdown(){
-    const now = Date.now();
-    const diff = targetTime - now;
-
-    if (diff <= 0) {
-      out.textContent = "C'est parti !";
-      clearInterval(intervalId);
-      return;
-    }
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-    out.textContent = `${pad(days)}j ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
-  }
-
-  updateCountdown(); // affiche immédiatement
-  const intervalId = setInterval(updateCountdown, 1000);
-});
 </script>
 
 <script>
@@ -457,4 +408,3 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 
 </body>
 </html>
-
