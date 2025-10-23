@@ -678,6 +678,7 @@ body {
 }
 
 /* --------- Bandeau défilant (ajoute ces règles dans style.css) --------- */
+/* --------- Bandeau défilant (nouveau) --------- */
 .info-marquee{
   position: sticky;
   top: 0;
@@ -690,70 +691,49 @@ body {
   backdrop-filter: blur(12px) saturate(140%);
   -webkit-backdrop-filter: blur(12px) saturate(140%);
   border-bottom: 1px solid rgba(0,0,0,0.06);
-  z-index: 1200; /* au-dessus du header */
-  padding: 0 12px;
-  gap: 12px;
+  z-index: 1200;
+  padding: 0 14px;
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
 }
 
-/* contenu défilant */
-.marquee-inner{
+/* piste qui contient deux fois le contenu (pour boucle fluide) */
+.marquee-track{
   display: inline-flex;
-  white-space: nowrap;
-  will-change: transform;
   align-items: center;
   gap: 40px;
-  padding-left: 8px;
-  /* animation (sera démarrée via CSS) */
+  white-space: nowrap;
+  transform: translateX(0);
+  /* animation appliquée au conteneur entier (les deux copies se déplacent ensemble) */
   animation: marqueeScroll 18s linear infinite;
-  animation-play-state: running;
   font-size: 14px;
   font-weight: 500;
   color: #111;
 }
 
-/* liens dans le bandeau */
+/* items cliquables */
 .marquee-item{
   display: inline-flex;
   align-items: center;
   gap: 10px;
   text-decoration: none;
   color: inherit;
-  opacity: 0.95;
   padding: 6px 0;
+  opacity: 0.95;
 }
 .marquee-item:hover{
   text-decoration: underline;
   opacity: 1;
-  cursor: pointer;
 }
 
-/* fermer */
-.marquee-close{
-  margin-left: auto;
-  background: none;
-  border: none;
-  font-size: 20px;
-  line-height: 1;
-  padding: 6px 8px;
-  cursor: pointer;
-  color: #111;
-  opacity: 0.7;
-}
-/* masque le bouton sur petit écran si tu préfères */
+/* petites adaptations responsive */
 @media (max-width:420px){
-  .marquee-close{ display: none; }
+  .info-marquee{ padding: 0 10px; }
+  .marquee-track{ gap: 20px; font-size: 13px; }
 }
 
-/* pause au survol + focus */
-.info-marquee:hover .marquee-inner,
-.info-marquee:focus-within .marquee-inner{
-  animation-play-state: paused;
-}
-
-/* animation keyframes (défilement continu : on duplique le contenu côté JS) */
+/* keyframes : on déplace de 0 à -50% pour une boucle grâce à la duplication JS */
 @keyframes marqueeScroll{
   0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); } /* -50% car on duplique le contenu pour boucle fluide */
+  100% { transform: translateX(-50%); }
 }
