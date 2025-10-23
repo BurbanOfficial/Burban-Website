@@ -60,9 +60,11 @@
   </filter>
 </svg>
 
-<!-- Bandeau d'info défilant (insérer juste après <body>) -->
+<!-- Bandeau d'info défilant — version fluide RAF -->
 <div id="info-marquee" class="info-marquee" role="region" aria-label="Informations importantes" aria-live="polite">
-  <div class="marquee-track" id="marqueeTrack" aria-hidden="false"></div>
+  <div class="marquee-viewport" aria-hidden="false">
+    <div class="marquee-track" id="marqueeTrack"></div>
+  </div>
 </div>
 
 
@@ -396,18 +398,18 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 
 <script>
 (function(){
-  // CONFIG : personnalise ici les messages / liens
+  // === CONFIG : messages / liens ===
   const messages = [
     { text: "Livraison gratuite en France à partir de 50€", url: "/shipping-info.html" },
     { text: "Nouveau drop — 10 novembre 2025 • Quantités limitées", url: "/shop.html" },
     { text: "Suivez-nous sur Instagram @burbanofficial", url: "https://instagram.com/burbanofficial" },
-    // Ajoute ou modifie des messages si besoin
+    // ajoute d'autres messages si nécessaire
   ];
 
   const track = document.getElementById('marqueeTrack');
   if(!track) return;
 
-  // construit la liste d'items et retourne un fragment
+  // construit une copie des items (retourne fragment)
   function buildFragment(){
     const frag = document.createDocumentFragment();
     messages.forEach(m => {
@@ -415,7 +417,6 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
       a.className = 'marquee-item';
       a.href = m.url || '#';
       a.textContent = m.text;
-      // ouvre les liens externes dans un onglet mais ça ne stoppe pas le bandeau
       if(m.url && /^https?:\/\//.test(m.url)){
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
@@ -425,36 +426,122 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     return frag;
   }
 
-  // Remplir la piste avec 2 copies pour boucle fluide
-  track.innerHTML = '';
-  const frag1 = buildFragment();
-  const frag2 = buildFragment();
-  track.appendChild(frag1);
-  track.appendChild(frag2);
+  // Remplir la piste avec 2 copies consécutives (pour wrapping)
+  function populate(){
+    track.innerHTML = '';
+    const frag1 = buildFragment();
+    const frag2 = buildFragment();
+    track.appendChild(frag1);
+    track.appendChild(frag2);
+  }
+  populate();
 
-  // Ajuste dynamiquement la durée d'animation en fonction de la largeur du contenu
-  function adaptDuration(){
-    const contentWidth = track.scrollWidth / 2; // largeur d'une seule copie
-    // vitesse de base : px par seconde (ajuste si besoin)
-    const pxPerSec = 120; // plus -> plus rapide
-    const seconds = Math.max(8, Math.round(contentWidth / pxPerSec));
-    track.style.animationDuration = seconds + 's';
+  // Variables d'animation
+  let copyWidth = 0;    // largeur d'une seule copie de contenu
+  let pos = 0;          // position courante (px) : traduit la piste vers la gauche
+  let lastTime = null;
+  let rafId = null;
+  const speedPxPerSec = 110; // vitesse (px/s) — ajuste si tu veux plus vite ou plus lent
+
+  // calcule largeur d'une copie (et applique styles si besoin)
+  function recalc(){
+    // largeur totale de la piste / 2 = largeur d'une copie (on a 2 copies)
+    // si le contenu est trop court, on duplique encore pour éviter "vide"
+    const total = track.scrollWidth;
+    copyWidth = Math.floor(total / 2) || 0;
+
+    // si copyWidth plus petit que viewport, dupliquer encore pour remplir
+    const viewport = track.parentElement.clientWidth;
+    if(copyWidth < viewport){
+      // on duplique dynamiquement jusqu'à dépasser le viewport * 1.5
+      const needed = Math.ceil((viewport * 1.5) / Math.max(copyWidth,1));
+      // recreate with many copies
+      track.innerHTML = '';
+      for(let i=0;i<needed;i++){
+        const frag = buildFragment();
+        track.appendChild(frag);
+      }
+      // maintenant recalculer
+      copyWidth = Math.floor(track.scrollWidth / needed) || track.scrollWidth;
+    }
   }
 
-  // lance l'ajustement et réajuste au resize
-  adaptDuration();
-  window.addEventListener('resize', adaptDuration);
+  // boucle RAF
+  function step(now){
+    if(lastTime === null) lastTime = now;
+    const delta = (now - lastTime) / 1000; // sec
+    lastTime = now;
 
-  // ACCESSIBILITÉ : permettre navigation clavier sur les items (les liens sont natifs)
-  // IMPORTANT : ne pas mettre de pause au focus/hover -> aucune logique de pause ici
+    pos += speedPxPerSec * delta; // on avance vers la droite en pixels
+    // si on a dépassé la largeur d'une "séquence utile", on wrap sans saut
+    // find modulus relative to copyWidth (si copyWidth === 0 -> skip)
+    if(copyWidth > 0){
+      if(pos >= copyWidth){
+        // wrap : on retire copyWidth (équivalent à remettre la piste sans coupure)
+        pos = pos - copyWidth;
+      }
+      // on applique une translation négative (défilement vers la gauche)
+      track.style.transform = `translateX(${-pos}px)`;
+    } else {
+      // fallback
+      track.style.transform = `translateX(0px)`;
+    }
 
-  // Empêche que des interactions JS extérieures (ex: anciens scripts) mettent pause
-  // On override explicitement animationPlayState si quelqu'un d'autre essaye de modifier
-  const observer = new MutationObserver(()=>{
-    track.style.animationPlayState = 'running';
+    rafId = requestAnimationFrame(step);
+  }
+
+  // (re)start animation
+  function start(){
+    cancelAnimationFrame(rafId);
+    lastTime = null;
+    rafId = requestAnimationFrame(step);
+  }
+
+  // initial calc & start
+  function init(){
+    recalc();
+    // set small timeout to ensure DOM/CSS appliqués (safer)
+    setTimeout(()=> {
+      recalc();
+      start();
+    }, 50);
+  }
+
+  // resize observer pour recalculer si contenu / fenêtre change
+  let resizeTimer = null;
+  function onResize(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(()=>{
+      // rebuild and recalc to ensure seamless
+      populate();
+      recalc();
+      // reset position modulo new copyWidth to avoid jump
+      pos = pos % Math.max(copyWidth,1);
+    }, 80);
+  }
+  window.addEventListener('resize', onResize);
+
+  // Observers pour changements dynamiques
+  const mo = new MutationObserver(()=>{
+    // si messages changent dynamiquement, rebuild
+    populate();
+    recalc();
   });
-  observer.observe(track, { attributes: true, attributeFilter: ['style', 'class'] });
+  mo.observe(track, { childList: true, subtree: true });
 
+  // Lance tout
+  init();
+
+  // sécurité : si perte de visibilité (tab inactif) on garde RAF mais peut baisser fréquence naturellement
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      // assure qu'on continue (et évite gros jump en recalculant)
+      recalc();
+      lastTime = performance.now();
+    }
+  });
+
+  // Pas de pause au hover/focus/clic — aucune logique de pause ici (toujours full)
 })();
 </script>
 
