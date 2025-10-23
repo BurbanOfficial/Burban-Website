@@ -396,129 +396,165 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 
 <script>
 (function(){
-  // === CONFIG - modifie les messages ici si besoin ===
+  // === CONFIG
   const messages = [
     { text: "Livraison gratuite en France à partir de 50€", url: "/shipping-info.html" },
     { text: "Nouveau drop — 10 novembre 2025 • Quantités limitées", url: "/shop.html" },
     { text: "Suivez-nous sur Instagram @burbanofficial", url: "https://instagram.com/burbanofficial" },
-    // Ajoute des messages si nécessaire
   ];
 
   const track = document.getElementById('marqueeTrack');
   if(!track) return;
 
-  // --- Build one "block" (single copy) of items ---
-  function buildBlock(){
-    const block = document.createElement('div');
-    block.className = 'marquee-block';
-    block.style.display = 'inline-flex';
-    block.style.alignItems = 'center';
-    block.style.gap = '40px';
-    block.style.whiteSpace = 'nowrap';
-    messages.forEach(m => {
+  // Nettoie et crée le conteneur "inner"
+  track.innerHTML = '';
+  const inner = document.createElement('div');
+  inner.className = 'marquee-inner-wrapper';
+  // style via JS pour s'assurer cohérence (mais garde CSS aussi)
+  inner.style.display = 'inline-flex';
+  inner.style.alignItems = 'center';
+  inner.style.whiteSpace = 'nowrap';
+  inner.style.gap = '40px';
+  inner.style.willChange = 'transform';
+  inner.style.pointerEvents = 'auto'; // liens restent cliquables
+
+  // function to create items
+  function appendItems(container){
+    messages.forEach(m=>{
       const a = document.createElement('a');
       a.className = 'marquee-item';
       a.href = m.url || '#';
       a.textContent = m.text;
+      a.style.display = 'inline-flex';
+      a.style.alignItems = 'center';
+      a.style.textDecoration = 'none';
+      a.style.color = 'inherit';
       if(m.url && /^https?:\/\//.test(m.url)){
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
       }
-      block.appendChild(a);
+      container.appendChild(a);
     });
-    return block;
   }
 
-  // Clear existing
-  track.innerHTML = '';
+  // Append one sequence, then we'll duplicate it
+  appendItems(inner);
+  track.appendChild(inner);
 
-  // Create at least 3 copies to avoid visible gaps on very wide screens / slow speeds
-  const blocks = [];
-  blocks.push(buildBlock());
-  blocks.push(buildBlock());
-  blocks.push(buildBlock());
-  blocks.forEach(b => track.appendChild(b));
+  // duplicate content: duplicate inner's HTML into another wrapper appended after
+  const innerClone = inner.cloneNode(true);
+  track.appendChild(innerClone);
 
-  // CSS safety: ensure track is inline-flex (already in your CSS), will-change for perf
-  track.style.willChange = 'transform';
+  // ensure track styles
   track.style.display = 'flex';
   track.style.alignItems = 'center';
+  track.style.overflow = 'hidden';
 
-  // We'll manage x offset manually
-  let offset = 0;
-  let lastTime = performance.now();
+  // Variables d'animation
+  let singleWidth = 0;     // largeur d'une seule séquence (inner)
+  let offset = 0;          // offset en px
+  let last = performance.now();
+  let speed = 110;         // px / sec de base (ajuste plus bas)
+  let running = true;
 
-  // measure width of one block (we assume blocks[0] widths are same)
-  function blockWidth(){
-    const b = track.querySelector('.marquee-block');
-    return b ? b.getBoundingClientRect().width : 0;
-  }
-
-  // adapt speed depending on viewport width to keep readable
-  function calcSpeedPxPerSecond(){
-    // base px/sec; augmente si contenu très large
-    const base = 110; // ajuste pour vitesse générale
-    const w = window.innerWidth;
-    // léger scaling for small screens
-    return Math.max(60, Math.round(base * (1024 / Math.max(w, 360))));
-  }
-
-  let speed = calcSpeedPxPerSecond();
-
-  // ensure there are enough blocks to fill 2x viewport (prevents gap on large screens)
-  function ensureBlocks(){
-    const single = blockWidth();
-    if(!single) return;
-    const needed = Math.ceil((window.innerWidth * 2) / single);
-    while(track.querySelectorAll('.marquee-block').length < Math.max(3, needed)){
-      track.appendChild(buildBlock());
-    }
-  }
-
-  ensureBlocks();
-  window.addEventListener('resize', () => {
-    ensureBlocks();
-    speed = calcSpeedPxPerSecond();
-  });
-
-  // main loop
-  function loop(now){
-    const dt = (now - lastTime) / 1000; // seconds
-    lastTime = now;
-    // move left
-    offset -= speed * dt;
-    // width of one block to decide wrap
-    const w = blockWidth() || 1;
-
-    // When the first block fully left viewport, move it to the end and adjust offset
-    // We use integer math to avoid sub-pixel jumps causing visual seams
-    if (Math.abs(offset) >= w) {
-      // shift offset forward by width of one block (wrap)
-      offset += w;
-      // Move first child to the end
-      const first = track.querySelector('.marquee-block');
-      if (first) track.appendChild(first);
-      // no visual jump because offset adjusted
+  // calcule largeur et vitesse, après que fonts/layout soient chargés
+  function measureAndStart(){
+    // mesure après micro-delay pour laisser navigateur finir layout
+    singleWidth = inner.getBoundingClientRect().width;
+    if(singleWidth === 0){
+      // retry plus tard si mesure foireuse
+      setTimeout(measureAndStart, 50);
+      return;
     }
 
-    // apply transform
-    // translateX(offset px) where offset is negative to scroll left
-    track.style.transform = 'translateX(' + Math.round(offset) + 'px)';
+    // adaptative speed: keep readable on mobile/desktop
+    const basePx = 110;
+    const w = window.innerWidth || 1024;
+    speed = Math.max(60, Math.round(basePx * (1024 / Math.max(w, 360))));
 
-    // keep running
+    // if track doesn't fill 2x viewport, clone more to avoid visible gaps
+    const needed = Math.ceil((window.innerWidth * 2) / singleWidth);
+    while(track.querySelectorAll('.marquee-inner-wrapper').length < Math.max(2, needed)){
+      track.appendChild(inner.cloneNode(true));
+      // recompute width after DOM mutation
+      singleWidth = inner.getBoundingClientRect().width;
+    }
+
+    // start loop
+    last = performance.now();
     requestAnimationFrame(loop);
   }
 
-  // initialize lastTime and start
-  lastTime = performance.now();
-  requestAnimationFrame(loop);
+  // wait for fonts and a paint to ensure measurements stable
+  // document.fonts.ready is supported in modern browsers
+  Promise.resolve()
+    .then(()=> {
+      if (document.fonts && document.fonts.ready) {
+        return document.fonts.ready;
+      }
+    })
+    .catch(()=>{})
+    .finally(()=> {
+      // also ensure next paint occurred
+      requestAnimationFrame(()=> {
+        // small delay to be safe (prevents FOIT/flash)
+        setTimeout(measureAndStart, 20);
+      });
+    });
 
-  // accessibility: don't pause on focus/hover/click (explicitly block external scripts)
-  track.addEventListener('mouseenter', ()=> track.style.pointerEvents = 'auto');
-  track.addEventListener('mouseleave', ()=> track.style.pointerEvents = 'auto');
+  // animation loop: offset grows, we use modulo singleWidth to wrap seamlessly
+  function loop(now){
+    if(!running){ last = now; requestAnimationFrame(loop); return; }
+    const dt = (now - last) / 1000;
+    last = now;
 
-  // defensive: if some external CSS/JS tries to pause animationPlayState, we don't use it.
-  // Keep transform-managed loop always running.
+    offset += speed * dt; // offset positive -> we'll translate negative
+    if(singleWidth > 0){
+      // keep offset in [0, singleWidth)
+      if(offset >= singleWidth) offset = offset % singleWidth;
+      // apply transform: translateX(-offset)
+      // use translate3d for GPU acceleration and subpixel float for smoothness
+      track.style.transform = `translate3d(${-offset}px, 0, 0)`;
+    }
+
+    requestAnimationFrame(loop);
+  }
+
+  // resize handler: re-measure widths safely
+  let resizeTimeout;
+  window.addEventListener('resize', ()=>{
+    cancelAnimationFrame(); // no-op safe
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(()=>{
+      // recompute singleWidth and ensure enough clones
+      singleWidth = inner.getBoundingClientRect().width || singleWidth;
+      const needed = Math.ceil((window.innerWidth * 2) / singleWidth);
+      while(track.querySelectorAll('.marquee-inner-wrapper').length < Math.max(2, needed)){
+        track.appendChild(inner.cloneNode(true));
+      }
+      // recompute speed
+      const basePx = 110;
+      const w = window.innerWidth || 1024;
+      speed = Math.max(60, Math.round(basePx * (1024 / Math.max(w, 360))));
+    }, 120);
+  });
+
+  // Defensive: ignore pointer-based pausing from other scripts/CSS
+  // Ensure transform remains controlled by our loop
+  const obs = new MutationObserver(()=> {
+    // force transform back if someone tries to change it
+    if(singleWidth > 0){
+      track.style.transform = `translate3d(${-offset}px, 0, 0)`;
+    }
+  });
+  obs.observe(track, { attributes: true, attributeFilter: ['style', 'class'] });
+
+  // Expose a small API if needed (console)
+  window.__burbanMarquee = {
+    pause(){ running = false; },
+    play(){ if(!running){ running = true; last = performance.now(); } },
+    setSpeed(pxPerSec){ speed = pxPerSec; }
+  };
 
 })();
 </script>
