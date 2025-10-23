@@ -696,39 +696,41 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
-/* viewport masque le débord */
+/* viewport masque */
 .marquee-viewport{
   width: 100%;
   overflow: hidden;
   display: block;
 }
 
-/* piste contenant 2 copies (inline-flex) */
-.marquee-track{
-  display: inline-flex;
+/* conteneur animé (la transform sera animée par CSS keyframes dynamiques) */
+.marquee-inner{
+  display: flex;
   align-items: center;
   gap: 40px;
   white-space: nowrap;
-  transform: translateX(0);
   will-change: transform;
-  font-size: 14px;
-  font-weight: 500;
-  color: #111;
+  /* animation properties populated dynamiquement by JS:
+     --marquee-duration : s
+     animation-name: marqueeAnim (injected)
+  */
 }
 
-/* items cliquables */
+/* chaque item */
 .marquee-item{
   display: inline-flex;
   align-items: center;
-  gap: 10px;
   text-decoration: none;
   color: inherit;
+  font-weight: 500;
+  font-size: 14px;
   padding: 6px 0;
   opacity: 0.95;
 }
 .marquee-item:hover{ text-decoration: underline; opacity: 1; }
 
+/* responsive tweaks */
 @media (max-width:420px){
-  .info-marquee{ padding: 0 10px; }
-  .marquee-track{ gap: 20px; font-size: 13px; }
+  .marquee-inner{ gap: 18px; }
+  .marquee-item{ font-size: 13px; }
 }
