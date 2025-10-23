@@ -62,9 +62,9 @@
 
 <!-- Bandeau d'info défilant (insérer juste après <body>) -->
 <div id="info-marquee" class="info-marquee" role="region" aria-label="Informations importantes" aria-live="polite">
-  <div class="marquee-inner" id="marqueeInner" tabindex="0"></div>
-  <button class="marquee-close" id="marqueeClose" aria-label="Fermer la barre d'informations">&times;</button>
+  <div class="marquee-track" id="marqueeTrack" aria-hidden="false"></div>
 </div>
+
 
   <!-- Loader -->
 <div id="loader">
@@ -396,92 +396,64 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 
 <script>
 (function(){
-  // --- CONFIG : personnalise ces messages / liens ---
+  // CONFIG : personnalise ici les messages / liens
   const messages = [
     { text: "Livraison gratuite en France à partir de 50€", url: "/shipping-info.html" },
     { text: "Nouveau drop — 10 novembre 2025 • Quantités limitées", url: "/shop.html" },
     { text: "Suivez-nous sur Instagram @burbanofficial", url: "https://instagram.com/burbanofficial" },
-    // Ajoute d'autres messages si besoin
+    // Ajoute ou modifie des messages si besoin
   ];
 
-  const marqueeRoot = document.getElementById('info-marquee');
-  const marqueeInner = document.getElementById('marqueeInner');
-  const closeBtn = document.getElementById('marqueeClose');
+  const track = document.getElementById('marqueeTrack');
+  if(!track) return;
 
-  // Si l'utilisateur a fermé le bandeau précédemment, on ne l'affiche pas
-  if(localStorage.getItem('marqueeDismissed') === '1'){
-    marqueeRoot && marqueeRoot.remove();
-    return;
-  }
-
-  // Crée les items
-  function buildTrack(){
-    marqueeInner.innerHTML = '';
-    messages.forEach((m)=>{
+  // construit la liste d'items et retourne un fragment
+  function buildFragment(){
+    const frag = document.createDocumentFragment();
+    messages.forEach(m => {
       const a = document.createElement('a');
       a.className = 'marquee-item';
       a.href = m.url || '#';
-      a.target = (m.url && m.url.startsWith('http')) ? '_blank' : '_self';
-      a.rel = (m.url && m.url.startsWith('http')) ? 'noopener noreferrer' : '';
       a.textContent = m.text;
-      marqueeInner.appendChild(a);
+      // ouvre les liens externes dans un onglet mais ça ne stoppe pas le bandeau
+      if(m.url && /^https?:\/\//.test(m.url)){
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      }
+      frag.appendChild(a);
     });
-    // Dupliquer le contenu pour boucle fluide
-    const clone = marqueeInner.cloneNode(true);
-    clone.id = '';
-    marqueeInner.parentNode.appendChild(clone);
-    clone.classList.add('marquee-clone'); // utile si tu veux cibler
+    return frag;
   }
 
-  // Build initial
-  buildTrack();
+  // Remplir la piste avec 2 copies pour boucle fluide
+  track.innerHTML = '';
+  const frag1 = buildFragment();
+  const frag2 = buildFragment();
+  track.appendChild(frag1);
+  track.appendChild(frag2);
 
-  // Pause animation au focus clavier
-  marqueeRoot.addEventListener('focusin', ()=> {
-    marqueeInner.style.animationPlayState = 'paused';
-    const clone = marqueeRoot.querySelector('.marquee-clone');
-    if(clone) clone.style.animationPlayState = 'paused';
-  });
-  marqueeRoot.addEventListener('focusout', ()=> {
-    marqueeInner.style.animationPlayState = '';
-    const clone = marqueeRoot.querySelector('.marquee-clone');
-    if(clone) clone.style.animationPlayState = '';
-  });
-
-  // Fermer définitivement la barre
-  closeBtn.addEventListener('click', ()=>{
-    marqueeRoot.style.transition = 'opacity .35s, transform .35s';
-    marqueeRoot.style.opacity = '0';
-    marqueeRoot.style.transform = 'translateY(-6px)';
-    setTimeout(()=> {
-      marqueeRoot.remove();
-      // Persiste la fermeture
-      try { localStorage.setItem('marqueeDismissed', '1'); } catch(e){}
-      // remets header top si nécessaire (optionnel)
-      document.querySelector('.header').style.top = '0';
-    }, 360);
-  });
-
-  // Si la fenêtre est trop petite, accélérer le scroll (simple adaptation)
-  function adaptSpeed(){
-    const width = window.innerWidth;
-    const base = 18; // seconds
-    const faster = Math.max(8, Math.round(base * (1024/Math.max(width,400))));
-    const allTracks = document.querySelectorAll('.marquee-inner, .marquee-clone');
-    allTracks.forEach(t => {
-      t.style.animationDuration = faster + 's';
-    });
+  // Ajuste dynamiquement la durée d'animation en fonction de la largeur du contenu
+  function adaptDuration(){
+    const contentWidth = track.scrollWidth / 2; // largeur d'une seule copie
+    // vitesse de base : px par seconde (ajuste si besoin)
+    const pxPerSec = 120; // plus -> plus rapide
+    const seconds = Math.max(8, Math.round(contentWidth / pxPerSec));
+    track.style.animationDuration = seconds + 's';
   }
-  adaptSpeed();
-  window.addEventListener('resize', adaptSpeed);
 
-  // Accessibilité : si on clique une phrase (via touche Entrée quand focus), suit le lien
-  marqueeRoot.addEventListener('keydown', (e)=>{
-    if((e.key === 'Enter' || e.key === ' ') && document.activeElement.classList.contains('marquee-item')){
-      document.activeElement.click();
-      e.preventDefault();
-    }
+  // lance l'ajustement et réajuste au resize
+  adaptDuration();
+  window.addEventListener('resize', adaptDuration);
+
+  // ACCESSIBILITÉ : permettre navigation clavier sur les items (les liens sont natifs)
+  // IMPORTANT : ne pas mettre de pause au focus/hover -> aucune logique de pause ici
+
+  // Empêche que des interactions JS extérieures (ex: anciens scripts) mettent pause
+  // On override explicitement animationPlayState si quelqu'un d'autre essaye de modifier
+  const observer = new MutationObserver(()=>{
+    track.style.animationPlayState = 'running';
   });
+  observer.observe(track, { attributes: true, attributeFilter: ['style', 'class'] });
 
 })();
 </script>
