@@ -123,6 +123,20 @@
     <a href="account.html" class="banner">
       <img src="https://imgur.com/GJTJfEE.png" alt="New Drop">
     </a>
+    <!-- Compte à rebours -->
+    <div id="countdown" style="
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      padding: 10px 15px;
+      font-size: 18px;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+    ">
+      Loading...
+    </div>
     <a href="account.html" class="banner">
       <img src="https://imgur.com/NG4FLAT.png" alt="Welcome Offers">
     </a>
@@ -388,6 +402,30 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 })();
 </script>
 
+<script>
+// Date de fin du compte à rebours (ex: 10 novembre 2025 à 00:00)
+const countdownDate = new Date("Nov 10, 2025 00:00:00").getTime();
+
+const countdownFunction = setInterval(() => {
+  const now = new Date().getTime();
+  const distance = countdownDate - now;
+
+  if (distance < 0) {
+    clearInterval(countdownFunction);
+    document.getElementById("countdown").innerHTML = "C'est parti !";
+    return;
+  }
+
+  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+  document.getElementById("countdown").innerHTML = 
+    days + "j " + hours + "h " + minutes + "m " + seconds + "s";
+}, 1000);
+</script>
+
 <script src="https://burbanofficial.com/public/includes/footer.js"></script>
 <script async type='text/javascript' src='https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=Sg3qFU'></script>
 
@@ -408,5 +446,4 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 
 </body>
 </html>
-
 
