@@ -18,7 +18,7 @@ body {
   justify-content: space-between;
   padding: 20px 40px;
   position: sticky;
-  top: 0;
+  top: var(--banner-height);
   background: #ffffff10;
   backdrop-filter: blur(80px);
   -webkit-backdrop-filter: blur(20px);
@@ -541,6 +541,7 @@ body {
 
 /* Headers réglages page shop*/
 :root {
+  --banner-height: 48px;       /* hauteur du bandeau (ajuste si besoin) */
   --main-header-height: 72px;   /* Hauteur de ton header principal */
   --shop-header-height: 80px;   /* Hauteur de ton header shop */
 }
@@ -674,4 +675,85 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   font-family: 'Poppins', sans-serif; /* ou autre police urbaine */
   z-index: 10;
+}
+
+/* --------- Bandeau défilant (ajoute ces règles dans style.css) --------- */
+.info-marquee{
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: var(--banner-height);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  z-index: 1200; /* au-dessus du header */
+  padding: 0 12px;
+  gap: 12px;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* contenu défilant */
+.marquee-inner{
+  display: inline-flex;
+  white-space: nowrap;
+  will-change: transform;
+  align-items: center;
+  gap: 40px;
+  padding-left: 8px;
+  /* animation (sera démarrée via CSS) */
+  animation: marqueeScroll 18s linear infinite;
+  animation-play-state: running;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111;
+}
+
+/* liens dans le bandeau */
+.marquee-item{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  opacity: 0.95;
+  padding: 6px 0;
+}
+.marquee-item:hover{
+  text-decoration: underline;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* fermer */
+.marquee-close{
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  padding: 6px 8px;
+  cursor: pointer;
+  color: #111;
+  opacity: 0.7;
+}
+/* masque le bouton sur petit écran si tu préfères */
+@media (max-width:420px){
+  .marquee-close{ display: none; }
+}
+
+/* pause au survol + focus */
+.info-marquee:hover .marquee-inner,
+.info-marquee:focus-within .marquee-inner{
+  animation-play-state: paused;
+}
+
+/* animation keyframes (défilement continu : on duplique le contenu côté JS) */
+@keyframes marqueeScroll{
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); } /* -50% car on duplique le contenu pour boucle fluide */
 }
