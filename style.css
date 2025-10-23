@@ -46,86 +46,6 @@
   <link rel="icon" href="https://burbanofficial.com/favicon.png" sizes="48x48" />
 
 </head>
-<style>
-/* Ensure banner container is positioned for overlay */
-.hero-banners .banner { position: relative; }
-
-/* Countdown overlay (big & responsive) */
-.banner .countdown-wrap {
-position: absolute;
-inset: 0; /* fill the banner */
-display: flex;
-align-items: center;
-justify-content: center;
-pointer-events: none; /* don't block clicks on the banner link */
-}
-
-.countdown-card {
-pointer-events: auto; /* allow hover effects if needed */
-text-align: center;
-padding: 18px 28px;
-border-radius: 12px;
-background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.25));
-backdrop-filter: blur(6px);
--webkit-backdrop-filter: blur(6px);
-color: #fff;
-box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-max-width: 92%;
-}
-
-.countdown-label {
-font-weight: 600;
-letter-spacing: 0.04em;
-margin-bottom: 6px;
-text-transform: uppercase;
-font-size: clamp(12px, 2.2vw, 14px);
-opacity: 0.95;
-}
-
-.countdown-values {
-display: flex;
-gap: 12px;
-align-items: baseline;
-justify-content: center;
-flex-wrap: nowrap;
-}
-
-.countdown-segment {
-display: flex;
-flex-direction: column;
-align-items: center;
-min-width: 52px;
-}
-
-.countdown-number {
-font-weight: 800;
-line-height: 1;
-/* big responsive number */
-font-size: clamp(28px, 8vw, 88px);
-letter-spacing: -1px;
-text-shadow: 0 6px 20px rgba(0,0,0,0.6);
-}
-
-.countdown-unit {
-font-size: clamp(10px, 2.2vw, 14px);
-margin-top: 6px;
-opacity: 0.9;
-}
-
-/* On very small screens, stack segments and reduce spacing */
-@media (max-width: 420px) {
-.countdown-values { gap: 8px; }
-.countdown-number { font-size: clamp(20px, 10vw, 52px); }
-.countdown-card { padding: 12px 14px; }
-}
-
-/* Ensure the overlay doesn't overflow rounded banner corners */
-.hero-banners .banner img { border-radius: 16px; }
-.hero-banners .banner .countdown-wrap { border-radius: 16px; overflow: hidden; }
-
-/* When countdown expires */
-.countdown-ended { font-weight: 700; font-size: clamp(18px, 4vw, 36px); }
-</style>
 <body>
   <!-- SVG MENU (Grands Ecrans)-->
   <svg style="position:absolute;width:0;height:0;">
@@ -202,31 +122,6 @@ opacity: 0.9;
   <section class="hero-banners">
     <a href="account.html" class="banner">
       <img src="https://imgur.com/GJTJfEE.png" alt="New Drop">
-
-      <!-- BIG responsive countdown overlay placed on the first banner -->
-      <div class="countdown-wrap" aria-hidden="false">
-        <div class="countdown-card" role="region" aria-live="polite" aria-label="Compte à rebours lancement">
-          <div class="countdown-label">Lancement le 10 novembre 2025</div>
-          <div class="countdown-values" id="heroCountdown">
-          <div class="countdown-segment">
-            <div class="countdown-number" id="cd-days">00</div>
-          <div class="countdown-unit">j</div>
-          </div>
-          <div class="countdown-segment">
-          <div class="countdown-number" id="cd-hours">00</div>
-          <div class="countdown-unit">h</div>
-          </div>
-          <div class="countdown-segment">
-          <div class="countdown-number" id="cd-minutes">00</div>
-          <div class="countdown-unit">m</div>
-          </div>
-          <div class="countdown-segment">
-          <div class="countdown-number" id="cd-seconds">00</div>
-          <div class="countdown-unit">s</div>
-          </div>
-          </div>
-        </div>
-      </div>
     </a>
     <a href="account.html" class="banner">
       <img src="https://imgur.com/NG4FLAT.png" alt="Welcome Offers">
@@ -283,48 +178,6 @@ opacity: 0.9;
 <script>
     // Mise à jour automatique de l'année
     document.getElementById('year').textContent = new Date().getFullYear();
-</script>
-
-<script>
-// ====== Countdown logic for hero banner ======
-// Change this date to update the target. Format: MMM D, YYYY HH:MM:SS
-const countdownDate = new Date('Nov 10, 2025 00:00:00').getTime();
-
-function pad(n){ return String(n).padStart(2,'0'); }
-
-function updateHeroCountdown(){
-const now = Date.now();
-let distance = countdownDate - now;
-
-const daysEl = document.getElementById('cd-days');
-const hoursEl = document.getElementById('cd-hours');
-const minutesEl = document.getElementById('cd-minutes');
-const secondsEl = document.getElementById('cd-seconds');
-const valuesWrap = document.getElementById('heroCountdown');
-
-if(!daysEl || !hoursEl || !minutesEl || !secondsEl || !valuesWrap) return;
-
-if(distance <= 0){
-// expired
-valuesWrap.innerHTML = '<div class="countdown-ended">C\'est parti !</div>';
-clearInterval(heroInterval);
-return;
-}
-
-const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-daysEl.textContent = pad(days);
-hoursEl.textContent = pad(hours);
-minutesEl.textContent = pad(minutes);
-secondsEl.textContent = pad(seconds);
-}
-
-// Start immediately and update every second
-updateHeroCountdown();
-const heroInterval = setInterval(updateHeroCountdown, 1000);
 </script>
 
 <script>
