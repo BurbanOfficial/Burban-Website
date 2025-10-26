@@ -229,7 +229,134 @@ body {
 }
 }
 
-/* Hero Banners */
+/* ---------- HERO SPLIT (exact layout) ---------- */
+.hero-split {
+  display: grid;
+  grid-template-columns: 1fr 520px;
+  gap: 28px;
+  align-items: start;
+  margin: 40px auto;
+  padding: 10px 20px;
+  max-width: 1400px;
+}
+
+/* Left copy */
+.hero-copy { padding: 36px 8px; }
+.hero-copy h1 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: clamp(30px, 7vw, 110px); /* grand titre responsive */
+  line-height: 0.95;
+  margin: 0 0 18px;
+  letter-spacing: -0.02em;
+  color: #0b0b0b;
+}
+.hero-copy .lead {
+  color: #7b7b7b;
+  font-size: 18px;
+  margin-bottom: 22px;
+  font-weight: 500;
+  max-width: 780px;
+}
+
+/* Buttons */
+.hero-ctas { display:flex; gap:14px; align-items:center; margin-bottom:20px; }
+.btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:14px 26px;
+  border-radius:999px;
+  text-decoration:none;
+  font-weight:700;
+  font-size:16px;
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+.btn:active { transform:translateY(1px); }
+.btn-primary {
+  background:#0b0b0b;
+  color:#fff;
+  border: 2px solid #0b0b0b;
+  box-shadow: 0 8px 28px rgba(11,11,11,0.08);
+}
+.btn-primary:hover { box-shadow: 0 14px 40px rgba(11,11,11,0.12); }
+
+.btn-ghost {
+  background: transparent;
+  color: #0b0b0b;
+  border: 2px solid #0b0b0b;
+}
+.btn-ghost:hover {
+  background: rgba(11,11,11,0.03);
+}
+
+/* Trust row with centered dots */
+.trust {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#8b8b8b;
+  font-weight:600;
+}
+.trust .sep { margin: 0 6px; color:#bdbdbd; font-weight:700; }
+
+/* Right media */
+.hero-media {
+  position: relative;
+  min-height: 520px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  align-items:stretch;
+  border-left: 1px solid #e9e9e9; /* subtle vertical separator */
+  padding-left: 28px;
+  background: #fff;
+}
+.hero-media-top {
+  font-size: 18px;
+  color: #111;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 18px;
+}
+.hero-media img {
+  width: 100%;
+  height: calc(100% - 48px);
+  object-fit: cover;
+  border-radius: 2px;
+  display:block;
+  box-shadow: none;
+  background:#fafafa;
+}
+
+/* Focus accessibility */
+.hero-split .btn:focus,
+.hero-split .banner:focus,
+.hero-split [tabindex] { outline: none; }
+.hero-split .btn:focus-visible {
+  box-shadow: 0 0 0 4px rgba(191,160,106,0.18);
+  border-radius: 999px;
+}
+
+/* Responsive (mobile) */
+@media (max-width: 980px) {
+  .hero-split { grid-template-columns: 1fr; gap: 18px; margin: 20px; }
+  .hero-media { display: none; }
+  .hero-media-top { display:none; }
+  .hero-media img { height: 100%; border-radius: 12px; }
+  .hero-copy h1 { font-size: clamp(28px, 8vw, 56px); text-align: left; }
+  .hero-copy { padding: 18px 8px 120px; }
+  .hero-ctas { flex-direction: row; flex-wrap:wrap; gap:10px; }
+  .trust { display: none; }
+}
+
+/* Ensure the hero content doesn't overflow on very small screens */
+@media (max-width: 420px) {
+  .btn { padding: 12px 16px; font-size:15px; }
+  .hero-copy .lead { font-size:15px; }
+  .trust { display: none; }
+}
+
 .hero-banners {
   display: flex;
   flex-direction: column;
@@ -241,6 +368,81 @@ body {
   display: block;
   border-radius: 16px;
   object-fit: cover;
+}
+
+/* --- Countdown button styles --- */
+.btn-countdown {
+  background: transparent !important;
+  color: #8f8f8f !important;
+  border: 2px solid #bdbdbd !important;
+  pointer-events: none;              /* non cliquable pendant le countdown */
+  cursor: not-allowed;
+  transition: background .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+
+/* texte countdown (optionnel : taille, espacement) */
+.btn-countdown .countdown {
+  font-weight:700;
+  letter-spacing:0.6px;
+  font-size:15px;
+  padding:2px 6px;
+}
+
+/* état activé — on réutilise ta classe .btn-primary pour le style noir */
+.btn-primary {
+  pointer-events: auto;
+  cursor: pointer;
+  background:#0b0b0b !important;
+  color:#fff !important;
+  border: 2px solid #0b0b0b !important;
+  box-shadow: 0 8px 28px rgba(11,11,11,0.08);
+}
+
+/* accessibilité : état désactivé visible */
+#discoverBtn[aria-disabled="true"] {
+  opacity: 0.98;
+}
+
+/* petite option : animation visuelle flash quand le bouton devient actif */
+.btn-activated {
+  animation: btnPop 420ms cubic-bezier(.2,.9,.2,1);
+}
+@keyframes btnPop {
+  0% { transform: scale(0.98); box-shadow: none; }
+  60% { transform: scale(1.02); box-shadow: 0 12px 36px rgba(0,0,0,0.12); }
+  100% { transform: scale(1); }
+}
+
+/* Reminder popover */
+.reminder-menu {
+  position: absolute;
+  background:#fff;
+  border:1px solid #eee;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  border-radius: 10px;
+  padding:8px;
+  min-width:220px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  z-index:3000;
+}
+.reminder-menu.hidden { display:none; }
+.reminder-menu .reminder-option {
+  background:transparent;
+  border:none;
+  padding:10px 12px;
+  text-align:left;
+  cursor:pointer;
+  font-weight:600;
+  border-radius:8px;
+}
+.reminder-menu .reminder-option:hover {
+  background:#fafafa;
+}
+#addReminderBtn { position:relative; }
+@media (max-width:980px){
+  .reminder-menu { min-width: 180px; right: 10px; }
 }
 
 /* Sections */
