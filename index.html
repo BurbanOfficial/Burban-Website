@@ -36,6 +36,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Corinthia:wght@400;700&display=swap" rel="stylesheet">
 
   <!-- Favicon -->
   <link rel="icon" href="https://burbanofficial.com/favicon.png" type="image/png">
@@ -118,11 +119,62 @@
   </ul>
 </div>
 
-  <!-- Hero Banners -->
-  <section class="hero-banners">
-    <a href="account.html" class="banner">
-      <img src="https://imgur.com/GJTJfEE.png" alt="New Drop">
+  <!-- HERO SPLIT (texte gauche / image droite) -->
+<section id="hero" class="hero-split wrap">
+  <div class="hero-copy">
+    <h1><span style="font-family: 'Corinthia', cursive; font-size: 1.3em; font-weight: 400; letter-spacing: 0.5px; color: #000; display: inline-block; transform: translateY(4px);">
+    Signature Drop </span><br> 10.11.2025</h1>
+    <p class="lead">What you’ll wear tomorrow starts here.</p>
+
+    <!-- <div class="hero-ctas">
+        <a href="#best-sellers" class="btn btn-primary">Découvrir la collection</a>
+        <a href="#story" class="btn btn-ghost">Ajouter un rappel</a>
+    </div> -->
+
+    <div class="hero-ctas">
+    <!-- Bouton découverte avec compte à rebours -->
+    <a id="discoverBtn"
+        class="btn btn-countdown"
+        href="#"
+        role="button"
+        aria-disabled="true"
+        data-target="#best-sellers">
+        <span class="countdown" aria-live="polite">--d --h --m --s</span>
     </a>
+
+    <!-- <a href="#story" class="btn btn-ghost">Ajouter un rappel</a> -->
+
+    <!-- Bouton rappel -->
+    <a id="addReminderBtn" class="btn btn-ghost" aria-haspopup="true" aria-expanded="false" type="button">
+    Add a Reminder
+    </a>
+
+    <!-- Popover / fallback menu (initialement caché) -->
+    <div id="reminderMenu" class="reminder-menu hidden" role="menu" aria-hidden="true">
+    <button class="reminder-option" data-action="auto">Add to Calendar (Recommended)</button>
+    <button class="reminder-option" data-action="google">Add to Google Calendar</button>
+    <button class="reminder-option" data-action="download">Download .ics (Apple / Outlook)</button>
+    <button id="reminderCancel" class="reminder-option" style="color: red;">Cancel</button>
+</div>
+
+    </div>
+
+
+    <div class="trust">
+      <span>Worldwide Shipping</span>
+      <span class="sep">•</span>
+      <span>29-Day Returns</span>
+      <span class="sep">•</span>
+      <span>100% Secure Payment</span>
+    </div>
+  </div>
+
+  <div class="hero-media" aria-hidden="false">
+    <img src="https://imgur.com/jSM6pff.jpeg" alt="New Drop" loading="lazy">
+  </div>
+</section>
+
+<section class="hero-banners">
     <a href="account.html" class="banner">
       <img src="https://imgur.com/NG4FLAT.png" alt="Welcome Offers">
     </a>
@@ -385,6 +437,336 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
     }
   });
 
+})();
+</script>
+
+<script>
+(function(){
+  // fix Imgur links that are not direct image urls
+  const img = document.querySelector('#hero .hero-media img');
+  if(img && img.src.includes('imgur.com/') && !img.src.includes('i.imgur.com')) {
+    img.src = img.src.replace('imgur.com/', 'i.imgur.com/');
+  }
+
+  // small accessibility: allow Enter to trigger primary button when focused on hero
+  const primary = document.querySelector('#hero .btn-primary');
+  if(primary) {
+    document.querySelector('#hero').addEventListener('keydown', (e) => {
+      if((e.key === 'Enter' || e.key === ' ') && document.activeElement === document.getElementById('hero')) {
+        e.preventDefault(); primary.click();
+      }
+    });
+  }
+})();
+</script>
+
+<script>
+(function(){
+  // ---- CONFIG : cible la date de lancement ---
+  // J'ai pris la date que tu as indiquée : 10 novembre 2025 à 00:00 (heure Europe/Paris)
+  const targetDate = new Date('2025-11-10T00:00:00+01:00').getTime();
+
+  const btn = document.getElementById('discoverBtn');
+  if(!btn) return;
+
+  const countdownSpan = btn.querySelector('.countdown');
+
+  // Si l'utilisateur souhaite conserver un href initial, on le met en data-target (déjà fait)
+  const targetHref = btn.dataset.target || '#best-sellers';
+
+  // Empêche le clic tant que aria-disabled=true
+  btn.addEventListener('click', function(e){
+    if (btn.getAttribute('aria-disabled') === 'true') {
+      e.preventDefault();
+      return false;
+    }
+    // sinon laisse le lien s'exécuter
+  });
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function update() {
+    const now = Date.now();
+    let diff = targetDate - now;
+
+    if (diff <= 0) {
+      // fin du compte à rebours -> activer le bouton
+      clearInterval(interval);
+      btn.setAttribute('aria-disabled','false');
+      btn.classList.remove('btn-countdown');
+      // ajoute classe bouton primaire (ton style existant)
+      btn.classList.add('btn-primary','btn-activated');
+      // remet href final pour naviguer
+      btn.setAttribute('href', targetHref);
+      // remplace le texte par le libellé final
+      btn.innerHTML = 'Découvrir la collection';
+      // supprime l'attribut pointer-events (géré par .btn-primary)
+      btn.style.pointerEvents = '';
+      return;
+    }
+
+    // calcul jours/heures/minutes/secondes
+    const days = Math.floor(diff / (1000*60*60*24));
+    diff -= days * (1000*60*60*24);
+    const hours = Math.floor(diff / (1000*60*60));
+    diff -= hours * (1000*60*60);
+    const minutes = Math.floor(diff / (1000*60));
+    diff -= minutes * (1000*60);
+    const seconds = Math.floor(diff / 1000);
+
+    // Format : "2j 03h 12m 09s" — adapte à ton goût
+    countdownSpan.textContent = `${days}d ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+  }
+
+  // si la date de target est déjà passée, active tout de suite
+  if (Date.now() >= targetDate) {
+    btn.setAttribute('aria-disabled','false');
+    btn.classList.remove('btn-countdown');
+    btn.classList.add('btn-primary');
+    btn.setAttribute('href', targetHref);
+    btn.innerHTML = 'Découvrir la collection';
+  } else {
+    // update initial et intervalle
+    update();
+    const interval = setInterval(update, 1000);
+  }
+})();
+</script>
+
+<script>
+(function(){
+  // --- CONFIG --- 
+  // même date que ton compte à rebours : 2025-11-10T00:00:00 (Europe/Paris)
+  const eventStartLocal = new Date('2025-11-10T00:00:00+01:00'); // début
+  const eventEndLocal   = new Date(eventStartLocal.getTime() + 60*60*1000); // +1h
+  const title = "Signature Drop — Burban";
+  const description = "Burban Signature Drop Launch — available in limited quantities on burbanofficial.com";
+  const location = "https://burbanofficial.com/";
+  const alarmMinutesBefore = 30; // alarme 30min avant
+
+  // DOM
+  const btn = document.getElementById('addReminderBtn');
+  const menu = document.getElementById('reminderMenu');
+  const options = menu ? menu.querySelectorAll('.reminder-option') : [];
+
+  // Helper : formate date en UTC pour Google / ICS ; format -> YYYYMMDDTHHMMSSZ
+  function formatDateToUTCString(d){
+    const pad = n => String(n).padStart(2,'0');
+    return d.getUTCFullYear()
+      + pad(d.getUTCMonth()+1)
+      + pad(d.getUTCDate())
+      + 'T'
+      + pad(d.getUTCHours())
+      + pad(d.getUTCMinutes())
+      + pad(d.getUTCSeconds())
+      + 'Z';
+  }
+
+  // Genère le contenu ICS (avec VALARM)
+  function buildICS(){
+    const uid = Date.now() + "@burbanofficial.com";
+    const dtstamp = formatDateToUTCString(new Date());
+    const dtstart = formatDateToUTCString(eventStartLocal);
+    const dtend   = formatDateToUTCString(eventEndLocal);
+    const alarmTrigger = `-PT${alarmMinutesBefore}M`;
+
+    // Simple ICS sans VTIMEZONE (la plupart des calendriers acceptent les dates en UTC 'Z')
+    return [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Burban Official//Signature Drop//EN",
+      "CALSCALE:GREGORIAN",
+      "BEGIN:VEVENT",
+      "UID:" + uid,
+      "DTSTAMP:" + dtstamp,
+      "DTSTART:" + dtstart,
+      "DTEND:" + dtend,
+      "SUMMARY:" + escapeICSText(title),
+      "DESCRIPTION:" + escapeICSText(description + "\\n" + location),
+      "LOCATION:" + escapeICSText(location),
+      "BEGIN:VALARM",
+      "TRIGGER:" + alarmTrigger,
+      "ACTION:DISPLAY",
+      "DESCRIPTION:Reminder",
+      "END:VALARM",
+      "END:VEVENT",
+      "END:VCALENDAR"
+    ].join("\r\n");
+  }
+
+  // Échappe quelques caractères pour ICS
+  function escapeICSText(s){
+    return String(s).replace(/\\n/g, '\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
+  }
+
+  // Télécharge le .ics
+  function downloadICS(filename){
+    const ics = buildICS();
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename || 'burban-signature-drop.ics';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  }
+
+  // Ouvre Google Calendar event creation (ouvre dans un nouvel onglet)
+  function openGoogleCalendar(){
+    const start = formatDateToUTCString(eventStartLocal);
+    const end   = formatDateToUTCString(eventEndLocal);
+    const text = encodeURIComponent(title);
+    const details = encodeURIComponent(description + '\n' + location);
+    const loc = encodeURIComponent(location);
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${start}/${end}&details=${details}&location=${loc}&sf=true&output=xml`;
+    window.open(url, '_blank');
+  }
+
+  // Détecte plateforme et déclenche l'action recommandée :
+  function autoAction(){
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    // iOS / macOS (Safari) : les .ics ouvrent dans Calendrier
+    if (/iPad|iPhone|Macintosh/.test(ua) && !/Android/.test(ua)) {
+      // lance le téléchargement du .ics — Safari/Apple propose alors d'ajouter à Calendar
+      downloadICS('burban-signature-drop.ics');
+      return;
+    }
+    // Android : on propose .ics (les apps calendar acceptent souvent) + ouvre Google Calendar pour confort
+    if (/Android/.test(ua)) {
+      // on ouvre Google Calendar (si utilisateur a un compte Google) en parallèle
+      openGoogleCalendar();
+      // on propose aussi le .ics pour les apps locales
+      setTimeout(()=>downloadICS('burban-signature-drop.ics'), 600);
+      return;
+    }
+    // Desktop Windows / Linux : propose .ics et ouvre Google Calendar en option
+    // Par défaut on ouvre Google Calendar dans un nouvel onglet (utile si connecté)
+    openGoogleCalendar();
+    // propose le .ics comme fallback
+    setTimeout(()=>downloadICS('burban-signature-drop.ics'), 600);
+  }
+
+  // Positionne le menu sous le bouton (simple)
+  function showMenu() {
+    if(!menu) return;
+    const rect = btn.getBoundingClientRect();
+    menu.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+    // try to align right edge with button if space allows
+    menu.style.left = (rect.left + window.scrollX) + 'px';
+    menu.classList.remove('hidden');
+    menu.setAttribute('aria-hidden','false');
+    btn.setAttribute('aria-expanded','true');
+  }
+  function hideMenu(){
+    if(!menu) return;
+    menu.classList.add('hidden');
+    menu.setAttribute('aria-hidden','true');
+    btn.setAttribute('aria-expanded','false');
+  }
+
+  // Events
+  if(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      // si menu present : affiche le menu, sinon execute auto
+      if(menu){
+        // positionne et ouvre
+        showMenu();
+      } else {
+        // sans menu on fait auto
+        autoAction();
+      }
+    });
+  }
+
+  // menu options
+  if(options && options.length){
+    options.forEach(opt => {
+      opt.addEventListener('click', function(e){
+        const action = opt.dataset.action;
+        if(action === 'google') {
+          openGoogleCalendar();
+        } else if(action === 'download') {
+          downloadICS('burban-signature-drop.ics');
+        } else if(action === 'auto') {
+          autoAction();
+        }
+        hideMenu();
+      });
+    });
+  }
+
+  // cancel
+  const cancel = document.getElementById('reminderCancel');
+  if(cancel) cancel.addEventListener('click', hideMenu);
+
+  // Ferme le menu si click en dehors
+  document.addEventListener('click', function(e){
+    if(!menu) return;
+    if(!menu.classList.contains('hidden') && !menu.contains(e.target) && e.target !== btn){
+      hideMenu();
+    }
+  });
+
+  // Accessibilité : fermer menu avec Esc
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') hideMenu();
+  });
+
+})();
+
+// Disparition du bouton "Ajouter un rappel" à une certaine date
+(function(){
+  // Date cible : 10 novembre 2025 à 00:00 (heure Europe/Paris)
+  const targetTs = new Date('2025-11-10T00:00:00+01:00').getTime();
+
+  const btn = document.getElementById('addReminderBtn');
+  const menu = document.getElementById('reminderMenu');
+
+  function hideReminderButton() {
+    if (menu) {
+      // cache le menu si ouvert
+      menu.classList.add('hidden');
+      menu.setAttribute('aria-hidden', 'true');
+    }
+    if (btn) {
+      // retire le bouton du flux et de l'accessibilité
+      btn.style.display = 'none';
+      btn.setAttribute('aria-hidden', 'true');
+      btn.disabled = true;
+      // nettoie éventuels listeners : en clonant le noeud on perd les handlers
+      try {
+        const clone = btn.cloneNode(true);
+        btn.parentNode.replaceChild(clone, btn);
+      } catch (e) {
+        // fallback si remplacement impossible
+      }
+    }
+    // optionnel : log pour debug
+    console.info('Bouton "Ajouter un rappel" supprimé (date cible dépassée).');
+  }
+
+  const now = Date.now();
+  if (now >= targetTs) {
+    // déjà passé -> cacher immédiatement
+    hideReminderButton();
+  } else {
+    // planifier le masquage exactement au moment voulu
+    const msUntil = targetTs - now;
+
+    // setTimeout est suffisant ici (intervale < 2^31-1 ms car ~15 jours)
+    setTimeout(hideReminderButton, msUntil);
+
+    // sécurité : vérification toutes les minutes au cas où setTimeout échouerait long terme
+    const fallbackChecker = setInterval(() => {
+      if (Date.now() >= targetTs) {
+        clearInterval(fallbackChecker);
+        hideReminderButton();
+      }
+    }, 60 * 1000);
+  }
 })();
 </script>
 
