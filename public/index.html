@@ -1319,29 +1319,7 @@ async function updateTotal() {
   try { if (typeof refreshFreeProgress === 'function') refreshFreeProgress(); } catch(e){ /* ignore */ }
 }
 
-/* ==== Gestion auto des coupons à la déconnexion ==== */
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-
-onAuthStateChanged(auth, (user) => {
-  const voucherBox = document.getElementById('voucher-options');
-
-  if (!user) {
-    // L'utilisateur vient de se déconnecter
-    setAppliedVoucher(null); // supprime le coupon stocké
-    localStorage.removeItem('appliedVoucher'); // sécurité
-    if (voucherBox) {
-      voucherBox.innerHTML = `<p style="font-style:italic;color:#a00;">
-        Connecte-toi pour voir tes coupons disponibles.
-      </p>`;
-    }
-    // Mets à jour le total (supprime la réduction du total affiché)
-    try { updateTotal(); } catch(e){ console.warn(e); }
-  } else {
-    // Rechargement normal une fois connecté
-    try { updateVoucherOptions(); } catch(e){ console.warn(e); }
-  }
-});
-
+setInterval(() => { location.reload(); }, 1000);
 </script>
 
 <script>
