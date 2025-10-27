@@ -1401,7 +1401,24 @@ auth.onAuthStateChanged(async (user) => {
   try { updateVoucherOptions(); } catch(e){ console.warn(e); }
   try { updateAccountDisplay(); } catch(e){ console.warn(e); }
 
-  if (!user) return;
+  // Si l'utilisateur se déconnecte, supprimer tout coupon appliqué et rafraîchir l'UI
+  if (!user) {
+    try {
+      // Supprime le voucher appliqué pour revenir au comportement initial (sans réduction)
+      try { localStorage.removeItem('appliedVoucher'); } catch(e){ /* ignore */ }
+
+      // Forcer mise à jour du total / options / points
+      try { await updateTotal(); } catch(e){ console.warn('updateTotal after logout failed', e); }
+      try { updateVoucherOptions(); } catch(e){ console.warn('updateVoucherOptions after logout failed', e); }
+      try { updateLoyaltyPoints(); } catch(e){ /* ignore */ }
+
+      // Optionnel : mettre à jour l'affichage du compte (sera déjà vide)
+      try { updateAccountDisplay(); } catch(e){ /* ignore */ }
+    } catch(err){
+      console.warn('Error while clearing voucher on logout', err);
+    }
+    return;
+  }
 
   const requireVerified = localStorage.getItem('requireEmailVerified') === 'true';
   const storedRedirect = localStorage.getItem('postLoginRedirect');
@@ -1439,6 +1456,15 @@ auth.onAuthStateChanged(async (user) => {
     }
     return;
   }
+
+  // Default behavior if no verification required
+  if (storedRedirect) {
+    try {
+      localStorage.removeItem('postLoginRedirect');
+      if (window.location.href !== storedRedirect) window.location.href = storedRedirect;
+    } catch(e){ console.warn('post-login redirect error', e); }
+  }
+});
 
   // Default behavior if no verification required
   if (storedRedirect) {
