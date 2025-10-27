@@ -1318,8 +1318,6 @@ async function updateTotal() {
   // refresh free-shipping UI if exists
   try { if (typeof refreshFreeProgress === 'function') refreshFreeProgress(); } catch(e){ /* ignore */ }
 }
-
-setInterval(() => { location.reload(); }, 1000);
 </script>
 
 <script>
