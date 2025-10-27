@@ -317,6 +317,64 @@
   color: #fff;
 }
 
+/* ---- Free shipping progress box ---- */
+.free-shipping-box {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #ffffff05, #ffffff03);
+  border: 1px solid rgba(0,0,0,0.06);
+  font-size: 13px;
+  color: #333;
+}
+
+.free-shipping-row {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:8px;
+  color: #555;
+}
+
+.progress-wrap {
+  height:10px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 999px;
+  overflow:hidden;
+  width:100%;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+.progress {
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background: linear-gradient(90deg,#FF7A18,#AF002D);
+  transition: width 600ms cubic-bezier(.22,.9,.3,1);
+}
+
+/* when goal reached */
+.free-shipping-box.reached {
+  border-color: #cdeecf;
+  background: linear-gradient(180deg,#f7fff6,#eefef0);
+  color: #0a6b2e;
+}
+
+/* small celebratory text when reached */
+.free-shipping-bubble {
+  display:inline-block;
+  font-weight:700;
+  font-size:13px;
+  color:#0a6b2e;
+}
+
+/* responsive small tweaks */
+@media (max-width:640px){
+  .free-shipping-box { font-size:12px; padding:10px; }
+  .progress-wrap { height:8px; }
+}
+
   </style>
 
   <!-- Firebase SDK -->
@@ -439,6 +497,23 @@
         <div class="summary-row total">
           <span>Total</span><span id="total">0€</span>
         </div>
+
+        <!-- ==== Free shipping progress block (AJOUT) ==== -->
+        <div id="freeShippingBox" class="free-shipping-box" aria-live="polite">
+          <div class="free-shipping-row">
+            <div><strong>Livraison gratuite</strong></div>
+            <div id="leftToFree" style="font-weight:600;color:#333">50.00€</div>
+          </div>
+
+          <div class="progress-wrap" aria-hidden="true" title="Progrès vers la livraison gratuite">
+            <div id="freeProgress" class="progress" style="width:0%"></div>
+          </div>
+          <div style="margin-top:8px;font-size:12px;color:#666">
+            Ajoute <span id="shortLeft" style="font-weight:700;color:#111">50.00€</span> à ton panier pour bénéficier de la livraison gratuite.
+          </div>
+        </div>
+        <!-- ==== /Free shipping progress block ==== -->
+
         <h5>The selected discount will be applied at checkout.</h5><br>
         <div class="summary-row" id="loyalty-points-row">
           <span>Loyalty: Points to Earn</span><span id="loyalty-points">0 points</span>
@@ -1327,6 +1402,86 @@ document.addEventListener('DOMContentLoaded', () => {
   loadCart();
 });
 </script>
+
+<script>
+/* ==== Free shipping progress UI updater ==== */
+(function(){
+  const GOAL = 50.00; // montant à atteindre pour livraison gratuite (en euros) — change si nécessaire
+  const subEl = () => document.getElementById('subTotal');
+  const progEl = document.getElementById('freeProgress');
+  const leftEl = document.getElementById('leftToFree');
+  const shortLeft = document.getElementById('shortLeft');
+  const box = document.getElementById('freeShippingBox');
+
+  function parseMoney(text){
+    if(!text) return 0;
+    // retire tous les caractères non numériques, sauf la virgule et le point
+    const cleaned = String(text).replace(/[^\d\.,-]/g,'').trim();
+    // normalise la virgule vers le point
+    const normalized = cleaned.replace(',', '.');
+    const v = parseFloat(normalized);
+    return isNaN(v) ? 0 : v;
+  }
+
+  function refreshFreeProgress(){
+    const sEl = subEl();
+    const sub = sEl ? parseMoney(sEl.innerText || sEl.textContent) : 0;
+
+    // calcul pour la barre (on se base sur le subtotal, avant réduction)
+    const pct = Math.min(100, Math.round((sub / GOAL) * 100));
+    if(progEl) progEl.style.width = pct + '%';
+
+    if(sub >= GOAL){
+      // atteint
+      if(leftEl) leftEl.innerText = '🎉 Gratuit';
+      if(shortLeft) shortLeft.innerText = '0.00€';
+      if(box) box.classList.add('reached');
+    } else {
+      const left = Math.max(0, (GOAL - sub));
+      // afficher avec deux décimales
+      const leftText = left.toFixed(2) + '€';
+      if(leftEl) leftEl.innerText = leftText;
+      if(shortLeft) shortLeft.innerText = leftText;
+      if(box) box.classList.remove('reached');
+    }
+  }
+
+  // observe les changements sur #subTotal et #voucher-options pour déclencher rafraîchissement
+  function safeObserve(){
+    const target = subEl();
+    if(!target) return;
+    const obs = new MutationObserver(() => refreshFreeProgress());
+    obs.observe(target, { childList:true, subtree:true, characterData:true });
+  }
+
+  // aussi réagir aux clics sur les vouchers (si existent)
+  document.addEventListener('click', function(e){
+    if(e.target && (e.target.matches('input.voucher-checkbox') || e.target.closest('.voucher-checkbox'))){
+      // attend la fin du cycle JS existant (si updateTotal vient de s'exécuter)
+      setTimeout(refreshFreeProgress, 80);
+    }
+  });
+
+  // run on load and after any updateTotal (safety)
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(refreshFreeProgress, 120);
+    safeObserve();
+    // si updateTotal existe, on le wrap légèrement pour s'assurer que la progress se rafraîchit après
+    if(window.updateTotal && !window.__freeShipping_wrapped){
+      const _u = window.updateTotal;
+      window.updateTotal = async function(){
+        try { await _u.apply(this, arguments); } catch(e){ console.warn(e); }
+        try { refreshFreeProgress(); } catch(e){ console.warn(e); }
+      };
+      window.__freeShipping_wrapped = true;
+    }
+  });
+
+  // call once in case DOMContentLoaded already fired
+  setTimeout(refreshFreeProgress, 300);
+})();
+</script>
+
 <!-- Script : puck centré sur le texte (remplacer ton ancien bloc par celui-ci) -->
 <!-- ---------- JS (module) ---------- -->
 <!-- ---------- JS (module) : hover Liquid Glass + active text color ---------- -->
