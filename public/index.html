@@ -767,12 +767,14 @@ async function getUserPoints(){
       const items = getCartItems();
       return items.reduce((a,i) => a + (Number(i.price)||0) * (Number(i.quantity)||1), 0);
     }
+    // STATE EN MEMOIRE (pas de localStorage)
+    if (!window.__appliedVoucher) window.__appliedVoucher = null;
+
     function getAppliedVoucher() {
-      try { return JSON.parse(localStorage.getItem('appliedVoucher') || 'null'); } catch(e){ return null; }
+      return window.__appliedVoucher || null;
     }
     function setAppliedVoucher(voucherObj) {
-      if (voucherObj) localStorage.setItem('appliedVoucher', JSON.stringify(voucherObj));
-      else localStorage.removeItem('appliedVoucher');
+      window.__appliedVoucher = voucherObj || null;
     }
 
     async function updateVoucherOptions(){
@@ -785,11 +787,11 @@ async function getUserPoints(){
         return;
       }
     
-      const points = await getUserPoints(); // garde compatible
-      const items = getCartItems();
-      const sum = getCartSum();
+      const points = await getUserPoints();
+      const items = (JSON.parse(localStorage.getItem('cartItems')) || []);
+      const sum = items.reduce((a,i) => a + (Number(i.price)||0) * (Number(i.quantity)||1), 0);
     
-      // estimate shipping & tax for applicability check
+      // estimate shipping & tax for applicability
       let region = 'worldwide';
       try { region = await detectRegion(); } catch(e){ /* fallback */ }
       const shippingEstimate = getCombinedShippingCost(items, region);
@@ -837,13 +839,13 @@ async function getUserPoints(){
       if (!html) html = '<p>No coupon available.</p>';
       div.innerHTML = html;
     
-      // Attache des listeners "change" (sans forcer le checked)
+      // Attache des listeners "change" sans forcer le checked ailleurs
       const cbs = div.querySelectorAll('input.voucher-checkbox');
       cbs.forEach(cb => {
-        cb.removeEventListener('change', voucherChangeHandler); // safe if previously attached
+        cb.removeEventListener('change', voucherChangeHandler);
         cb.addEventListener('change', voucherChangeHandler);
       });
-    }    
+    }        
 
     function voucherChangeHandler(e){
       const input = e.target;
@@ -851,23 +853,23 @@ async function getUserPoints(){
       const container = input.closest('#voucher-options');
       if (!container) return;
     
-      // Si on coche -> décocher les autres et sauvegarder; si on décoche -> supprimer le voucher
       if (input.checked) {
         // décocher les autres visuellement
         container.querySelectorAll('input.voucher-checkbox').forEach(cb => {
           if (cb !== input) cb.checked = false;
         });
+        // stocker EN MEMOIRE uniquement
         const voucherData = { voucherValue: input.value, voucherPoints: input.getAttribute('data-points') };
         setAppliedVoucher(voucherData);
       } else {
-        // décoché -> enlever voucher
+        // décoché -> retirer en mémoire
         setAppliedVoucher(null);
       }
     
-      // recalculer tout proprement
+      // recalculer totaux et points
       try { updateTotal(); } catch(err){ console.warn('updateTotal err from voucher handler', err); }
       try { updateLoyaltyPoints(); } catch(e){ /* ignore */ }
-    }
+    }    
     
     
 function addVoucherCheckboxListeners(){
@@ -1253,17 +1255,17 @@ function attachLoginRedirectListeners() {
   // updateTotal: discount is removed FROM subtotal (subtotal affiché = subtotal - discount)
 // Tax is computed on (subtotal_after_discount + shipping). Free-shipping trigger uses FINAL total.
 async function updateTotal() {
-  const items = getCartItems();
-  const sum = getCartSum();
+  const items = JSON.parse(localStorage.getItem('cartItems')) || [];
+  const sum = items.reduce((a,i) => a + (Number(i.price)||0) * (Number(i.quantity)||1), 0);
 
   const applied = getAppliedVoucher();
   const discount = applied ? Number(applied.voucherValue) : 0;
 
-  // detect region & compute shipping
+  // détecter region & calcul shipping
   const region = await detectRegion();
   let shipping = getCombinedShippingCost(items, region);
 
-  // si subtotal (avant réduction) >= 50 → livraison gratuite (conserve ton ancien comportement)
+  // logique livraison gratuite si subtotal (avant remise) >= 50
   if (sum >= 50) shipping = 0;
 
   // base after discount = (sum - discount) + shipping
@@ -1271,7 +1273,7 @@ async function updateTotal() {
   const tax = baseAfterDiscount * 0.2;
   const total = baseAfterDiscount + tax;
 
-  // Mise à jour DOM : subtotal (montrer l'ancien si réduction appliquée)
+  // Mise à jour DOM : subtotal (montrer ancien si réduction appliquée)
   const subEl = document.getElementById('subTotal');
   if (subEl) {
     if (discount > 0) {
@@ -1300,7 +1302,7 @@ async function updateTotal() {
   const taxEl = document.getElementById('tax');
   if (taxEl) taxEl.innerText = tax.toFixed(2) + '€';
 
-  // Total element (on affiche ancien total barré si reduction)
+  // Total element
   const totalEl = document.getElementById('total');
   if (totalEl) {
     const oldBase = sum + (shipping || 0);
@@ -1313,11 +1315,11 @@ async function updateTotal() {
     }
   }
 
-  // mettre à jour les options disponibles et points
+  // refresh voucher list (pour réévaluer applicabilité) et points
   try { updateVoucherOptions(); } catch(e){ console.warn(e); }
   try { updateLoyaltyPoints(); } catch(e){ console.warn(e); }
 
-  // refresh free-shipping UI if exists
+  // free-shipping UI refresh si présent
   try { if (typeof refreshFreeProgress === 'function') refreshFreeProgress(); } catch(e){ /* ignore */ }
 }
 
