@@ -1405,40 +1405,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script>
 /* ==== Free shipping progress UI updater ==== */
+/* ==== Free shipping progress UI updater (TOTAL-based) ==== */
 (function(){
-  const GOAL = 50.00; // montant à atteindre pour livraison gratuite (en euros) — change si nécessaire
-  const subEl = () => document.getElementById('subTotal');
+  const GOAL = 50.00; // montant pour livraison gratuite (en €) — modifie si besoin
+  const totalEl = () => document.getElementById('total');
   const progEl = document.getElementById('freeProgress');
   const leftEl = document.getElementById('leftToFree');
   const shortLeft = document.getElementById('shortLeft');
   const box = document.getElementById('freeShippingBox');
 
-  function parseMoney(text){
-    if(!text) return 0;
-    // retire tous les caractères non numériques, sauf la virgule et le point
-    const cleaned = String(text).replace(/[^\d\.,-]/g,'').trim();
-    // normalise la virgule vers le point
-    const normalized = cleaned.replace(',', '.');
-    const v = parseFloat(normalized);
+  function parseDisplayedTotalFromElement(el){
+    if(!el) return 0;
+    // récupère le texte complet (peut contenir un montant barré + le nouveau montant)
+    const txt = (el.innerText || el.textContent || '').replace(/\u00A0/g,' ');
+    // trouve toutes les occurrences de nombres (ex: "123.45" ou "123,45")
+    const matches = txt.match(/(\d+(?:[.,]\d+)?)/g);
+    if(!matches || matches.length === 0) return 0;
+    // le TOTAL effectif est le dernier nombre affiché (après le prix barré si présent)
+    const last = matches[matches.length - 1].replace(',', '.');
+    const v = parseFloat(last);
     return isNaN(v) ? 0 : v;
   }
 
   function refreshFreeProgress(){
-    const sEl = subEl();
-    const sub = sEl ? parseMoney(sEl.innerText || sEl.textContent) : 0;
+    const totalDisplayed = parseDisplayedTotalFromElement(totalEl());
+    const total = Number(totalDisplayed) || 0;
 
-    // calcul pour la barre (on se base sur le subtotal, avant réduction)
-    const pct = Math.min(100, Math.round((sub / GOAL) * 100));
+    // pourcentage vers l'objectif (clamp 0..100)
+    const pct = Math.min(100, Math.round((total / GOAL) * 100));
     if(progEl) progEl.style.width = pct + '%';
 
-    if(sub >= GOAL){
-      // atteint
+    if(total >= GOAL){
       if(leftEl) leftEl.innerText = '🎉 Gratuit';
       if(shortLeft) shortLeft.innerText = '0.00€';
       if(box) box.classList.add('reached');
     } else {
-      const left = Math.max(0, (GOAL - sub));
-      // afficher avec deux décimales
+      const left = Math.max(0, (GOAL - total));
       const leftText = left.toFixed(2) + '€';
       if(leftEl) leftEl.innerText = leftText;
       if(shortLeft) shortLeft.innerText = leftText;
@@ -1446,38 +1448,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // observe les changements sur #subTotal et #voucher-options pour déclencher rafraîchissement
-  function safeObserve(){
-    const target = subEl();
-    if(!target) return;
-    const obs = new MutationObserver(() => refreshFreeProgress());
-    obs.observe(target, { childList:true, subtree:true, characterData:true });
+  // Observe les mutations du #total (utile si updateTotal écrit du HTML avec strike-through)
+  function observeTotalMutations(){
+    const t = totalEl();
+    if(!t) return;
+    const obs = new MutationObserver(() => {
+      refreshFreeProgress();
+    });
+    obs.observe(t, { childList:true, subtree:true, characterData:true });
   }
 
-  // aussi réagir aux clics sur les vouchers (si existent)
+  // Réagir aussi aux interactions sur les coupons
   document.addEventListener('click', function(e){
     if(e.target && (e.target.matches('input.voucher-checkbox') || e.target.closest('.voucher-checkbox'))){
-      // attend la fin du cycle JS existant (si updateTotal vient de s'exécuter)
-      setTimeout(refreshFreeProgress, 80);
+      // laisse le temps à updateTotal() d'exécuter si il est appelé juste après le click
+      setTimeout(refreshFreeProgress, 90);
     }
   });
 
-  // run on load and after any updateTotal (safety)
+  // wrapper léger autour de updateTotal pour être sûr que la UI se rafraîchisse après
   document.addEventListener('DOMContentLoaded', function(){
     setTimeout(refreshFreeProgress, 120);
-    safeObserve();
-    // si updateTotal existe, on le wrap légèrement pour s'assurer que la progress se rafraîchit après
-    if(window.updateTotal && !window.__freeShipping_wrapped){
-      const _u = window.updateTotal;
+    observeTotalMutations();
+    if(window.updateTotal && !window.__freeShippingTotal_wrapped){
+      const old = window.updateTotal;
       window.updateTotal = async function(){
-        try { await _u.apply(this, arguments); } catch(e){ console.warn(e); }
-        try { refreshFreeProgress(); } catch(e){ console.warn(e); }
+        try { await old.apply(this, arguments); } catch(e){ console.warn(e); }
+        try { refreshFreeProgress(); } catch(err){ console.warn(err); }
       };
-      window.__freeShipping_wrapped = true;
+      window.__freeShippingTotal_wrapped = true;
     }
   });
 
-  // call once in case DOMContentLoaded already fired
+  // si DOM déjà prêt (double-call safety)
   setTimeout(refreshFreeProgress, 300);
 })();
 </script>
