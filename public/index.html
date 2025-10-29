@@ -768,8 +768,6 @@ async function getUserPoints(){
     }
     // STATE EN MEMOIRE (pas de localStorage)
     if (!window.__appliedVoucher) window.__appliedVoucher = null;
-    function getAppliedVoucher(){ return window.__appliedVoucher || null; }
-    function setAppliedVoucher(v){ window.__appliedVoucher = v || null; }
 
     function getAppliedVoucher() {
       return window.__appliedVoucher || null;
@@ -781,42 +779,37 @@ async function getUserPoints(){
     async function updateVoucherOptions(){
       const div = document.getElementById('voucher-options');
       if (!div) return;
-    
       if (!auth.currentUser) {
-        div.innerHTML = `<p style="font-style:italic;color:#a00;">Log in to view your coupons.</p>`;
+        div.innerHTML = `<p style="font-style:italic;color:#a00;">
+                           Log in to view your coupons.
+                         </p>`;
         return;
       }
     
       const points = await getUserPoints();
-      const items = JSON.parse(localStorage.getItem('cartItems')) || [];
+      const items = (JSON.parse(localStorage.getItem('cartItems')) || []);
       const sum = items.reduce((a,i) => a + (Number(i.price)||0) * (Number(i.quantity)||1), 0);
     
-      // estimation shipping & tax pour décider de l'applicabilité
+      // estimate shipping & tax for applicability
       let region = 'worldwide';
-      try { region = await detectRegion(); } catch(e){}
+      try { region = await detectRegion(); } catch(e){ /* fallback */ }
       const shippingEstimate = getCombinedShippingCost(items, region);
       const taxEstimate = (sum + shippingEstimate) * 0.2;
       const totalEstimate = sum + shippingEstimate + taxEstimate;
     
-      // si un voucher est appliqué mais n'est plus applicable → le retirer
-      const applied = getAppliedVoucher();
-      if (applied) {
-        const rule = vouchers.find(v => Number(v.value) === Number(applied.voucherValue));
-        const applicableNow = rule ? (totalEstimate >= rule.min) : false;
-        if (!applicableNow) {
-          // clear state + décocher si une case est cochée
-          setAppliedVoucher(null);
-          const checked = div.querySelector('input.voucher-checkbox:checked') || document.querySelector('input.voucher-checkbox:checked');
-          if (checked) checked.checked = false;
-        }
-      }
+      const vouchers = [
+        { points: 500,  value: 5,  min: 30  },
+        { points: 1000, value: 10, min: 40 },
+        { points: 2000, value: 20, min: 80 },
+        { points: 2500, value: 30, min: 100 },
+      ];
     
-      // build HTML
+      const applied = getAppliedVoucher();
       let html = '';
       vouchers.forEach(v => {
         if (points >= v.points) {
           const isApplicable = totalEstimate >= v.min;
-          const isChecked = getAppliedVoucher() && Number(getAppliedVoucher().voucherValue) === Number(v.value);
+          const checked = applied && Number(applied.voucherValue) === Number(v.value);
           if (isApplicable) {
             html += `
               <div style="margin-bottom:8px;">
@@ -826,7 +819,7 @@ async function getUserPoints(){
                   id="v${v.value}"
                   value="${v.value}"
                   data-points="${v.points}"
-                  ${isChecked ? 'checked' : ''}
+                  ${checked ? 'checked' : ''}
                 >
                 <label for="v${v.value}" style="cursor:pointer;">
                   €${v.value} coupon (cost ${v.points} pts)
@@ -845,7 +838,7 @@ async function getUserPoints(){
       if (!html) html = '<p>No coupon available.</p>';
       div.innerHTML = html;
     
-      // attache listeners (proprement)
+      // Attache des listeners "change" sans forcer le checked ailleurs
       const cbs = div.querySelectorAll('input.voucher-checkbox');
       cbs.forEach(cb => {
         cb.removeEventListener('change', voucherChangeHandler);
@@ -855,12 +848,12 @@ async function getUserPoints(){
 
     function voucherChangeHandler(e){
       const input = e.target;
-      if (!input || !input.classList.contains('voucher-checkbox')) return;
-      const container = document.getElementById('voucher-options');
+      if (!input || !input.classList || !input.classList.contains('voucher-checkbox')) return;
+      const container = input.closest('#voucher-options');
       if (!container) return;
     
       if (input.checked) {
-        // décocher les autres cases
+        // décocher les autres visuellement
         container.querySelectorAll('input.voucher-checkbox').forEach(cb => {
           if (cb !== input) cb.checked = false;
         });
@@ -1263,37 +1256,18 @@ async function updateTotal() {
   const items = JSON.parse(localStorage.getItem('cartItems')) || [];
   const sum = items.reduce((a,i) => a + (Number(i.price)||0) * (Number(i.quantity)||1), 0);
 
-  // récupération du voucher en mémoire (pas localStorage)
-  let applied = getAppliedVoucher();
-  // calcul shipping & tax estimate pour vérifier applicabilité
+  const applied = getAppliedVoucher();
+  const discount = applied ? Number(applied.voucherValue) : 0;
+
+  // détecter region & calcul shipping
   const region = await detectRegion();
   let shipping = getCombinedShippingCost(items, region);
 
   // logique livraison gratuite si subtotal (avant remise) >= 50
   if (sum >= 50) shipping = 0;
 
-  // Si un voucher est stocké -> vérifie encore s'il reste applicable (par rapport au min du voucher)
-  if (applied) {
-    const rule = vouchers.find(v => Number(v.value) === Number(applied.voucherValue));
-    // on juge l'applicabilité sur sum + shipping + taxEstimate (cohérent avec UI)
-    const taxEstimate = (sum + shipping) * 0.2;
-    const totalEstimate = sum + shipping + taxEstimate;
-    const applicableNow = rule ? (totalEstimate >= rule.min) : false;
-    if (!applicableNow) {
-      // retirer voucher (mémoire) + décocher case si présente
-      setAppliedVoucher(null);
-      applied = null;
-      const cb = document.querySelector('input.voucher-checkbox:checked');
-      if (cb) cb.checked = false;
-    }
-  }
-
-  const discount = applied ? Number(applied.voucherValue) : 0;
-
-  // subtotal après remise (ne pas descendre en dessous de 0)
-  const subAfterDiscount = Math.max(0, sum - discount);
-
-  const baseAfterDiscount = subAfterDiscount + shipping;
+  // base after discount = (sum - discount) + shipping
+  const baseAfterDiscount = Math.max(0, sum - discount) + shipping;
   const tax = baseAfterDiscount * 0.2;
   const total = baseAfterDiscount + tax;
 
@@ -1301,7 +1275,7 @@ async function updateTotal() {
   const subEl = document.getElementById('subTotal');
   if (subEl) {
     if (discount > 0) {
-      subEl.innerHTML = `<span class="sub-old">${sum.toFixed(2)}€</span><span class="sub-new">${subAfterDiscount.toFixed(2)}€</span>`;
+      subEl.innerHTML = `<span class="sub-old">${sum.toFixed(2)}€</span><span class="sub-new">${Math.max(0,(sum - discount)).toFixed(2)}€</span>`;
     } else {
       subEl.textContent = sum.toFixed(2) + '€';
     }
@@ -1339,11 +1313,12 @@ async function updateTotal() {
     }
   }
 
-  // Rafraîchir la liste des vouchers (si la disponibilité a changé)
-  try { updateVoucherOptions(); } catch(e){ console.warn('updateVoucherOptions err', e); }
-  // points / free shipping UI
+  // refresh voucher list (pour réévaluer applicabilité) et points
+  try { updateVoucherOptions(); } catch(e){ console.warn(e); }
   try { updateLoyaltyPoints(); } catch(e){ console.warn(e); }
-  try { if (typeof refreshFreeProgress === 'function') refreshFreeProgress(); } catch(e){}
+
+  // free-shipping UI refresh si présent
+  try { if (typeof refreshFreeProgress === 'function') refreshFreeProgress(); } catch(e){ /* ignore */ }
 }
 
 </script>
