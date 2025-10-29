@@ -871,19 +871,13 @@ async function getUserPoints(){
     }    
     
     
-function addVoucherCheckboxListeners(){
-  const cbs = document.querySelectorAll('input.voucher-checkbox');
-  cbs.forEach(cb => cb.addEventListener('click', function(){
-    if (this.checked){
-      cbs.forEach(o => o!==this && (o.checked = false));
-    } else {
-      this.checked = false;
-    }
-    // refresh immediately everything: totals, points, free-shipping UI
-    try { updateTotal(); } catch(e){ console.warn('updateTotal error', e); }
-    try { updateLoyaltyPoints(); } catch(e){ console.warn('updateLoyaltyPoints error', e); }
-  }));
-}
+    // -----------------------------
+    // Replace the old noisy function with a no-op
+    // -----------------------------
+    function addVoucherCheckboxListeners(){
+      // noop — voucher checkbox handling is done by voucherChangeHandler
+      // This prevents duplicate listeners that immediately uncheck the box.
+    }    
 
     // --- Total & TVA ---
     function updateTotal(){const items=JSON.parse(localStorage.getItem('cartItems'))||[];const sum=items.reduce((a,i)=>a+i.price*i.quantity,0);document.getElementById('subTotal').innerText=sum.toFixed(2)+'€';document.getElementById('tax').innerText=(sum*0.2).toFixed(2)+'€';document.getElementById('shipping').innerText='To be determined at checkout';document.getElementById('total').innerText=(sum*1.2).toFixed(2)+'€';updateVoucherOptions();}
