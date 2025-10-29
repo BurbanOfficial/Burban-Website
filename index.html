@@ -137,7 +137,8 @@
         class="btn btn-countdown"
         href="https://www.burbanofficial.com/shop.html"
         role="button"
-        aria-disabled="true">
+        aria-disabled="true"
+        data-target="shop.html">
         <span class="countdown" aria-live="polite">--d --h --m --s</span>
     </a>
 
@@ -471,7 +472,7 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
   const countdownSpan = btn.querySelector('.countdown');
 
   // Si l'utilisateur souhaite conserver un href initial, on le met en data-target (déjà fait)
-  const targetHref = btn.dataset.target || '#best-sellers';
+  const targetHref = btn.dataset.target || 'shop.html';
 
   // Empêche le clic tant que aria-disabled=true
   btn.addEventListener('click', function(e){
@@ -789,4 +790,3 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 
 </body>
 </html>
-
