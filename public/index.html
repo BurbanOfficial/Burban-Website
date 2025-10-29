@@ -921,19 +921,25 @@ async function handleCheckout(){
     if (c) c.style.display = 'none';
   }
 
-  // utilise l'état en mémoire (pas le DOM directement)
-  const applied = getAppliedVoucher();
-  const voucherData = applied ? { voucherValue: applied.voucherValue, voucherPoints: applied.voucherPoints } : null;
+  const selectedVoucher = document.querySelector('input.voucher-checkbox:checked');
+  let voucherData = null;
+  if (selectedVoucher) {
+    const voucherValue = selectedVoucher.value;
+    const voucherPoints = selectedVoucher.getAttribute('data-points');
+    voucherData = { voucherValue, voucherPoints };
+    localStorage.setItem('appliedVoucher', JSON.stringify(voucherData));
+  } else {
+    localStorage.removeItem('appliedVoucher');
+  }
 
   try {
     const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
     if (cartItems.length === 0) {
       alert("Your cart is empty!");
-      if (b) { b.disabled = false; if (t) t.style.display = 'inline'; if (l) l.style.display = 'none'; if (c) c.style.display = 'inline-block'; }
+      resetButton();
       return;
     }
-
-    // Envoi au backend
+    // Post to your backend to create checkout session
     const response = await fetch('https://burban-stripe-service.onrender.com/create-checkout-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -942,16 +948,16 @@ async function handleCheckout(){
     const data = await response.json();
     if (data.error) {
       alert(data.error);
-      if (b) { b.disabled = false; if (t) t.style.display = 'inline'; if (l) l.style.display = 'none'; if (c) c.style.display = 'inline-block'; }
+      resetButton();
       return;
     }
-    // redirect stripe
+    resetButton();
     const stripe = Stripe('pk_live_51Q9ORzRwel3656rYkt2acyiz7KoCl1mJA6ru04LPlGQmt5Iw9BcTQa16qv5O0Ozte9bMCtutah1qh4r6yds3l2p000MPG83KmB');
     stripe.redirectToCheckout({ sessionId: data.sessionId });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     alert("An error has occurred. Please try again.");
-    if (b) { b.disabled = false; if (t) t.style.display = 'inline'; if (l) l.style.display = 'none'; if (c) c.style.display = 'inline-block'; }
+    resetButton();
   }
 }
 
