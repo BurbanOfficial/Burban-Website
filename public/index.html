@@ -1252,22 +1252,50 @@ function attachLoginRedirectListeners() {
 
   // updateTotal: discount is removed FROM subtotal (subtotal affiché = subtotal - discount)
 // Tax is computed on (subtotal_after_discount + shipping). Free-shipping trigger uses FINAL total.
+// --- Remplace votre updateTotal par celle-ci (NE PAS TOUCHER localStorage.appliedVoucher) ---
 async function updateTotal() {
   const items = JSON.parse(localStorage.getItem('cartItems')) || [];
   const sum = items.reduce((a,i) => a + (Number(i.price)||0) * (Number(i.quantity)||1), 0);
 
-  const applied = getAppliedVoucher();
-  const discount = applied ? Number(applied.voucherValue) : 0;
+  // Lire l'éventuel voucher depuis le localStorage (on ne le supprime pas)
+  const stored = (() => {
+    try { return JSON.parse(localStorage.getItem('appliedVoucher')); } catch(e) { return null; }
+  })();
+  const applied = stored ? { voucherValue: stored.voucherValue, voucherPoints: stored.voucherPoints } : null;
 
-  // détecter region & calcul shipping
+  // détecter région & calcul shipping
   const region = await detectRegion();
   let shipping = getCombinedShippingCost(items, region);
 
   // logique livraison gratuite si subtotal (avant remise) >= 50
   if (sum >= 50) shipping = 0;
 
-  // base after discount = (sum - discount) + shipping
-  const baseAfterDiscount = Math.max(0, sum - discount) + shipping;
+  // Estimation utilisée pour décider si un voucher reste applicable
+  const baseEstimate = Math.max(0, sum) + shipping;
+  const taxEstimate = baseEstimate * 0.2;
+  const totalEstimate = sum + shipping + taxEstimate;
+
+  // Calcul du discount EFFECTIF (on n'écrase pas localStorage, on l'ignore si inapplicable)
+  let discount = 0;
+  if (applied && applied.voucherValue) {
+    const cfg = getVoucherConfigs().find(v => Number(v.value) === Number(applied.voucherValue));
+    if (cfg && totalEstimate >= cfg.min) {
+      discount = Number(applied.voucherValue);
+    } else {
+      // voucher stocké mais plus applicable → on l'ignore dans le calcul
+      discount = 0;
+      // décocher visuellement les checkbox si présentes (sans toucher localStorage)
+      try {
+        document.querySelectorAll('input.voucher-checkbox').forEach(cb => {
+          if (cb && Number(cb.value) === Number(applied.voucherValue)) cb.checked = false;
+        });
+      } catch(e){ /* ignore */ }
+    }
+  }
+
+  // Calculs finaux (on applique le discount EFFECTIF uniquement)
+  const subAfterDiscount = Math.max(0, sum - discount);
+  const baseAfterDiscount = subAfterDiscount + shipping;
   const tax = baseAfterDiscount * 0.2;
   const total = baseAfterDiscount + tax;
 
@@ -1275,7 +1303,7 @@ async function updateTotal() {
   const subEl = document.getElementById('subTotal');
   if (subEl) {
     if (discount > 0) {
-      subEl.innerHTML = `<span class="sub-old">${sum.toFixed(2)}€</span><span class="sub-new">${Math.max(0,(sum - discount)).toFixed(2)}€</span>`;
+      subEl.innerHTML = `<span class="sub-old">${sum.toFixed(2)}€</span><span class="sub-new">${subAfterDiscount.toFixed(2)}€</span>`;
     } else {
       subEl.textContent = sum.toFixed(2) + '€';
     }
@@ -1313,7 +1341,7 @@ async function updateTotal() {
     }
   }
 
-  // refresh voucher list (pour réévaluer applicabilité) et points
+  // refresh voucher list (pour réévaluer applicabilité visuelle) et points
   try { updateVoucherOptions(); } catch(e){ console.warn(e); }
   try { updateLoyaltyPoints(); } catch(e){ console.warn(e); }
 
