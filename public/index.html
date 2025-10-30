@@ -1252,101 +1252,132 @@ function attachLoginRedirectListeners() {
 
   // updateTotal: discount is removed FROM subtotal (subtotal affiché = subtotal - discount)
 // Tax is computed on (subtotal_after_discount + shipping). Free-shipping trigger uses FINAL total.
-// --- Remplace votre updateTotal par celle-ci (NE PAS TOUCHER localStorage.appliedVoucher) ---
+// Remplace toutes les définitions existantes par celle-ci (unique)
 async function updateTotal() {
-  const items = JSON.parse(localStorage.getItem('cartItems')) || [];
-  const sum = items.reduce((a,i) => a + (Number(i.price)||0) * (Number(i.quantity)||1), 0);
+  try {
+    // Récupération panier
+    const items = JSON.parse(localStorage.getItem('cartItems')) || [];
+    const sum = items.reduce((acc, it) => acc + (Number(it.price) || 0) * (Number(it.quantity) || 1), 0);
 
-  // Lire l'éventuel voucher depuis le localStorage (on ne le supprime pas)
-  const stored = (() => {
-    try { return JSON.parse(localStorage.getItem('appliedVoucher')); } catch(e) { return null; }
-  })();
-  const applied = stored ? { voucherValue: stored.voucherValue, voucherPoints: stored.voucherPoints } : null;
+    // Lire le voucher dans localStorage (NE PAS L'EFFACER)
+    let storedApplied = null;
+    try { storedApplied = JSON.parse(localStorage.getItem('appliedVoucher')); } catch(e){ storedApplied = null; }
 
-  // détecter région & calcul shipping
-  const region = await detectRegion();
-  let shipping = getCombinedShippingCost(items, region);
+    // safety: fonction pour récupérer la config des vouchers (même liste que ton UI)
+    const vouchersCfg = [
+      { points: 500,  value: 5,  min: 30  },
+      { points: 1000, value: 10, min: 40 },
+      { points: 2000, value: 20, min: 80 },
+      { points: 2500, value: 30, min: 100 },
+    ];
 
-  // logique livraison gratuite si subtotal (avant remise) >= 50
-  if (sum >= 50) shipping = 0;
+    // Détecter region (try/catch => fallback 'worldwide')
+    let region = 'worldwide';
+    try { region = await (typeof detectRegion === 'function' ? detectRegion() : Promise.resolve('worldwide')); }
+    catch(e){ region = 'worldwide'; }
 
-  // Estimation utilisée pour décider si un voucher reste applicable
-  const baseEstimate = Math.max(0, sum) + shipping;
-  const taxEstimate = baseEstimate * 0.2;
-  const totalEstimate = sum + shipping + taxEstimate;
+    // Calcul shipping estimé (fonction existante)
+    let shipping = 0;
+    try { shipping = getCombinedShippingCost(items, region); } catch(e){ shipping = 0; }
 
-  // Calcul du discount EFFECTIF (on n'écrase pas localStorage, on l'ignore si inapplicable)
-  let discount = 0;
-  if (applied && applied.voucherValue) {
-    const cfg = getVoucherConfigs().find(v => Number(v.value) === Number(applied.voucherValue));
-    if (cfg && totalEstimate >= cfg.min) {
-      discount = Number(applied.voucherValue);
-    } else {
-      // voucher stocké mais plus applicable → on l'ignore dans le calcul
-      discount = 0;
-      // décocher visuellement les checkbox si présentes (sans toucher localStorage)
-      try {
-        document.querySelectorAll('input.voucher-checkbox').forEach(cb => {
-          if (cb && Number(cb.value) === Number(applied.voucherValue)) cb.checked = false;
-        });
-      } catch(e){ /* ignore */ }
+    // Si montant panier (avant remise) atteint le seuil => livraison gratuite
+    const FREE_GOAL = 50.00;
+    if (sum >= FREE_GOAL) shipping = 0;
+
+    // Estimation du total AVANT application du voucher (utilisée pour tester l'éligibilité)
+    // On calcule la TVA sur (sum + shipping)
+    const taxEstimateBefore = (sum + shipping) * 0.2;
+    const totalEstimateBefore = sum + shipping + taxEstimateBefore;
+
+    // Déterminer discount effectif : lire storedApplied mais l'IGNORER si inapplicable
+    let discount = 0;
+    if (storedApplied && storedApplied.voucherValue) {
+      const storedValue = Number(storedApplied.voucherValue);
+      const cfg = vouchersCfg.find(v => Number(v.value) === storedValue);
+      if (cfg && totalEstimateBefore >= cfg.min) {
+        discount = Number(cfg.value) || 0;
+      } else {
+        // voucher présent mais non applicable → on l'ignore pour le calcul
+        discount = 0;
+        // décocher visuellement la checkbox correspondante (sans toucher au localStorage)
+        try {
+          document.querySelectorAll('input.voucher-checkbox').forEach(cb => {
+            if (cb && Number(cb.value) === storedValue) cb.checked = false;
+          });
+        } catch(e){ /* ignore */ }
+      }
     }
-  }
 
-  // Calculs finaux (on applique le discount EFFECTIF uniquement)
-  const subAfterDiscount = Math.max(0, sum - discount);
-  const baseAfterDiscount = subAfterDiscount + shipping;
-  const tax = baseAfterDiscount * 0.2;
-  const total = baseAfterDiscount + tax;
+    // Calculs finaux : on applique uniquement le discount EFFECTIF
+    const subAfterDiscount = Math.max(0, sum - discount);
+    const baseAfterDiscount = subAfterDiscount + shipping;
+    const tax = baseAfterDiscount * 0.2;
+    const total = baseAfterDiscount + tax;
 
-  // Mise à jour DOM : subtotal (montrer ancien si réduction appliquée)
-  const subEl = document.getElementById('subTotal');
-  if (subEl) {
+    // Mise à jour DOM en sécurisant chaque élément
+    const setText = (id, txt) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      // pour éviter d'écraser des structures complexes, on utilise textContent sauf pour subTotal/total quand il y a strike
+      el.textContent = txt;
+    };
+
+    // subTotal (montrer ancien si réduction)
+    const subEl = document.getElementById('subTotal');
+    if (subEl) {
+      if (discount > 0) {
+        subEl.innerHTML = `<span class="sub-old">${sum.toFixed(2)}€</span><span class="sub-new">${subAfterDiscount.toFixed(2)}€</span>`;
+      } else {
+        subEl.textContent = sum.toFixed(2) + '€';
+      }
+    }
+
+    // discount row
+    const discountRow = document.getElementById('discount-row');
+    const discountAmountEl = document.getElementById('discountAmount');
     if (discount > 0) {
-      subEl.innerHTML = `<span class="sub-old">${sum.toFixed(2)}€</span><span class="sub-new">${subAfterDiscount.toFixed(2)}€</span>`;
+      if (discountRow) discountRow.style.display = 'flex';
+      if (discountAmountEl) discountAmountEl.textContent = '-' + Number(discount).toFixed(2) + '€';
     } else {
-      subEl.textContent = sum.toFixed(2) + '€';
+      if (discountRow) discountRow.style.display = 'none';
+      if (discountAmountEl) discountAmountEl.textContent = '-0.00€';
     }
-  }
 
-  // Discount row
-  const discountRow = document.getElementById('discount-row');
-  const discountAmountEl = document.getElementById('discountAmount');
-  if (discount > 0) {
-    if (discountRow) discountRow.style.display = 'flex';
-    if (discountAmountEl) discountAmountEl.textContent = '-' + Number(discount).toFixed(2) + '€';
-  } else {
-    if (discountRow) discountRow.style.display = 'none';
-    if (discountAmountEl) discountAmountEl.textContent = '-0.00€';
-  }
+    // shipping
+    const shipEl = document.getElementById('shipping');
+    if (shipEl) shipEl.textContent = (shipping === 0 ? 'Livraison gratuite' : shipping.toFixed(2) + '€');
 
-  // Shipping element
-  const shipEl = document.getElementById('shipping');
-  if (shipEl) shipEl.innerText = shipping === 0 ? 'Livraison gratuite' : shipping.toFixed(2) + '€';
+    // tax
+    const taxEl = document.getElementById('tax');
+    if (taxEl) taxEl.textContent = tax.toFixed(2) + '€';
 
-  // Tax element
-  const taxEl = document.getElementById('tax');
-  if (taxEl) taxEl.innerText = tax.toFixed(2) + '€';
-
-  // Total element
-  const totalEl = document.getElementById('total');
-  if (totalEl) {
-    const oldBase = sum + (shipping || 0);
-    const oldTax = oldBase * 0.2;
-    const oldTotal = oldBase + oldTax;
-    if (discount > 0) {
-      totalEl.innerHTML = `<span style="text-decoration: line-through; color: #bccaff;">${oldTotal.toFixed(2)}€</span>&nbsp;${total.toFixed(2)}€`;
-    } else {
-      totalEl.textContent = total.toFixed(2) + '€';
+    // total (avec ancien total barré si discount appliqué)
+    const totalEl = document.getElementById('total');
+    if (totalEl) {
+      const oldBase = sum + (shipping || 0);
+      const oldTax = oldBase * 0.2;
+      const oldTotal = oldBase + oldTax;
+      if (discount > 0) {
+        totalEl.innerHTML = `<span style="text-decoration: line-through; color: #bccaff;">${oldTotal.toFixed(2)}€</span>&nbsp;${total.toFixed(2)}€`;
+      } else {
+        totalEl.textContent = total.toFixed(2) + '€';
+      }
     }
+
+    // rafraîchir l'affichage des vouchers/points/UI annexes en toute sécurité
+    try { if (typeof updateVoucherOptions === 'function') updateVoucherOptions(); } catch(e){ console.warn('updateVoucherOptions error', e); }
+    try { if (typeof updateLoyaltyPoints === 'function') updateLoyaltyPoints(); } catch(e){ console.warn('updateLoyaltyPoints error', e); }
+    try { if (typeof refreshFreeProgress === 'function') refreshFreeProgress(); } catch(e){ /* ignore */ }
+
+  } catch (err) {
+    // En cas d'erreur, log et restaure des valeurs lisibles pour l'utilisateur
+    console.error('updateTotal fatal error', err);
+    if (document.getElementById('subTotal')) document.getElementById('subTotal').textContent = '0.00€';
+    if (document.getElementById('discountAmount')) document.getElementById('discountAmount').textContent = '-0.00€';
+    if (document.getElementById('shipping')) document.getElementById('shipping').textContent = 'To be determined at checkout';
+    if (document.getElementById('tax')) document.getElementById('tax').textContent = '0.00€';
+    if (document.getElementById('total')) document.getElementById('total').textContent = '0.00€';
   }
-
-  // refresh voucher list (pour réévaluer applicabilité visuelle) et points
-  try { updateVoucherOptions(); } catch(e){ console.warn(e); }
-  try { updateLoyaltyPoints(); } catch(e){ console.warn(e); }
-
-  // free-shipping UI refresh si présent
-  try { if (typeof refreshFreeProgress === 'function') refreshFreeProgress(); } catch(e){ /* ignore */ }
 }
 
 </script>
