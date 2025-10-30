@@ -768,169 +768,108 @@ async function getUserPoints(){
     }
     // STATE EN MEMOIRE (pas de localStorage)
     if (!window.__appliedVoucher) window.__appliedVoucher = null;
-    function getAppliedVoucher(){
-      if (window.__appliedVoucher) return window.__appliedVoucher;
-      try {
-        const ls = localStorage.getItem('appliedVoucher');
-        if (ls) {
-          window.__appliedVoucher = JSON.parse(ls);
-          return window.__appliedVoucher;
-        }
-      } catch(e){ /* ignore */ }
-      return null;
+
+    function getAppliedVoucher() {
+      return window.__appliedVoucher || null;
     }
-    function setAppliedVoucher(voucherObj){
+    function setAppliedVoucher(voucherObj) {
       window.__appliedVoucher = voucherObj || null;
-      try {
-        if (voucherObj) localStorage.setItem('appliedVoucher', JSON.stringify(voucherObj));
-        else localStorage.removeItem('appliedVoucher');
-      } catch(e){ console.warn('setAppliedVoucher localStorage error', e); }
     }
 
-    // Validate applied voucher: si devenu inapplicable -> le retirer et rafraîchir l'UI
-  async function validateAppliedVoucher(){
-    const applied = getAppliedVoucher();
-    if (!applied) return true; // rien à valider
-    // Calculer total estimé (même logique que dans updateVoucherOptions/updateTotal)
-    const items = (JSON.parse(localStorage.getItem('cartItems')) || []);
-    const sum = items.reduce((a,i) => a + (Number(i.price)||0) * (Number(i.quantity)||1), 0);
-
-    // detect region + shipping estimate (detectRegion peut échouer -> fallback worldwide)
-    let region = 'worldwide';
-    try { region = await detectRegion(); } catch(e){ /* fallback */ }
-
-    const shippingEstimate = getCombinedShippingCost(items, region);
-    const taxEstimate = (sum + shippingEstimate) * 0.2;
-    const totalEstimate = sum + shippingEstimate + taxEstimate;
-
-    const vDef = VOUCHERS.find(v => Number(v.value) === Number(applied.voucherValue));
-    if (!vDef) {
-      // voucher inconnu -> retirer
-      setAppliedVoucher(null);
-      await updateVoucherOptions(); // re-render
-      updateTotal(); // mise à jour affichage totaux
-      return false;
-    }
-
-    if (totalEstimate < vDef.min) {
-      // plus applicable -> retirer et mettre à jour l'UI
-      setAppliedVoucher(null);
-      // décoche toute case affichée (sécurité)
-      document.querySelectorAll('.voucher-checkbox').forEach(cb => cb.checked = false);
-      await updateVoucherOptions();
-      updateTotal();
-      return false;
-    }
-    return true;
-  }
-
-    // Rend la liste des vouchers selon points utilisateur + applicabilité
-  async function updateVoucherOptions(){
-    const div = document.getElementById('voucher-options');
-    if (!div) return;
-
-    if (!auth || !auth.currentUser) {
-      div.innerHTML = `<p style="font-style:italic;color:#a00;">
-                         Log in to view your coupons.
-                       </p>`;
-      return;
-    }
-
-    // ensure applied voucher still valid
-    await validateAppliedVoucher();
-
-    const points = await getUserPoints();
-    const items = (JSON.parse(localStorage.getItem('cartItems')) || []);
-    const sum = items.reduce((a,i) => a + (Number(i.price)||0) * (Number(i.quantity)||1), 0);
-    let region = 'worldwide';
-    try { region = await detectRegion(); } catch(e){ /* fallback */ }
-    const shippingEstimate = getCombinedShippingCost(items, region);
-    const taxEstimate = (sum + shippingEstimate) * 0.2;
-    const totalEstimate = sum + shippingEstimate + taxEstimate;
-
-    const applied = getAppliedVoucher();
-    let html = '';
-    VOUCHERS.forEach(v => {
-      if (points >= v.points) {
-        const isApplicable = totalEstimate >= v.min;
-        const checked = applied && Number(applied.voucherValue) === Number(v.value);
-        if (isApplicable) {
-          html += `
-            <div style="margin-bottom:8px;">
-              <input
-                type="checkbox"
-                class="voucher-checkbox"
-                id="v${v.value}"
-                value="${v.value}"
-                data-points="${v.points}"
-                ${checked ? 'checked' : ''}
-              >
-              <label for="v${v.value}" style="cursor:pointer;">
-                €${v.value} coupon (cost ${v.points} pts)
-              </label>
-            </div>`;
-        } else {
-          html += `
-            <div style="margin-bottom:8px;color:#aaa;">
-              €${v.value} coupon (min. ${v.min}€ – cost ${v.points} pts)
-              <em>Inapplicable</em>
-            </div>`;
-        }
+    async function updateVoucherOptions(){
+      const div = document.getElementById('voucher-options');
+      if (!div) return;
+      if (!auth.currentUser) {
+        div.innerHTML = `<p style="font-style:italic;color:#a00;">
+                           Log in to view your coupons.
+                         </p>`;
+        return;
       }
-    });
-
-    if (!html) html = '<p>No coupon available.</p>';
-    div.innerHTML = html;
-
-    // Attacher listeners (single handler)
-    const cbs = div.querySelectorAll('input.voucher-checkbox');
-    cbs.forEach(cb => {
-      cb.removeEventListener('change', voucherChangeHandler);
-      cb.addEventListener('change', voucherChangeHandler);
-    });
-  }        
-
-    // Handler pour checkbox: uniquement 1 actif, sync setAppliedVoucher
-  function voucherChangeHandler(e){
-    const input = e.target;
-    if (!input || !input.classList || !input.classList.contains('voucher-checkbox')) return;
-    const container = input.closest('#voucher-options');
-    if (!container) return;
-
-    if (input.checked) {
-      // décocher les autres visuellement
-      container.querySelectorAll('input.voucher-checkbox').forEach(cb => {
-        if (cb !== input) cb.checked = false;
+    
+      const points = await getUserPoints();
+      const items = (JSON.parse(localStorage.getItem('cartItems')) || []);
+      const sum = items.reduce((a,i) => a + (Number(i.price)||0) * (Number(i.quantity)||1), 0);
+    
+      // estimate shipping & tax for applicability
+      let region = 'worldwide';
+      try { region = await detectRegion(); } catch(e){ /* fallback */ }
+      const shippingEstimate = getCombinedShippingCost(items, region);
+      const taxEstimate = (sum + shippingEstimate) * 0.2;
+      const totalEstimate = sum + shippingEstimate + taxEstimate;
+    
+      const vouchers = [
+        { points: 500,  value: 5,  min: 30  },
+        { points: 1000, value: 10, min: 40 },
+        { points: 2000, value: 20, min: 80 },
+        { points: 2500, value: 30, min: 100 },
+      ];
+    
+      const applied = getAppliedVoucher();
+      let html = '';
+      vouchers.forEach(v => {
+        if (points >= v.points) {
+          const isApplicable = totalEstimate >= v.min;
+          const checked = applied && Number(applied.voucherValue) === Number(v.value);
+          if (isApplicable) {
+            html += `
+              <div style="margin-bottom:8px;">
+                <input
+                  type="checkbox"
+                  class="voucher-checkbox"
+                  id="v${v.value}"
+                  value="${v.value}"
+                  data-points="${v.points}"
+                  ${checked ? 'checked' : ''}
+                >
+                <label for="v${v.value}" style="cursor:pointer;">
+                  €${v.value} coupon (cost ${v.points} pts)
+                </label>
+              </div>`;
+          } else {
+            html += `
+              <div style="margin-bottom:8px;color:#aaa;">
+                €${v.value} coupon (min. ${v.min}€ – cost ${v.points} pts)
+                <em>Inapplicable</em>
+              </div>`;
+          }
+        }
       });
-      const voucherData = { voucherValue: input.value, voucherPoints: input.getAttribute('data-points') };
-      setAppliedVoucher(voucherData);
-    } else {
-      // décoché -> retirer
-      setAppliedVoucher(null);
-    }
+    
+      if (!html) html = '<p>No coupon available.</p>';
+      div.innerHTML = html;
+    
+      // Attache des listeners "change" sans forcer le checked ailleurs
+      const cbs = div.querySelectorAll('input.voucher-checkbox');
+      cbs.forEach(cb => {
+        cb.removeEventListener('change', voucherChangeHandler);
+        cb.addEventListener('change', voucherChangeHandler);
+      });
+    }        
 
-    // recalculer totaux et points
-    try { updateTotal(); } catch(err){ console.warn('updateTotal err from voucher handler', err); }
-    try { updateLoyaltyPoints(); } catch(e){ /* ignore */ }
-  }    
-
-  // Utility pour réparer l'affichage au chargement (s'il restait une donnée obsolète)
-  (function initVoucherFromStorage(){
-    const ls = localStorage.getItem('appliedVoucher');
-    if (ls) {
-      try {
-        window.__appliedVoucher = JSON.parse(ls);
-      } catch(e){ window.__appliedVoucher = null; }
-    }
-  })();
-
-  // Expose/update immediately once DOM is ready (déjà appelé ailleurs aussi)
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(()=> {
-      updateVoucherOptions().catch(()=>{});
-      validateAppliedVoucher().catch(()=>{});
-    }, 80);
-  });
+    function voucherChangeHandler(e){
+      const input = e.target;
+      if (!input || !input.classList || !input.classList.contains('voucher-checkbox')) return;
+      const container = input.closest('#voucher-options');
+      if (!container) return;
+    
+      if (input.checked) {
+        // décocher les autres visuellement
+        container.querySelectorAll('input.voucher-checkbox').forEach(cb => {
+          if (cb !== input) cb.checked = false;
+        });
+        // stocker EN MEMOIRE uniquement
+        const voucherData = { voucherValue: input.value, voucherPoints: input.getAttribute('data-points') };
+        setAppliedVoucher(voucherData);
+      } else {
+        // décoché -> retirer en mémoire
+        setAppliedVoucher(null);
+      }
+    
+      // recalculer totaux et points
+      try { updateTotal(); } catch(err){ console.warn('updateTotal err from voucher handler', err); }
+      try { updateLoyaltyPoints(); } catch(e){ /* ignore */ }
+    }    
+    
     
 function addVoucherCheckboxListeners(){
   const cbs = document.querySelectorAll('input.voucher-checkbox');
