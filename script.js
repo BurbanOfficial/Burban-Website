@@ -9,6 +9,72 @@
     // (conservez votre liste complète; j'ai gardé votre exemple ci-dessous)
     const products = [
       {
+        id: 'Purple Reign',
+        name: 'Purple Reign',
+        originalPrice: 47.99,
+        price: 47.99,
+        type: 'Hoodie',
+        colors: [
+          { name: 'Black', code: '#000', img: 'https://i.imgur.com/8AxApDD.jpeg', hover: 'https://i.imgur.com/Lb8RAPy.jpeg', url: '/public/purple-reign-ar00065.html' }
+        ],
+        sizes: ['S','M','L','XL','2XL','3XL'],
+        cut: 'Straight',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false,
+        availableFrom: '10/11/2025 00:00:00',
+        // availableUntil: '27/08/2025 20:20:40'
+      },
+
+
+
+
+      {
+        id: 'Lil Devil',
+        name: 'Lil Devil',
+        originalPrice: 39.99,
+        price: 39.99,
+        type: 'Hoodie',
+        colors: [
+          { name: 'Brown', code: '#9e7551', img: 'https://i.imgur.com/gvUglRW.jpeg', hover: 'https://i.imgur.com/fIGHb40.jpeg', url: '/public/lil-devil-ar00061.html' },
+          { name: 'Beige', code: '#f4e7d6', img: 'https://i.imgur.com/Z8Fls59.jpeg', hover: 'https://i.imgur.com/IaCQNRj.jpeg', url: '/public/lil-devil-ar00062.html' },
+          { name: 'Athletic Heather', code: '#f2f2f2', img: 'https://i.imgur.com/JLIt8jf.jpeg', hover: 'https://i.imgur.com/mESyzoh.jpeg', url: '/public/lil-devil-ar00063.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/pKXcxSH.jpeg', hover: 'https://i.imgur.com/LubJebH.jpeg', url: '/public/lil-devil-ar00064.html' }
+        ],
+        sizes: ['S','M','L','XL','2XL','3XL'],
+        cut: 'Straight',
+        gender: 'Unisex',
+        badge_eco: false,
+        badge_europe: false,
+        availableFrom: '10/11/2025 00:00:00',
+        // availableUntil: '27/08/2025 20:20:40'
+      },
+
+
+
+
+      {
+        id: 'ECHO//01',
+        name: 'ECHO//01',
+        originalPrice: 43.99,
+        price: 43.99,
+        type: 'Knitted T-Shirt',
+        colors: [
+          { name: 'Coral', code: '#d68785', img: 'https://i.imgur.com/7CC5NdZ.jpeg', hover: 'https://i.imgur.com/aNFX6SC.jpeg', url: '/public/echo01-ar00060.html' }
+        ],
+        sizes: ['3XS','2XS','S','M','L','XL'],
+        cut: 'Straight',
+        gender: 'Unisex',
+        badge_eco: false,
+        badge_europe: false,
+        availableFrom: '10/11/2025 00:00:00',
+        // availableUntil: '27/08/2025 20:20:40'
+      },
+
+
+
+
+      {
         id: 'K.O. Cutie',
         name: 'K.O. Cutie',
         originalPrice: 21.99,
@@ -516,7 +582,7 @@
     const showAllBtn = document.getElementById('showAllResults') || document.querySelector('.show-all-results');
 
     // --- TRI SPÉCIAL POUR LES TAILLES ---
-    const sizeOrder = ['XS','S','M','L','XL','2XL','3XL','4XL'];
+    const sizeOrder = ['3XS','2XS','XS','S','M','L','XL','2XL','3XL','4XL'];
     function compareSizes(a, b) {
       if (a === 'Unique') return 1;
       if (b === 'Unique') return -1;
@@ -828,6 +894,3 @@ function isProductActive(product, nowMs = Date.now()) {
   }); // end DOMContentLoaded
 
 })(); // end IIFE
-
-
-
