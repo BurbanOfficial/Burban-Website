@@ -1194,6 +1194,11 @@ function attachLoginRedirectListeners() {
       efta: { unique: 8.99, additional: 1.00 }, canada: { unique: 6.09, additional: 1.70 }, australia: { unique: 6.19, additional: 1.15 },
       japan: { unique: 3.99, additional: 1.25 }, brazil: { unique: 4.09, additional: 2.25 }, worldwide: { unique: 10.59, additional: 5.30 }
     }
+    category7: {
+      us: { unique: 5.19, additional: 5.10 }, europe: { unique: 5.19, additional: 5.10 }, uk: { unique: 5.19, additional: 5.10 },
+      efta: { unique: 5.19, additional: 5.10 }, canada: { unique: 5.19, additional: 5.10 }, australia: { unique: 5.19, additional: 5.10 },
+      japan: { unique: 5.19, additional: 5.10 }, brazil: { unique: 5.19, additional: 5.10 }, worldwide: { unique: 7, additional: 5.90 }
+    }
   };
 
   const countryToRegion = { us:'us', ca:'canada', gb:'uk', uk:'uk', jp:'japan', au:'australia', br:'brazil' };
@@ -1206,6 +1211,7 @@ function attachLoginRedirectListeners() {
     if (name.includes('hoodie')||name.includes('jacket')||name.includes('jogger')) return 'category4';
     if (name.includes('coupe-vent')||name.includes('pyjama')) return 'category5';
     if (name.includes('casquette')||name.includes('bonnet')||name.includes('bob')||name.includes('visière')) return 'category6';
+    if (name.includes('knitted')||name.includes('Knitted')) return 'category7';
     return 'category3';
   }
 
