@@ -369,6 +369,15 @@
   color:#ffd0bc;
 }
 
+/* style when free shipping is suspended */
+.free-shipping-box.suspended {
+  opacity: 0.85;
+  background: linear-gradient(180deg,#fafafa,#f5f5f5);
+  border-color: #eee;
+  color: #888;
+}
+.free-shipping-box.suspended .free-shipping-bubble { display:none; }
+
 /* responsive small tweaks */
 @media (max-width:640px){
   .free-shipping-box { font-size:12px; padding:10px; }
@@ -514,7 +523,7 @@
           <div class="free-shipping-row">
             <div><strong>Free Shipping</strong></div>
             <div id="leftToFree" style="font-weight:600;color:#333">50.00€</div>
-          </div>
+          </div> 
 
           <div class="progress-wrap" aria-hidden="true" title="Progrès vers la livraison gratuite">
             <div id="freeProgress" class="progress" style="width:0%"></div>
@@ -1194,7 +1203,17 @@ function attachLoginRedirectListeners() {
       efta: { unique: 8.99, additional: 1.00 }, canada: { unique: 6.09, additional: 1.70 }, australia: { unique: 6.19, additional: 1.15 },
       japan: { unique: 3.99, additional: 1.25 }, brazil: { unique: 4.09, additional: 2.25 }, worldwide: { unique: 10.59, additional: 5.30 }
     }
+    category6: {
+      us: { unique: 5.19, additional: 5.10 }, europe: { unique: 5.19, additional: 5.10 }, uk: { unique: 5.19, additional: 5.10 },
+      efta: { unique: 5.19, additional: 5.10 }, canada: { unique: 5.19, additional: 5.10 }, australia: { unique: 5.19, additional: 5.10 },
+      japan: { unique: 5.19, additional: 5.10 }, brazil: { unique: 5.19, additional: 5.10 }, worldwide: { unique: 7, additional: 5.90 }
+    }
   };
+
+  // ---------- Free shipping toggle (do not remove, just suspend) ----------
+  /* set to true to suspend the free-shipping feature without deleting code.
+    set to false to restore normal behavior. */
+  const FREE_SHIPPING_SUSPENDED = true;
 
   const countryToRegion = { us:'us', ca:'canada', gb:'uk', uk:'uk', jp:'japan', au:'australia', br:'brazil' };
   const euCountries = ['at','be','bg','cy','cz','dk','ee','fi','fr','de','gr','hr','hu','ie','it','lv','lt','lu','mt','nl','pl','pt','ro','sk','si','es','se'];
@@ -1206,6 +1225,7 @@ function attachLoginRedirectListeners() {
     if (name.includes('hoodie')||name.includes('jacket')||name.includes('jogger')) return 'category4';
     if (name.includes('coupe-vent')||name.includes('pyjama')) return 'category5';
     if (name.includes('casquette')||name.includes('bonnet')||name.includes('bob')||name.includes('visière')) return 'category6';
+    if (name.includes('Knitted')||name.includes('knitted')) return 'category7';
     return 'category3';
   }
 
@@ -1264,7 +1284,13 @@ async function updateTotal() {
   let shipping = getCombinedShippingCost(items, region);
 
   // logique livraison gratuite si subtotal (avant remise) >= 50
-  if (sum >= 50) shipping = 0;
+  // logique livraison gratuite (suspendable)
+  if (!FREE_SHIPPING_SUSPENDED) {
+    if (sum >= 50) shipping = 0;
+  } else {
+    // Free shipping is suspended: do nothing — shipping remains calculated normally.
+    // Optionally you can add a marker to the DOM if needed.
+  }
 
   // base after discount = (sum - discount) + shipping
   const baseAfterDiscount = Math.max(0, sum - discount) + shipping;
@@ -1488,9 +1514,9 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script>
-/* ==== Free shipping progress UI updater ==== */
+/* ==== Free shipping progress UI updater (suspension aware) ==== */
 (function(){
-  const GOAL = 50.00; // montant à atteindre pour livraison gratuite (en euros) — change si nécessaire
+  const GOAL = 50.00; // montant à atteindre pour livraison gratuite (en euros)
   const subEl = () => document.getElementById('subTotal');
   const progEl = document.getElementById('freeProgress');
   const leftEl = document.getElementById('leftToFree');
@@ -1499,30 +1525,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function parseMoney(text){
     if(!text) return 0;
-    // retire tous les caractères non numériques, sauf la virgule et le point
     const cleaned = String(text).replace(/[^\d\.,-]/g,'').trim();
-    // normalise la virgule vers le point
     const normalized = cleaned.replace(',', '.');
     const v = parseFloat(normalized);
     return isNaN(v) ? 0 : v;
   }
 
   function refreshFreeProgress(){
+    // If feature suspended -> visually mark the box and show a message
+    if (typeof FREE_SHIPPING_SUSPENDED !== 'undefined' && FREE_SHIPPING_SUSPENDED) {
+      if (box) {
+        box.classList.add('suspended');
+      }
+      if (leftEl) leftEl.innerHTML = '<i class="fa-solid fa-truck-circle-xmark"></i> Free shipping suspended';
+      if (shortLeft) shortLeft.innerText = '--';
+      if (progEl) progEl.style.width = '0%';
+      return;
+    }
+
+    // Normal behavior when not suspended
     const sEl = subEl();
     const sub = sEl ? parseMoney(sEl.innerText || sEl.textContent) : 0;
-
-    // calcul pour la barre (on se base sur le subtotal, avant réduction)
     const pct = Math.min(100, Math.round((sub / GOAL) * 100));
     if(progEl) progEl.style.width = pct + '%';
 
     if(sub >= GOAL){
-      // atteint
       if (leftEl) leftEl.innerHTML = '<i class="fa-solid fa-truck-fast"></i> Free';
       if(shortLeft) shortLeft.innerText = '0.00€';
       if(box) box.classList.add('reached');
     } else {
       const left = Math.max(0, (GOAL - sub));
-      // afficher avec deux décimales
       const leftText = left.toFixed(2) + '€';
       if(leftEl) leftEl.innerText = leftText;
       if(shortLeft) shortLeft.innerText = leftText;
@@ -1530,7 +1562,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // observe les changements sur #subTotal et #voucher-options pour déclencher rafraîchissement
+  // observe changes on #subTotal and voucher list (same as before)
   function safeObserve(){
     const target = subEl();
     if(!target) return;
@@ -1538,19 +1570,15 @@ document.addEventListener('DOMContentLoaded', () => {
     obs.observe(target, { childList:true, subtree:true, characterData:true });
   }
 
-  // aussi réagir aux clics sur les vouchers (si existent)
   document.addEventListener('click', function(e){
     if(e.target && (e.target.matches('input.voucher-checkbox') || e.target.closest('.voucher-checkbox'))){
-      // attend la fin du cycle JS existant (si updateTotal vient de s'exécuter)
       setTimeout(refreshFreeProgress, 80);
     }
   });
 
-  // run on load and after any updateTotal (safety)
   document.addEventListener('DOMContentLoaded', function(){
     setTimeout(refreshFreeProgress, 120);
     safeObserve();
-    // si updateTotal existe, on le wrap légèrement pour s'assurer que la progress se rafraîchit après
     if(window.updateTotal && !window.__freeShipping_wrapped){
       const _u = window.updateTotal;
       window.updateTotal = async function(){
