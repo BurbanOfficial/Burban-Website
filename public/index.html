@@ -510,11 +510,11 @@
         </div>
 
         <!-- ==== Free shipping progress block (AJOUT) ==== -->
-        <div id="freeShippingBox" class="free-shipping-box" aria-live="polite">
+        <!-- <div id="freeShippingBox" class="free-shipping-box" aria-live="polite">
           <div class="free-shipping-row">
             <div><strong>Free Shipping</strong></div>
             <div id="leftToFree" style="font-weight:600;color:#333">50.00€</div>
-          </div>
+          </div> 
 
           <div class="progress-wrap" aria-hidden="true" title="Progrès vers la livraison gratuite">
             <div id="freeProgress" class="progress" style="width:0%"></div>
@@ -522,7 +522,7 @@
           <div style="margin-top:8px;font-size:12px;color:#666">
             Add <span id="shortLeft" style="font-weight:700;color:#111">50.00€</span> to your cart to get free shipping.
           </div>
-        </div><br>
+        </div><br> -->
         <!-- ==== /Free shipping progress block ==== -->
 
         <!-- <h5>The selected discount will be applied at checkout.</h5><br> -->
@@ -1194,6 +1194,11 @@ function attachLoginRedirectListeners() {
       efta: { unique: 8.99, additional: 1.00 }, canada: { unique: 6.09, additional: 1.70 }, australia: { unique: 6.19, additional: 1.15 },
       japan: { unique: 3.99, additional: 1.25 }, brazil: { unique: 4.09, additional: 2.25 }, worldwide: { unique: 10.59, additional: 5.30 }
     }
+    category6: {
+      us: { unique: 5.19, additional: 5.10 }, europe: { unique: 5.19, additional: 5.10 }, uk: { unique: 5.19, additional: 5.10 },
+      efta: { unique: 5.19, additional: 5.10 }, canada: { unique: 5.19, additional: 5.10 }, australia: { unique: 5.19, additional: 5.10 },
+      japan: { unique: 5.19, additional: 5.10 }, brazil: { unique: 5.19, additional: 5.10 }, worldwide: { unique: 7, additional: 5.90 }
+    }
   };
 
   const countryToRegion = { us:'us', ca:'canada', gb:'uk', uk:'uk', jp:'japan', au:'australia', br:'brazil' };
@@ -1206,6 +1211,7 @@ function attachLoginRedirectListeners() {
     if (name.includes('hoodie')||name.includes('jacket')||name.includes('jogger')) return 'category4';
     if (name.includes('coupe-vent')||name.includes('pyjama')) return 'category5';
     if (name.includes('casquette')||name.includes('bonnet')||name.includes('bob')||name.includes('visière')) return 'category6';
+    if (name.includes('Knitted T-shirt')||name.includes('knitted-t-shirt')) return 'category7';
     return 'category3';
   }
 
@@ -1264,7 +1270,7 @@ async function updateTotal() {
   let shipping = getCombinedShippingCost(items, region);
 
   // logique livraison gratuite si subtotal (avant remise) >= 50
-  if (sum >= 50) shipping = 0;
+  // if (sum >= 50) shipping = 0;
 
   // base after discount = (sum - discount) + shipping
   const baseAfterDiscount = Math.max(0, sum - discount) + shipping;
@@ -1489,7 +1495,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script>
 /* ==== Free shipping progress UI updater ==== */
-(function(){
+/* (function(){
   const GOAL = 50.00; // montant à atteindre pour livraison gratuite (en euros) — change si nécessaire
   const subEl = () => document.getElementById('subTotal');
   const progEl = document.getElementById('freeProgress');
@@ -1563,7 +1569,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // call once in case DOMContentLoaded already fired
   setTimeout(refreshFreeProgress, 300);
-})();
+})(); */
 </script>
 
 <!-- Script : puck centré sur le texte (remplacer ton ancien bloc par celui-ci) -->
