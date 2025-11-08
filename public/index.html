@@ -1264,7 +1264,12 @@ async function updateTotal() {
   let shipping = getCombinedShippingCost(items, region);
 
   // logique livraison gratuite si subtotal (avant remise) >= 50
-  if (sum >= 50) shipping = 0;
+  if (!FREE_SHIPPING_RULE_SUSPENDED) {
+    if (sum >= 50) shipping = 0;
+  } else {
+    // règle suspendue : ne rien faire, shipping reste le résultat normal de getCombinedShippingCost()
+    // (on garde cependant shipping dans les calculs suivants)
+  }
 
   // base after discount = (sum - discount) + shipping
   const baseAfterDiscount = Math.max(0, sum - discount) + shipping;
@@ -1294,7 +1299,7 @@ async function updateTotal() {
 
   // Shipping element
   const shipEl = document.getElementById('shipping');
-  if (shipEl) shipEl.innerText = shipping === 0 ? 'Livraison gratuite' : shipping.toFixed(2) + '€';
+  if (shipEl) shipEl.innerText = shipping === 0 ? 'Free Shipping' : shipping.toFixed(2) + '€';
 
   // Tax element
   const taxEl = document.getElementById('tax');
