@@ -9,13 +9,34 @@
     // (conservez votre liste complète; j'ai gardé votre exemple ci-dessous)
     const products = [
       {
+        id: 'Different',
+        name: 'Different',
+        originalPrice: 39.99,
+        price: 39.99,
+        type: 'Hoodie',
+        colors: [
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/Te0tyuu.jpeg', hover: 'https://i.imgur.com/qreEVes.jpeg', url: 'https://burbanofficial.com/public/different-ar00066.html' }
+        ],
+        sizes: ['S','M','L','XL','2XL','3XL'],
+        cut: 'Straight',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false,
+        availableFrom: '10/11/2025 00:00:00',
+        // availableUntil: '27/08/2025 20:20:40'
+      },
+
+
+
+
+      {
         id: 'Purple Reign',
         name: 'Purple Reign',
         originalPrice: 47.99,
         price: 47.99,
         type: 'Hoodie',
         colors: [
-          { name: 'Black', code: '#000', img: 'https://i.imgur.com/8AxApDD.jpeg', hover: 'https://i.imgur.com/Lb8RAPy.jpeg', url: '/public/purple-reign-ar00065.html' }
+          { name: 'Black', code: '#000', img: 'https://i.imgur.com/8AxApDD.jpeg', hover: 'https://i.imgur.com/Lb8RAPy.jpeg', url: 'https://burbanofficial.com/public/purple-reign-ar00065.html' }
         ],
         sizes: ['S','M','L','XL','2XL','3XL'],
         cut: 'Straight',
@@ -36,10 +57,10 @@
         price: 39.99,
         type: 'Hoodie',
         colors: [
-          { name: 'Brown', code: '#9e7551', img: 'https://i.imgur.com/gvUglRW.jpeg', hover: 'https://i.imgur.com/fIGHb40.jpeg', url: '/public/lil-devil-ar00061.html' },
-          { name: 'Beige', code: '#f4e7d6', img: 'https://i.imgur.com/Z8Fls59.jpeg', hover: 'https://i.imgur.com/IaCQNRj.jpeg', url: '/public/lil-devil-ar00062.html' },
-          { name: 'Athletic Heather', code: '#f2f2f2', img: 'https://i.imgur.com/JLIt8jf.jpeg', hover: 'https://i.imgur.com/mESyzoh.jpeg', url: '/public/lil-devil-ar00063.html' },
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/pKXcxSH.jpeg', hover: 'https://i.imgur.com/LubJebH.jpeg', url: '/public/lil-devil-ar00064.html' }
+          { name: 'Brown', code: '#9e7551', img: 'https://i.imgur.com/gvUglRW.jpeg', hover: 'https://i.imgur.com/fIGHb40.jpeg', url: 'https://burbanofficial.com/public/lil-devil-ar00061.html' },
+          { name: 'Beige', code: '#f4e7d6', img: 'https://i.imgur.com/Z8Fls59.jpeg', hover: 'https://i.imgur.com/IaCQNRj.jpeg', url: 'https://burbanofficial.com/public/lil-devil-ar00062.html' },
+          { name: 'Athletic Heather', code: '#f2f2f2', img: 'https://i.imgur.com/JLIt8jf.jpeg', hover: 'https://i.imgur.com/mESyzoh.jpeg', url: 'https://burbanofficial.com/public/lil-devil-ar00063.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/pKXcxSH.jpeg', hover: 'https://i.imgur.com/LubJebH.jpeg', url: 'https://burbanofficial.com/public/lil-devil-ar00064.html' }
         ],
         sizes: ['S','M','L','XL','2XL','3XL'],
         cut: 'Straight',
@@ -56,11 +77,11 @@
       {
         id: 'ECHO//01',
         name: 'ECHO//01',
-        originalPrice: 43.99,
-        price: 43.99,
+        originalPrice: 53.90,
+        price: 53.90,
         type: 'Knitted T-Shirt',
         colors: [
-          { name: 'Coral', code: '#d68785', img: 'https://i.imgur.com/7CC5NdZ.jpeg', hover: 'https://i.imgur.com/aNFX6SC.jpeg', url: '/public/echo01-ar00060.html' }
+          { name: 'Coral', code: '#d68785', img: 'https://i.imgur.com/7CC5NdZ.jpeg', hover: 'https://i.imgur.com/aNFX6SC.jpeg', url: 'https://burbanofficial.com/public/echo01-ar00060.html' }
         ],
         sizes: ['3XS','2XS','S','M','L','XL'],
         cut: 'Straight',
@@ -81,10 +102,10 @@
         price: 14.99,
         type: 'T-Shirt',
         colors: [
-          { name: 'Dark Heather Blue', code: '#7a8ca8', img: 'https://i.imgur.com/Lf8kP4J.jpeg', hover: 'https://i.imgur.com/IrUukCq.jpeg', url: '/public/k.o.cutie-ar00059.html' },
-          { name: 'Heather Grey', code: '#cfcbc8', img: 'https://i.imgur.com/BJY2e2R.jpeg', hover: 'https://i.imgur.com/I6yweGx.jpeg', url: '/public/k.o.cutie-ar00060.html' },
-          { name: 'Khaki', code: '#6e6b4d', img: 'https://i.imgur.com/NoStK28.jpeg', hover: 'https://i.imgur.com/VbYkBzD.jpeg', url: '/public/k.o.cutie-ar00061.html' },
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/fk6K9DD.jpeg', hover: 'https://i.imgur.com/suT2lpo.jpeg', url: '/public/k.o.cutie-ar00062.html' }
+          { name: 'Dark Heather Blue', code: '#7a8ca8', img: 'https://i.imgur.com/Lf8kP4J.jpeg', hover: 'https://i.imgur.com/IrUukCq.jpeg', url: 'https://burbanofficial.com/public/k.o.cutie-ar00059.html' },
+          { name: 'Heather Grey', code: '#cfcbc8', img: 'https://i.imgur.com/BJY2e2R.jpeg', hover: 'https://i.imgur.com/I6yweGx.jpeg', url: 'https://burbanofficial.com/public/k.o.cutie-ar00060.html' },
+          { name: 'Khaki', code: '#6e6b4d', img: 'https://i.imgur.com/NoStK28.jpeg', hover: 'https://i.imgur.com/VbYkBzD.jpeg', url: 'https://burbanofficial.com/public/k.o.cutie-ar00061.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/fk6K9DD.jpeg', hover: 'https://i.imgur.com/suT2lpo.jpeg', url: 'https://burbanofficial.com/public/k.o.cutie-ar00062.html' }
         ],
         sizes: ['S','M','L','XL','2XL'],
         cut: 'Straight',
@@ -105,7 +126,7 @@
         price: 19.99,
         type: 'T-Shirt',
         colors: [
-          { name: 'Black', code: '#000', img: 'https://i.imgur.com/TWzptrk.jpeg', hover: 'https://i.imgur.com/Y6xCRWm.jpeg', url: '/public/no-fear-ar00058.html' }
+          { name: 'Black', code: '#000', img: 'https://i.imgur.com/TWzptrk.jpeg', hover: 'https://i.imgur.com/Y6xCRWm.jpeg', url: 'https://burbanofficial.com/public/no-fear-ar00058.html' }
         ],
         sizes: ['XS','S','M','L','XL','2XL'],
         cut: 'Straight',
@@ -126,7 +147,7 @@
         price: 24.99,
         type: 'Bucket Hat',
         colors: [
-          { name: 'Denim', code: '#0c223C', img: 'https://i.imgur.com/8SuOQaX.jpeg', hover: 'https://i.imgur.com/3vD7kTT.jpeg', url: '/public/royal-drip-ar00057.html' }
+          { name: 'Denim', code: '#0c223C', img: 'https://i.imgur.com/8SuOQaX.jpeg', hover: 'https://i.imgur.com/3vD7kTT.jpeg', url: 'https://burbanofficial.com/public/royal-drip-ar00057.html' }
         ],
         sizes: ['Unique'],
         cut: 'Other',
@@ -147,10 +168,10 @@
         price: 14.99,
         type: 'T-Shirt',
         colors: [
-          { name: 'Dark Heather Blue', code: '#7a8ca8', img: 'https://i.imgur.com/8CnQaze.jpeg', hover: 'https://i.imgur.com/SHRNZY4.jpeg', url: '/public/diamond-mouth-ar00053.html' },
-          { name: 'Heather Grey', code: '#cfcbc8', img: 'https://i.imgur.com/8RKakKY.jpeg', hover: 'https://i.imgur.com/jucCb3h.jpeg', url: '/public/diamond-mouth-ar00054.html' },
-          { name: 'Lavender', code: '#f7ecff', img: 'https://i.imgur.com/TVk0zf8.jpeg', hover: 'https://i.imgur.com/IhKilKK.jpeg', url: '/public/diamond-mouth-ar00055.html' },
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/hFsTDZv.jpeg', hover: 'https://i.imgur.com/iGFKqze.jpeg', url: '/public/diamond-mouth-ar00056.html' }
+          { name: 'Dark Heather Blue', code: '#7a8ca8', img: 'https://i.imgur.com/8CnQaze.jpeg', hover: 'https://i.imgur.com/SHRNZY4.jpeg', url: 'https://burbanofficial.com/public/diamond-mouth-ar00053.html' },
+          { name: 'Heather Grey', code: '#cfcbc8', img: 'https://i.imgur.com/8RKakKY.jpeg', hover: 'https://i.imgur.com/jucCb3h.jpeg', url: 'https://burbanofficial.com/public/diamond-mouth-ar00054.html' },
+          { name: 'Lavender', code: '#f7ecff', img: 'https://i.imgur.com/TVk0zf8.jpeg', hover: 'https://i.imgur.com/IhKilKK.jpeg', url: 'https://burbanofficial.com/public/diamond-mouth-ar00055.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/hFsTDZv.jpeg', hover: 'https://i.imgur.com/iGFKqze.jpeg', url: 'https://burbanofficial.com/public/diamond-mouth-ar00056.html' }
         ],
         sizes: ['S','M','L','XL','2XL'],
         cut: 'Straight',
@@ -171,9 +192,9 @@
         price: 20.99,
         type: 'T-Shirt',
         colors: [
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/3OueieQ.jpeg', hover: 'https://i.imgur.com/ol3tK3L.jpeg', url: '/public/metamorphosis-ar00050.html' },
-          { name: 'Lavender', code: '#f7ecff', img: 'https://i.imgur.com/ITx8c7r.jpeg', hover: 'https://i.imgur.com/yeYYPqa.jpeg', url: '/public/metamorphosis-ar00051.html' },
-          { name: 'Pastel Pink', code: '#ffe9eb', img: 'https://i.imgur.com/0dnXLh4.jpeg', hover: 'https://i.imgur.com/HKaRX8P.jpeg', url: '/public/metamorphosis-ar00052.html' }
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/3OueieQ.jpeg', hover: 'https://i.imgur.com/ol3tK3L.jpeg', url: 'https://burbanofficial.com/public/metamorphosis-ar00050.html' },
+          { name: 'Lavender', code: '#f7ecff', img: 'https://i.imgur.com/ITx8c7r.jpeg', hover: 'https://i.imgur.com/yeYYPqa.jpeg', url: 'https://burbanofficial.com/public/metamorphosis-ar00051.html' },
+          { name: 'Pastel Pink', code: '#ffe9eb', img: 'https://i.imgur.com/0dnXLh4.jpeg', hover: 'https://i.imgur.com/HKaRX8P.jpeg', url: 'https://burbanofficial.com/public/metamorphosis-ar00052.html' }
         ],
         sizes: ['S','M','L','XL','2XL','3XL'],
         cut: 'Straight',
@@ -194,7 +215,7 @@
         price: 15.99,
         type: 'T-Shirt',
         colors: [
-          { name: 'White', code: '#fffefa', img: 'https://i.imgur.com/zZ2tww6.jpeg', hover: 'https://i.imgur.com/3TRibcn.jpeg', url: '/public/celestial-b-ar00049.html' }
+          { name: 'White', code: '#fffefa', img: 'https://i.imgur.com/zZ2tww6.jpeg', hover: 'https://i.imgur.com/3TRibcn.jpeg', url: 'https://burbanofficial.com/public/celestial-b-ar00049.html' }
         ],
         sizes: ['S','M','L','XL','2XL','3XL'],
         cut: 'Straight',
@@ -213,7 +234,7 @@
         price: 21.99,
         type: 'Cap',
         colors: [
-          { name: 'Black', code: '#000', img: 'https://i.imgur.com/asPiEue.jpeg', hover: 'https://i.imgur.com/U0oUcsA.jpeg', url: '/public/urban-crest-ar00046.html' }
+          { name: 'Black', code: '#000', img: 'https://i.imgur.com/asPiEue.jpeg', hover: 'https://i.imgur.com/U0oUcsA.jpeg', url: 'https://burbanofficial.com/public/urban-crest-ar00046.html' }
         ],
         sizes: ['Unique'],
         cut: 'Other',
@@ -232,7 +253,7 @@
         price: 34.99,
         type: 'Sweatshirt',
         colors: [
-          { name: 'Dark Blue', code: '#171f2c', img: 'https://i.imgur.com/50AGnb5.jpeg', hover: 'https://i.imgur.com/WZgnZhx.jpeg', url: '/public/colorful-burst-ar00045.html' }
+          { name: 'Dark Blue', code: '#171f2c', img: 'https://i.imgur.com/50AGnb5.jpeg', hover: 'https://i.imgur.com/WZgnZhx.jpeg', url: 'https://burbanofficial.com/public/colorful-burst-ar00045.html' }
         ],
         sizes: ['S','M','L','XL','2XL','3XL'],
         cut: 'Other',
@@ -251,9 +272,9 @@
         price: 23.99,
         type: 'Sweatshirt',
         colors: [
-          { name: 'Dark Green', code: '#1a3626', img: 'https://i.imgur.com/UDBzhpS.jpeg', hover: 'https://i.imgur.com/uVeTzOQ.jpeg', url: '/public/urban-hibiscus-ar00044.html' },
-          { name: 'Indigo Blue', code: '#395d82', img: 'https://i.imgur.com/4j5IjyP.jpeg', hover: 'https://i.imgur.com/8a0UYy0.jpeg', url: '/public/urban-hibiscus-ar00048.html' },
-          { name: 'Sage Green', code: '#7e8560', img: 'https://i.imgur.com/62dxFU2.jpeg', hover: 'https://i.imgur.com/pMVsAJC.jpeg', url: '/public/urban-hibiscus-ar00047.html' }
+          { name: 'Dark Green', code: '#1a3626', img: 'https://i.imgur.com/UDBzhpS.jpeg', hover: 'https://i.imgur.com/uVeTzOQ.jpeg', url: 'https://burbanofficial.com/public/urban-hibiscus-ar00044.html' },
+          { name: 'Indigo Blue', code: '#395d82', img: 'https://i.imgur.com/4j5IjyP.jpeg', hover: 'https://i.imgur.com/8a0UYy0.jpeg', url: 'https://burbanofficial.com/public/urban-hibiscus-ar00048.html' },
+          { name: 'Sage Green', code: '#7e8560', img: 'https://i.imgur.com/62dxFU2.jpeg', hover: 'https://i.imgur.com/pMVsAJC.jpeg', url: 'https://burbanofficial.com/public/urban-hibiscus-ar00047.html' }
         ],
         sizes: ['S','M','L','XL','2XL','3XL'],
         cut: 'Other',
@@ -272,7 +293,7 @@
         price: 44.99,
         type: 'Hoodie',
         colors: [
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/ZP4zVSK.jpeg', hover: 'https://i.imgur.com/r9HQUCq.jpeg', url: '/public/universal-love-ar00043.html' }
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/ZP4zVSK.jpeg', hover: 'https://i.imgur.com/r9HQUCq.jpeg', url: 'https://burbanofficial.com/public/universal-love-ar00043.html' }
         ],
         sizes: ['S','M','L','XL','2XL'],
         cut: 'Other',
@@ -291,7 +312,7 @@
         price: 44.99,
         type: 'Hoodie',
         colors: [
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/m2tkvTm.jpeg', hover: 'https://i.imgur.com/EcjqfHS.jpeg', url: '/public/natural-glow-ar00042.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/m2tkvTm.jpeg', hover: 'https://i.imgur.com/EcjqfHS.jpeg', url: 'https://burbanofficial.com/public/natural-glow-ar00042.html' },
           // …
         ],
         sizes: ['S','M','L','XL','2XL'],
@@ -310,8 +331,8 @@
         price: 54.99,
         type: 'Hoodie',
         colors: [
-          { name: 'Black', code: '#000', img: 'https://i.imgur.com/7zR8liE.jpeg', hover: 'https://i.imgur.com/8GZ52nM.jpeg', url: '/public/mad-in-love-ar00041.html' },
-          { name: 'Dark Blue', code: '#132e57', img: 'https://i.imgur.com/a3O4ESv.jpeg', hover: 'https://i.imgur.com/Seortkg.jpeg', url: '/public/mad-in-love-ar00040.html' },
+          { name: 'Black', code: '#000', img: 'https://i.imgur.com/7zR8liE.jpeg', hover: 'https://i.imgur.com/8GZ52nM.jpeg', url: 'https://burbanofficial.com/public/mad-in-love-ar00041.html' },
+          { name: 'Dark Blue', code: '#132e57', img: 'https://i.imgur.com/a3O4ESv.jpeg', hover: 'https://i.imgur.com/Seortkg.jpeg', url: 'https://burbanofficial.com/public/mad-in-love-ar00040.html' },
           // …
         ],
         sizes: ['S','M','L','XL','2XL'],
@@ -331,7 +352,7 @@
         price: 23.99,
         type: 'T-Shirt',
         colors: [
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/morning-sweets-ar00039.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: 'https://burbanofficial.com/public/morning-sweets-ar00039.html' },
           // …
         ],
         sizes: ['XS','S','M','L','XL','2XL','3XL'],
@@ -351,18 +372,18 @@
         price: 16.99,
         type: 'T-Shirt',
         colors: [
-          { name: 'Light Blue', code: '#c7d7ef', img: 'https://i.imgur.com/YTtg0ah.jpeg', hover: 'https://i.imgur.com/CHxj3Cs.jpeg', url: '/public/skate-ar00033.html' },
-          { name: 'Pastel Pink', code: '#ffd8e1', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00034.html' },
-          { name: 'Silver', code: '#e3e3dd', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00035.html' },
-          { name: 'Natural', code: '#fef1d1', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00036.html' },
-          { name: 'Lemon', code: '#f7fee5', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00037.html' },
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00038.html' },
-          { name: 'Dark Green', code: '#223e25', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00027.html' },
-          { name: 'Black', code: '#000', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00028.html' },
-          { name: 'Oxblood Black', code: '#2c1013', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00029.html' },
-          { name: 'Team Purple', code: '#230f46', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00030.html' },
-          { name: 'Maroon', code: '#721d37', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00031.html' },
-          { name: 'Heather Blue', code: '#536ba7', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: '/public/skate-ar00032.html' },
+          { name: 'Light Blue', code: '#c7d7ef', img: 'https://i.imgur.com/YTtg0ah.jpeg', hover: 'https://i.imgur.com/CHxj3Cs.jpeg', url: 'https://burbanofficial.com/public/skate-ar00033.html' },
+          { name: 'Pastel Pink', code: '#ffd8e1', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: 'https://burbanofficial.com/public/skate-ar00034.html' },
+          { name: 'Silver', code: '#e3e3dd', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: 'https://burbanofficial.com/public/skate-ar00035.html' },
+          { name: 'Natural', code: '#fef1d1', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: 'https://burbanofficial.com/public/skate-ar00036.html' },
+          { name: 'Lemon', code: '#f7fee5', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: 'https://burbanofficial.com/public/skate-ar00037.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: 'https://burbanofficial.com/public/skate-ar00038.html' },
+          { name: 'Dark Green', code: '#223e25', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: 'https://burbanofficial.com/public/skate-ar00027.html' },
+          { name: 'Black', code: '#000', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: 'https://burbanofficial.com/public/skate-ar00028.html' },
+          { name: 'Oxblood Black', code: '#2c1013', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: 'https://burbanofficial.com/public/skate-ar00029.html' },
+          { name: 'Team Purple', code: '#230f46', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: 'https://burbanofficial.com/public/skate-ar00030.html' },
+          { name: 'Maroon', code: '#721d37', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: 'https://burbanofficial.com/public/skate-ar00031.html' },
+          { name: 'Heather Blue', code: '#536ba7', img: 'https://i.imgur.com/IYQp1Om.jpeg', hover: 'https://i.imgur.com/3EAiQad.jpeg', url: 'https://burbanofficial.com/public/skate-ar00032.html' },
           // …
         ],
         sizes: ['XS','S','M','L','XL','2XL','3XL'],
@@ -382,7 +403,7 @@
         price: 23.99,
         type: 'Beanie',
         colors: [
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/lArV95v.jpeg', hover: 'https://i.imgur.com/QIM5Xl4.jpeg', url: '/public/starry-ar00026.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/lArV95v.jpeg', hover: 'https://i.imgur.com/QIM5Xl4.jpeg', url: 'https://burbanofficial.com/public/starry-ar00026.html' },
           // …
         ],
         sizes: ['Unique'],
@@ -401,7 +422,7 @@
         price: 47.99,
         type: 'Hoodie',
         colors: [
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/2kJ87qf.jpeg', hover: 'https://i.imgur.com/3A3fP9Z.jpeg', url: '/public/cartoon-ar00025.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/2kJ87qf.jpeg', hover: 'https://i.imgur.com/3A3fP9Z.jpeg', url: 'https://burbanofficial.com/public/cartoon-ar00025.html' },
           // …
         ],
         sizes: ['S','M','L','XL','2XL','3XL'],
@@ -420,7 +441,7 @@
         price: 23.99,
         type: 'Beanie',
         colors: [
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/3Tf7X89.jpeg', hover: 'https://i.imgur.com/h6QYpXG.jpeg', url: '/public/white-shine-ar00024.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/3Tf7X89.jpeg', hover: 'https://i.imgur.com/h6QYpXG.jpeg', url: 'https://burbanofficial.com/public/white-shine-ar00024.html' },
           // …
         ],
         sizes: ['Unique'],
@@ -439,7 +460,7 @@
         price: 51.99,
         type: 'Hoodie',
         colors: [
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/ReqYkdu.jpeg', hover: 'https://i.imgur.com/wyMnPJT.jpeg', url: '/public/stay-cool-ar00023.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/ReqYkdu.jpeg', hover: 'https://i.imgur.com/wyMnPJT.jpeg', url: 'https://burbanofficial.com/public/stay-cool-ar00023.html' },
           // …
         ],
         sizes: ['S','M','L','XL','2XL','3XL'],
@@ -458,8 +479,8 @@
         price: 19.99,
         type: 'Beanie',
         colors: [
-          { name: 'Black', code: '#000', img: 'https://i.imgur.com/H5rlHBh.jpeg', hover: 'https://i.imgur.com/HEiFUHq.jpeg', url: '/public/elegance-ar00022.html' },
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/uQugDr8.jpeg', hover: 'https://i.imgur.com/JmKvvP8.jpeg', url: '/public/elegance-ar00021.html' },
+          { name: 'Black', code: '#000', img: 'https://i.imgur.com/H5rlHBh.jpeg', hover: 'https://i.imgur.com/HEiFUHq.jpeg', url: 'https://burbanofficial.com/public/elegance-ar00022.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/uQugDr8.jpeg', hover: 'https://i.imgur.com/JmKvvP8.jpeg', url: 'https://burbanofficial.com/public/elegance-ar00021.html' },
           // …
         ],
         sizes: ['Unique'],
@@ -478,7 +499,7 @@
         price: 47.99,
         type: 'Hoodie',
         colors: [
-          { name: 'Black', code: '#000', img: 'https://i.imgur.com/5Ya85o8.jpeg', hover: 'https://i.imgur.com/pB50o1O.jpeg', url: '/public/emerald-ar00002.html' },
+          { name: 'Black', code: '#000', img: 'https://i.imgur.com/5Ya85o8.jpeg', hover: 'https://i.imgur.com/pB50o1O.jpeg', url: 'https://burbanofficial.com/public/emerald-ar00002.html' },
           // …
         ],
         sizes: ['S','M','L','XL','2XL','3XL'],
@@ -497,7 +518,7 @@
         price: 53.99,
         type: 'Hoodie',
         colors: [
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/letVpMU.jpeg', hover: 'https://i.imgur.com/70YG2tk.jpeg', url: '/public/lavender-glow-ar00003.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/letVpMU.jpeg', hover: 'https://i.imgur.com/70YG2tk.jpeg', url: 'https://burbanofficial.com/public/lavender-glow-ar00003.html' },
           // …
         ],
         sizes: ['S','M','L','XL','2XL','3XL'],
@@ -516,7 +537,7 @@
         price: 53.99,
         type: 'Hoodie',
         colors: [
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/70hCMZv.jpeg', hover: 'https://i.imgur.com/4u6mGvR.jpeg', url: '/public/harmony-ar00004.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/70hCMZv.jpeg', hover: 'https://i.imgur.com/4u6mGvR.jpeg', url: 'https://burbanofficial.com/public/harmony-ar00004.html' },
           // …
         ],
         sizes: ['S','M','L','XL','2XL','3XL'],
@@ -535,10 +556,10 @@
         price: 47.99,
         type: 'Hoodie',
         colors: [
-          { name: 'Black', code: '#000', img: 'https://i.imgur.com/WML7UGN.jpeg', hover: 'https://i.imgur.com/AX4e0vt.jpeg', url: '/public/bunny-chic-ar00015.html' },
-          { name: 'Beige', code: '#f5e8ce', img: 'https://i.imgur.com/UBqXkLv.jpeg', hover: 'https://i.imgur.com/AGHE9LR.jpeg', url: '/public/bunny-chic-ar00014.html' },
-          { name: 'Light Blue', code: '#d6edf7', img: 'https://i.imgur.com/hPiCIAc.jpeg', hover: 'https://i.imgur.com/20rKL01.jpeg', url: '/public/bunny-chic-ar00013.html' },
-          { name: 'White', code: '#fff', img: 'https://i.imgur.com/pziI0qx.jpeg', hover: 'https://i.imgur.com/qP7p6N0.jpeg', url: '/public/bunny-chic-ar00016.html' },
+          { name: 'Black', code: '#000', img: 'https://i.imgur.com/WML7UGN.jpeg', hover: 'https://i.imgur.com/AX4e0vt.jpeg', url: 'https://burbanofficial.com/public/bunny-chic-ar00015.html' },
+          { name: 'Beige', code: '#f5e8ce', img: 'https://i.imgur.com/UBqXkLv.jpeg', hover: 'https://i.imgur.com/AGHE9LR.jpeg', url: 'https://burbanofficial.com/public/bunny-chic-ar00014.html' },
+          { name: 'Light Blue', code: '#d6edf7', img: 'https://i.imgur.com/hPiCIAc.jpeg', hover: 'https://i.imgur.com/20rKL01.jpeg', url: 'https://burbanofficial.com/public/bunny-chic-ar00013.html' },
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/pziI0qx.jpeg', hover: 'https://i.imgur.com/qP7p6N0.jpeg', url: 'https://burbanofficial.com/public/bunny-chic-ar00016.html' },
           // …
         ],
         sizes: ['S','M','L','XL','2XL','3XL'],
@@ -890,6 +911,10 @@ function isProductActive(product, nowMs = Date.now()) {
         console.error('Erreur périodique:', err);
       }
     }, 1000);
+    
+    // expose pour la search (necessaire pour que la recherche sache quels produits sont "disponibles")
+    window.BURBAN_PRODUCTS = products;
+    window.BURBAN_IS_PRODUCT_ACTIVE = isProductActive;
 
   }); // end DOMContentLoaded
 
