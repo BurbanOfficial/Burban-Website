@@ -75,18 +75,24 @@
     <img src="https://i.imgur.com/Kl9kTBg.png" alt="Burban Logo" class="logo-img">
   </a>
 
-  <!-- Nav desktop -->
-  <nav class="nav">
+  <!-- Nav desktop -> déplacé à gauche -->
+  <nav class="nav nav-left">
     <a href="https://burbanofficial.com/index.html" class="nav-item active">Home</a>
     <a href="https://burbanofficial.com/shop.html" class="nav-item">Shop</a>
     <a href="https://burbanofficial.com/about-burban.html" class="nav-item">About Burban</a>
     <a href="https://burbanofficial.com/contact.html" class="nav-item">Contact Us</a>
   </nav>
 
-  <!-- Icônes + hamburger -->
+  <!-- Icônes + hamburger + MINI barre de recherche à droite -->
   <div class="actions">
-    <a href="https://burbanofficial.com/account.html" class="account-btn" aria-label="Mon compte"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="https://burbanofficial.com/public/index.html" class="cart-btn" aria-label="Mon panier"><i class="fa-solid fa-bag-shopping"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+    <!-- mini search (cliquable - ouvrira l'overlay central) -->
+    <button id="openSearchShort" class="search-short" aria-label="Search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Search" aria-hidden="true" readonly />
+    </button>
+
+    <a href="https://burbanofficial.com/account.html" class="account-btn" aria-label="Mon compte"><i class="fa-solid fa-user"></i></a>
+    <a href="https://burbanofficial.com/public/index.html" class="cart-btn" aria-label="Mon panier"><i class="fa-solid fa-bag-shopping"></i></a>
     <button class="hamburger" aria-label="Ouvrir le menu">
       <span class="bar"></span>
       <span class="bar"></span>
@@ -100,6 +106,7 @@
     </div> -->
   </div>
 </header>
+
 
 <!-- Overlay menu mobile -->
 <div class="overlay-menu" id="overlayMenu">
@@ -771,6 +778,8 @@ import gsap from 'https://cdn.skypack.dev/gsap@3.13.0'
 </script>
 
 <script src="https://burbanofficial.com/public/includes/footer.js"></script>
+<script src="search.js"></script>
+<script src="script.js"></script>
 <script async type='text/javascript' src='https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=Sg3qFU'></script>
 
 <!-- Liquid glass SVG filter (insert before </body>) -->
