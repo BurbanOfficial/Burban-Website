@@ -128,7 +128,7 @@
         sizes: ['S','M','L','XL','2XL','3XL'],
         cut: 'Straight',
         gender: 'Unisex',
-        badge_eco: false,
+        badge_eco: true,
         badge_europe: false,
         availableFrom: '10/11/2025 00:00:00',
         // availableUntil: '27/08/2025 20:20:40'
@@ -149,7 +149,7 @@
         sizes: ['3XS','2XS','XS','S','M','L','XL'],
         cut: 'Straight',
         gender: 'Unisex',
-        badge_eco: false,
+        badge_eco: true,
         badge_europe: false,
         availableFrom: '10/11/2025 00:00:00',
         // availableUntil: '27/08/2025 20:20:40'
@@ -978,3 +978,4 @@ function isProductActive(product, nowMs = Date.now()) {
   }); // end DOMContentLoaded
 
 })(); // end IIFE
+
