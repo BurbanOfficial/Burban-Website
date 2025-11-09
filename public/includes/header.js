@@ -3,61 +3,55 @@
 
 const HEADER_HTML = `
   <!-- Header -->
-<header class="header">
-  <!-- Logo -->
-  <a href="index.html" class="logo-link">
-    <img src="https://i.imgur.com/Kl9kTBg.png" alt="Burban Logo" class="logo-img">
-  </a>
+  <header class="header">
+    <!-- Logo -->
+    <a href="/index.html" class="logo-link">
+      <img src="https://i.imgur.com/Kl9kTBg.png" alt="Burban Logo" class="logo-img">
+    </a>
 
-  <!-- Nav desktop -> déplacé à gauche -->
-  <nav class="nav nav-left">
-    <a href="https://burbanofficial.com/index.html" class="nav-item active">Home</a>
-    <a href="https://burbanofficial.com/shop.html" class="nav-item">Shop</a>
-    <a href="https://burbanofficial.com/about-burban.html" class="nav-item">About Burban</a>
-    <a href="https://burbanofficial.com/contact.html" class="nav-item">Contact Us</a>
-  </nav>
+    <!-- Nav desktop -->
+    <nav class="nav">
+      <a href="/index.html" class="nav-item">Home</a>
+      <a href="/shop.html" class="nav-item active">Shop</a>
+      <a href="/about-burban.html" class="nav-item">About Burban</a>
+      <a href="/contact.html" class="nav-item">Contact Us</a>
+    </nav>
 
-  <!-- Icônes + hamburger + MINI barre de recherche à droite -->
-  <div class="actions">
-    <!-- mini search (cliquable - ouvrira l'overlay central) -->
-    <button id="openSearchShort" class="search-short" aria-label="Search">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" placeholder="Search" aria-hidden="true" readonly />
-    </button>
-
-    <a href="https://burbanofficial.com/account.html" class="account-btn" aria-label="Mon compte"><i class="fa-solid fa-user"></i></a>
-    <a href="https://burbanofficial.com/public/index.html" class="cart-btn" aria-label="Mon panier"><i class="fa-solid fa-bag-shopping"></i></a>
-    <button class="hamburger" aria-label="Ouvrir le menu">
-      <span class="bar"></span>
-      <span class="bar"></span>
-      <span class="bar"></span>
-    </button>
-    <!-- <div class="lang-switcher desktop-lang">
-      <select id="languageSelector" aria-label="Changer de langue">
-        <option value="EN">EN</option>
-        <option value="FR">FR</option>
-      </select>
-    </div> -->
-  </div>
-</header>
+    <!-- Icônes + hamburger -->
+    <div class="actions">
+      <a href="/account.html" class="account-btn" aria-label="Mon compte"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="/public/index.html" class="cart-btn" aria-label="Mon panier"><i class="fa-solid fa-bag-shopping"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <button class="hamburger" aria-label="Ouvrir le menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+      <div class="lang-switcher desktop-lang">
+        <select id="languageSelector" aria-label="Changer de langue">
+          <option value="EN">EN</option>
+          <option value="FR">FR</option>
+        </select>
+      </div>
+    </div>
+  </header>
 
   <!-- Overlay menu mobile -->
-<div class="overlay-menu" id="overlayMenu">
-  <button class="close-btn" aria-label="Fermer le menu">&times;</button>
-  <ul class="overlay-nav">
-    <li><a href="https://burbanofficial.com/index.html">Home</a></li>
-    <li><a href="https://burbanofficial.com/shop.html">Shop</a></li>
-    <li><a href="https://burbanofficial.com/about-burban.html">About Burban</a></li>
-    <li><a href="https://burbanofficial.com/contact.html">Contact Us</a></li>
-    <!-- <li class="mobile-lang">
-      <label for="languageSelectorMobile">Language:</label>
-      <select id="languageSelectorMobile" aria-label="Changer de langue">
-        <option value="EN">EN</option>
-        <option value="FR">FR</option>
-      </select>
-    </li> -->
-  </ul>
-</div>
+  <div class="overlay-menu" id="overlayMenu">
+    <button class="close-btn" aria-label="Fermer le menu">&times;</button>
+    <ul class="overlay-nav">
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="/shop.html">Shop</a></li>
+      <li><a href="/about-burban.html">About Burban</a></li>
+      <li><a href="/contact.html">Contact Us</a></li>
+      <li class="mobile-lang">
+        <label for="languageSelectorMobile">Language:</label>
+        <select id="languageSelectorMobile" aria-label="Changer de langue">
+          <option value="EN">EN</option>
+          <option value="FR">FR</option>
+        </select>
+      </li>
+    </ul>
+  </div>
 `;
 
 // SVG filters (injected once)
@@ -296,27 +290,10 @@ function initNavPuck() {
   });
 }
 
-/* ---------- Inject external scripts ---------- */
-function injectExternalScripts() {
-  const scripts = [
-    "https://burbanofficial.com/script.js"
-  ];
-
-  scripts.forEach(src => {
-    if (!document.querySelector(`script[src="${src}"]`)) {
-      const s = document.createElement('script');
-      s.src = src;
-      s.defer = true; // évite de bloquer le parsing HTML
-      document.head.appendChild(s);
-    }
-  });
-}
-
 /* ---------- Init all ---------- */
 function initAll() {
   injectHeader();
   injectSvgFiltersIfMissing();
-  injectExternalScripts();
   // small delay for injected DOM to be present
   requestAnimationFrame(() => {
     initOverlayMenu();
@@ -332,204 +309,3 @@ if (document.readyState === 'loading') {
 } else {
   initAll();
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  // build overlay DOM
-  const overlay = document.createElement('div');
-overlay.className = 'search-overlay';
-overlay.innerHTML = `
-  <div class="search-panel" role="dialog" aria-modal="true" aria-label="Recherche de produits">
-    <div style="width:100%;">
-      <input id="searchInputLarge" class="search-input-large" placeholder="Find your next Burban piece..." autocomplete="off" />
-      <!-- Message d'erreur / "aucun résultat" placé directement sous l'input -->
-      <div id="searchNoResults" class="search-no-results" style="display:none;"></div>
-    </div>
-
-    <div class="search-results" aria-live="polite" aria-atomic="true">
-      <div id="searchResults" class="results-grid"></div>
-    </div>
-  </div>
-`;
-document.body.appendChild(overlay);
-
-
-  const openBtn = document.getElementById('openSearchShort');
-  const inputLarge = document.getElementById('searchInputLarge');
-  const resultsGrid = document.getElementById('searchResults');
-  const noResBox = document.getElementById('searchNoResults');
-
-  // helper : open / close overlay
-  function openOverlay() {
-    overlay.classList.add('open');
-    // allow animation frame then focus
-    requestAnimationFrame(() => inputLarge.focus());
-    document.body.style.overflow = 'hidden';
-  }
-  function closeOverlay() {
-    overlay.classList.remove('open');
-    document.body.style.overflow = '';
-    resultsGrid.innerHTML = '';
-    noResBox.style.display = 'none';
-    inputLarge.value = '';
-  }
-
-  openBtn.addEventListener('click', openOverlay);
-
-  // close when Esc or click outside panel
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && overlay.classList.contains('open')) closeOverlay();
-  });
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) closeOverlay();
-  });
-
-  // debounce
-  let timer = null;
-  function debounce(fn, ms=160) {
-    return function(...args){
-      clearTimeout(timer);
-      timer = setTimeout(()=>fn(...args), ms);
-    };
-  }
-
-  // search function (uses window.BURBAN_PRODUCTS and window.BURBAN_IS_PRODUCT_ACTIVE)
-  function performSearch(q) {
-    resultsGrid.innerHTML = '';
-    noResBox.style.display = 'none';
-    q = String(q || '').trim().toLowerCase();
-    const products = window.BURBAN_PRODUCTS || [];
-    const isActive = typeof window.BURBAN_IS_PRODUCT_ACTIVE === 'function';
-
-    // only consider "available" items if helper exists
-    const pool = products.filter(p => isActive ? window.BURBAN_IS_PRODUCT_ACTIVE(p) : true);
-
-    if (!q) {
-      // show nothing on empty query (or show top nouveautés)
-      renderSuggestions(pool);
-      return;
-    }
-
-    const results = pool.filter(p => {
-      const hay = [
-        (p.name||''),
-        (p.id||''),
-        (p.type||''),
-        (p.gender||''),
-        (p.colors||[]).map(c=>c.name).join(' ')
-      ].join(' ').toLowerCase();
-      return hay.includes(q);
-    });
-
-    if (results.length) {
-      renderResults(results);
-    } else {
-      // no results => show message and suggestions (nouveautés en tête du fichier)
-      noResBox.style.display = 'block';
-      noResBox.innerHTML = `
-        <strong>We couldn’t find that one. Maybe another keyword?</strong>
-      `;
-      renderSuggestions(pool);
-    }
-  }
-
-  // helper : normalise une url (retourne une url absolue si possible)
-function absoluteUrl(u) {
-  if (!u) return '#';
-  // déjà absolue
-  if (/^https?:\/\//i.test(u) || /^\/\//.test(u)) {
-    // si commence par '/' -> préfixe l'origine
-    if (u.startsWith('/')) return window.location.origin + u;
-    return u;
-  }
-  // commence par '/' (cas fréquent dans ton script.js)
-  if (u.startsWith('/')) return window.location.origin + u;
-  // relatif -> résout par rapport au path courant
-  const base = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/');
-  return new URL(u, base).href;
-}
-
-function renderResults(list) {
-  resultsGrid.innerHTML = '';
-  noResBox.style.display = 'none';
-  list.forEach(p => {
-    const color = (p.colors && p.colors[0]) ? p.colors[0] : { img:'', url:'#' };
-    const href = absoluteUrl(color.url || '#');
-
-    const a = document.createElement('a');
-    a.className = 'result-card';
-    a.href = href;                 // href propre (utile pour SEO / ouverture onglet droit)
-    a.setAttribute('target', '_self');
-    a.setAttribute('rel', 'noopener noreferrer');
-    a.innerHTML = `
-      <img src="${color.img || ''}" alt="${p.name || ''}">
-      <div class="result-info">
-        <h4>${p.name || ''}</h4>
-        <p>${(p.price!=null?Number(p.price).toFixed(2)+'€':'')} • ${p.gender||''} • ${p.type||''}</p>
-      </div>
-    `;
-
-    // Force la navigation propre (ferme overlay puis navigue)
-    a.addEventListener('click', (e) => {
-      // Empêche problèmes d'événements concurrents mais navigue explicitement
-      e.preventDefault();
-      // fermer l'overlay si défini
-      try { if (typeof closeOverlay === 'function') closeOverlay(); } catch(e){ /* ignore */ }
-      // une courte attente pour laisser l'animation se faire proprement
-      setTimeout(() => { window.location.href = href; }, 120);
-    });
-
-    resultsGrid.appendChild(a);
-  });
-}
-
-  function renderSuggestions(pool) {
-  const suggestions = (pool.slice(0,6));
-  resultsGrid.innerHTML = '';
-  suggestions.forEach(p => {
-    const color = (p.colors && p.colors[0]) ? p.colors[0] : { img:'', url:'#' };
-    const href = absoluteUrl(color.url || '#');
-
-    const a = document.createElement('a');
-    a.className = 'result-card';
-    a.href = href;
-    a.setAttribute('target', '_self');
-    a.setAttribute('rel', 'noopener noreferrer');
-    a.innerHTML = `
-      <img src="${color.img || ''}" alt="${p.name || ''}">
-      <div class="result-info">
-        <h4>${p.name || ''}</h4>
-        <p>${(p.price!=null?Number(p.price).toFixed(2)+'€':'')} • ${p.gender||''} • ${p.type||''}</p>
-      </div>
-    `;
-
-    a.addEventListener('click', (e) => {
-      e.preventDefault();
-      try { if (typeof closeOverlay === 'function') closeOverlay(); } catch(e){ /* ignore */ }
-      setTimeout(() => { window.location.href = href; }, 120);
-    });
-
-    resultsGrid.appendChild(a);
-  });
-
-  // bouton "voir plus"
-  const seeMoreWrap = document.createElement('div');
-  seeMoreWrap.style.gridColumn = '1 / -1';
-  seeMoreWrap.style.display = 'flex';
-  seeMoreWrap.style.justifyContent = 'center';
-  seeMoreWrap.innerHTML = `<a class="see-more-btn" href="https://burbanofficial.com/shop.html">Discover more you might like</a>`;
-  resultsGrid.appendChild(seeMoreWrap);
-}
-
-  const debouncedSearch = debounce((e) => performSearch(e.target.value), 180);
-
-  inputLarge.addEventListener('input', debouncedSearch);
-
-  // init: when overlay opens, focus + show suggestions
-  const obs = new MutationObserver((mut) => {
-    if (overlay.classList.contains('open')) {
-      // small delay then show suggestions
-      setTimeout(()=>performSearch(''), 50);
-    }
-  });
-  obs.observe(overlay, { attributes: true, attributeFilter: ['class'] });
-});
