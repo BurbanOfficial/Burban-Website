@@ -9,6 +9,48 @@
     // (conservez votre liste complète; j'ai gardé votre exemple ci-dessous)
     const products = [
       {
+        id: 'Raw V',
+        name: 'Raw V',
+        originalPrice: 49.99,
+        price: 49.99,
+        type: 'Knit V-neck vest',
+        colors: [
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/U79UcI5.jpeg', hover: 'https://i.imgur.com/gYGqWy4.jpeg', url: 'https://burbanofficial.com/public/raw-v-ar00068.html' }
+        ],
+        sizes: ['3XS','2XS','S','M','L','XL','2XL','3XL'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false,
+        availableFrom: '10/11/2025 00:00:00',
+        // availableUntil: '27/08/2025 20:20:40'
+      },
+
+
+
+
+      {
+        id: 'Woven Code',
+        name: 'Woven Code',
+        originalPrice: 60.99,
+        price: 60.99,
+        type: 'Cardigan',
+        colors: [
+          { name: 'White', code: '#fff', img: 'https://i.imgur.com/XJ9yHJq.jpeg', hover: 'https://i.imgur.com/Klnescm.jpeg', url: 'https://burbanofficial.com/public/woven-code-ar00067.html' }
+        ],
+        sizes: ['2XS','S','M','L','XL','2XL','3XL'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false,
+        availableFrom: '10/11/2025 00:00:00',
+        // availableUntil: '27/08/2025 20:20:40'
+      },
+
+
+
+
+      {
         id: 'Different',
         name: 'Different',
         originalPrice: 39.99,
