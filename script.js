@@ -9,6 +9,27 @@
     // (conservez votre liste complète; j'ai gardé votre exemple ci-dessous)
     const products = [
       {
+        id: 'Burban Fall',
+        name: 'Burban Fall',
+        originalPrice: 53.99,
+        price: 53.99,
+        type: 'Knitted Sweat',
+        colors: [
+          { name: 'Grey', code: '#dcdfe2', img: 'https://i.imgur.com/qmpTHZ8.jpeg', hover: 'https://i.imgur.com/FYzG8vN.jpeg', url: 'https://burbanofficial.com/public/burban-fall-ar00069.html' }
+        ],
+        sizes: ['3XS','2XS','S','M','L','XL','2XL','3XL'],
+        cut: 'Other',
+        gender: 'Unisex',
+        badge_eco: true,
+        badge_europe: false,
+        availableFrom: '10/11/2025 00:00:00',
+        // availableUntil: '27/08/2025 20:20:40'
+      },
+
+
+
+
+      {
         id: 'Raw V',
         name: 'Raw V',
         originalPrice: 49.99,
