@@ -35,8 +35,12 @@ body {
    ------------------------- */
 /* ------------------ Liquid glass puck (desktop) ------------------ */
 
-.nav { 
-  position: relative; 
+.nav-left { 
+  position: relative;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-left: 40px;
 }
 
 /* Liens du menu */
@@ -106,9 +110,207 @@ body {
 
 /* Conteneur des icônes et hamburger */
 .actions {
+  margin-left: auto;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Mini barre de recherche compacte (bouton visuel) */
+.search-short,
+#openSearchShort {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+  cursor: pointer;
+  min-width: 140px;
+  transition: transform .14s ease, box-shadow .14s ease, background .18s;
+  -webkit-tap-highlight-color: transparent;
+  margin-right: 15px;
+}
+.search-short:hover,
+#openSearchShort:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(2,6,23,0.06); }
+
+/* Icone loupe */
+.search-short i,
+#openSearchShort i {
+  font-size: 15px;
+  color: #111;
+  flex: 0 0 auto;
+}
+
+/* Faux input (readonly) */
+.search-short input,
+#openSearchShort input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+  color: #222;
+  width: 120px;
+  pointer-events: none; /* rendu visuel uniquement */
+}
+
+/* raccourcir le texte sur petits écrans */
+@media (max-width:520px) {
+  .search-short input,
+  #openSearchShort input { display: none; }
+  .search-short { min-width: 44px; padding: 8px; }
+}
+
+/* -----------------------------
+   Overlay de recherche (plein écran)
+   ----------------------------- */
+.search-overlay {
+  position: fixed;
+  inset: 0;
   display: flex;
   align-items: center;
-  gap: 0px;
+  justify-content: center;
+  z-index: 12000;
+  background: rgba(6,8,10,0.22);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .26s ease;
+}
+
+/* état ouvert */
+.search-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* panneau central animé */
+.search-panel {
+  width: min(980px, 94%);
+  transform: translateY(8px) scale(.96);
+  transition: transform .36s cubic-bezier(.2,.9,.2,1), opacity .22s ease;
+  opacity: 0;
+  will-change: transform, opacity;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+  max-height: 84vh;
+}
+.search-overlay.open .search-panel {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* grand input central */
+.search-input-large {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 18px 22px;
+  font-size: 20px;
+  border-radius: 999px;
+  border: none;
+  outline: none;
+  background: #fff;
+  box-shadow: 0 18px 48px rgba(3,7,18,0.12);
+}
+
+/* résultat / suggestion container */
+.search-results {
+  width: 100%;
+  overflow: auto;
+  padding: 0 2px 8px;
+}
+
+/* Grid des aperçus */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* carte résultat */
+.result-card {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 8px 22px rgba(3,7,18,0.06);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.result-card:hover { transform: translateY(-4px); box-shadow: 0 14px 40px rgba(3,7,18,0.10); }
+.result-card img { width:72px; height:72px; object-fit:cover; border-radius:8px; flex:0 0 auto; }
+.result-info h4 { margin:0; font-size:15px; color:#111; }
+.result-info p { margin:4px 0 0; font-size:13px; color:#666; }
+
+/* zone "aucun résultat" */
+.search-no-results {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #ff32329c;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+  color: #ffffff;
+  font-size: 14px;
+  text-align: center;
+}
+.search-no-results.visible { display:block; }
+
+/* bouton "Voir plus" */
+.see-more-btn {
+  display:inline-block;
+  padding:10px 14px;
+  border-radius:15px;
+  text-decoration:none;
+  font-weight:700;
+  font-size:14px;
+  background:#000000;
+  color:#fff;
+  margin-top:10px;
+}
+
+.see-more-btn:hover {
+  background:#000000ce;
+  color:#fff;
+}
+
+/* Responsive overlay adjustments */
+@media (max-width:700px) {
+  .results-grid { grid-template-columns: repeat(2,1fr); gap:10px; }
+  .search-input-large { font-size:18px; padding:14px 16px; }
+}
+@media (max-width:420px) {
+  .results-grid { grid-template-columns: 1fr; }
+  .search-panel { width: 96%; }
+}
+
+/* Accessibilité : focus styling pour éléments interactifs */
+.search-short:focus,
+#openSearchShort:focus,
+.search-input-large:focus,
+.result-card:focus,
+.see-more-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #0000001d;
+  border-radius: 12px;
+}
+
+/* Petite optimisation pour éviter que le menu "liquid puck" ne chevauche l'overlay search */
+.search-overlay.open ~ .nav-hover,
+.search-overlay.open .nav-hover {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: none;
 }
 
 /* Hamburger (caché desktop) */
