@@ -1,66 +1,72 @@
-// header.js (ES module) - injecte header + svg filters + init nav interactions + search integration
+// header.js (ES module) - injecte header + svg filters + init nav interactions + search overlay
 // Remplace les anciens header.js qui utilisaient document.write
 
 const HEADER_HTML = `
   <!-- Header -->
-  <header class="header">
-    <!-- Logo -->
-    <a href="/index.html" class="logo-link">
-      <img src="https://i.imgur.com/Kl9kTBg.png" alt="Burban Logo" class="logo-img">
-    </a>
+<header class="header">
+  <!-- Logo -->
+  <a href="index.html" class="logo-link">
+    <img src="https://i.imgur.com/Kl9kTBg.png" alt="Burban Logo" class="logo-img">
+  </a>
 
-    <!-- Nav desktop -->
-    <nav class="nav">
-      <a href="/index.html" class="nav-item">Home</a>
-      <a href="/shop.html" class="nav-item active">Shop</a>
-      <a href="/about-burban.html" class="nav-item">About Burban</a>
-      <a href="/contact.html" class="nav-item">Contact Us</a>
-    </nav>
+  <!-- Nav desktop -> déplacé à gauche -->
+  <nav class="nav nav-left">
+    <a href="https://burbanofficial.com/index.html" class="nav-item active">Home</a>
+    <a href="https://burbanofficial.com/shop.html" class="nav-item">Shop</a>
+    <a href="https://burbanofficial.com/about-burban.html" class="nav-item">About Burban</a>
+    <a href="https://burbanofficial.com/contact.html" class="nav-item">Contact Us</a>
+  </nav>
 
-    <!-- Icônes + hamburger + mini barre de recherche -->
-    <div class="actions">
-      <!-- MINI barre de recherche (identique à index.html) -->
-      <button id="openSearchShort" class="search-short" aria-label="Search">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" placeholder="Search" aria-hidden="true" readonly />
-      </button>
+  <!-- Icônes + hamburger + MINI barre de recherche à droite -->
+  <div class="actions">
+    <!-- mini search (cliquable - ouvrira l'overlay central) -->
+    <button id="openSearchShort" class="search-short" aria-label="Search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Search" aria-hidden="true" readonly />
+    </button>
 
-      <a href="/account.html" class="account-btn" aria-label="Mon compte"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="/public/index.html" class="cart-btn" aria-label="Mon panier"><i class="fa-solid fa-bag-shopping"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
-      <button class="hamburger" aria-label="Ouvrir le menu">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </button>
-      <div class="lang-switcher desktop-lang">
-        <select id="languageSelector" aria-label="Changer de langue">
-          <option value="EN">EN</option>
-          <option value="FR">FR</option>
-        </select>
-      </div>
-    </div>
-  </header>
+    <a href="https://burbanofficial.com/account.html" class="account-btn" aria-label="Mon compte"><i class="fa-solid fa-user"></i></a>
+    <a href="https://burbanofficial.com/public/index.html" class="cart-btn" aria-label="Mon panier"><i class="fa-solid fa-bag-shopping"></i></a>
+    <button class="hamburger" aria-label="Ouvrir le menu">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+  </div>
+</header>
 
   <!-- Overlay menu mobile -->
-  <div class="overlay-menu" id="overlayMenu">
-    <button class="close-btn" aria-label="Fermer le menu">&times;</button>
-    <ul class="overlay-nav">
-      <li><a href="/index.html">Home</a></li>
-      <li><a href="/shop.html">Shop</a></li>
-      <li><a href="/about-burban.html">About Burban</a></li>
-      <li><a href="/contact.html">Contact Us</a></li>
-      <li class="mobile-lang">
-        <label for="languageSelectorMobile">Language:</label>
-        <select id="languageSelectorMobile" aria-label="Changer de langue">
-          <option value="EN">EN</option>
-          <option value="FR">FR</option>
-        </select>
-      </li>
-    </ul>
+<div class="overlay-menu" id="overlayMenu">
+  <button class="close-btn" aria-label="Fermer le menu">&times;</button>
+  <ul class="overlay-nav">
+    <li><a href="https://burbanofficial.com/index.html">Home</a></li>
+    <li><a href="https://burbanofficial.com/shop.html">Shop</a></li>
+    <li><a href="https://burbanofficial.com/about-burban.html">About Burban</a></li>
+    <li><a href="https://burbanofficial.com/contact.html">Contact Us</a></li>
+  </ul>
+</div>
+`;
+
+// Search overlay HTML (injected once)
+const SEARCH_OVERLAY_HTML = `
+  <div id="searchOverlay" class="search-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="search-overlay-backdrop" data-action="close"></div>
+    <div class="search-overlay-panel" role="document" aria-labelledby="searchOverlayLabel">
+      <button class="search-close" aria-label="Fermer la recherche" data-action="close">&times;</button>
+      <h2 id="searchOverlayLabel" class="visually-hidden">Recherche</h2>
+
+      <div class="search-box">
+        <input id="searchInput" type="search" placeholder="Search products, styles or keywords..." aria-label="Search" autocomplete="off" />
+        <button id="searchSubmit" aria-label="Lancer la recherche"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </div>
+
+      <div id="searchSuggestions" class="search-suggestions" aria-live="polite"></div>
+      <div id="searchResults" class="search-results" aria-live="polite"></div>
+    </div>
   </div>
 `;
 
-/* ---------- SVG filters (injected once) ---------- */
+// SVG filters (injected once)
 const SVG_FILTERS = `
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden;">
     <defs>
@@ -103,24 +109,14 @@ function injectSvgFiltersIfMissing() {
   }
 }
 
-/* ---------- SCRIPTS EXTERNES (search.js + script.js) ---------- */
-function appendScriptOnce(src, attrs = {}) {
-  // évite les doublons
-  if (Array.from(document.scripts).some(s => s.src && s.src.indexOf(src) !== -1)) return null;
-  const s = document.createElement('script');
-  s.src = src;
-  // copier attributs (defer/async etc)
-  Object.keys(attrs).forEach(k => s.setAttribute(k, attrs[k]));
-  s.setAttribute('data-burban', 'injected');
-  document.head.appendChild(s);
-  return s;
-}
-
-function ensureSearchAndMainScripts() {
-  // si tu héberges search.js et script.js à la racine comme discuté :
-  const base = 'https://burbanofficial.com/';
-  appendScriptOnce(base + 'search.js');
-  appendScriptOnce(base + 'script.js');
+function injectSearchOverlayIfMissing() {
+  if (document.getElementById('searchOverlay')) return;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = SEARCH_OVERLAY_HTML;
+  // insert after header to keep DOM order predictable
+  const header = document.querySelector('header.header');
+  if (header && header.parentNode) header.parentNode.insertBefore(tmp, header.nextSibling);
+  else document.body.insertBefore(tmp, document.body.firstChild);
 }
 
 /* ---------- Overlay / Hamburger ---------- */
@@ -312,193 +308,161 @@ function initNavPuck() {
   });
 }
 
-/* ---------- SEARCH : fallback si search.js n'a pas été exécuté ---------- */
-/*
-  Raison : certaines pages produit peuvent ne pas charger search.js avant DOMContentLoaded.
-  Ce fallback crée une overlay minimale et la logique de recherche (empreintée de ton search.js).
-  Si search.js est présent et s'exécute, il prendra le pas (on vérifie l'existence de .search-overlay).
-*/
-function initSearchFallbackIfNeeded() {
-  // si search.js a déjà injecté l'overlay, ne rien faire
-  if (document.querySelector('.search-overlay')) return;
-
+/* ---------- Search (overlay) ---------- */
+function initSearchOverlay() {
   const openBtn = document.getElementById('openSearchShort');
-  if (!openBtn) return; // si pas de bouton, rien à faire
+  const overlay = document.getElementById('searchOverlay');
+  if (!openBtn || !overlay) return;
 
-  // crée overlay minimal
-  const overlay = document.createElement('div');
-  overlay.className = 'search-overlay';
-  overlay.innerHTML = `
-    <div class="search-panel" role="dialog" aria-modal="true" aria-label="Recherche de produits">
-      <div style="width:100%;">
-        <input id="searchInputLarge" class="search-input-large" placeholder="Find your next Burban piece..." autocomplete="off" />
-        <div id="searchNoResults" class="search-no-results" style="display:none;"></div>
-      </div>
-      <div class="search-results" aria-live="polite" aria-atomic="true">
-        <div id="searchResults" class="results-grid"></div>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(overlay);
+  const panel = overlay.querySelector('.search-overlay-panel');
+  const input = overlay.querySelector('#searchInput');
+  const submit = overlay.querySelector('#searchSubmit');
+  const suggestions = overlay.querySelector('#searchSuggestions');
+  const results = overlay.querySelector('#searchResults');
 
-  const inputLarge = document.getElementById('searchInputLarge');
-  const resultsGrid = document.getElementById('searchResults');
-  const noResBox = document.getElementById('searchNoResults');
+  let lastQuery = '';
+  let debounceTimer = null;
 
   function openOverlay() {
     overlay.classList.add('open');
-    requestAnimationFrame(() => inputLarge.focus());
+    overlay.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-  }
-  function closeOverlay() {
-    overlay.classList.remove('open');
-    document.body.style.overflow = '';
-    resultsGrid.innerHTML = '';
-    if (noResBox) noResBox.style.display = 'none';
-    inputLarge.value = '';
+    // focus
+    setTimeout(() => input && input.focus(), 50);
+    // emit event for external search logic (search.js) if needed
+    window.dispatchEvent(new CustomEvent('searchOverlayOpened'));
   }
 
-  openBtn.addEventListener('click', openOverlay);
+  function closeOverlay() {
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    // clear UI
+    if (suggestions) suggestions.innerHTML = '';
+    // emit close event
+    window.dispatchEvent(new CustomEvent('searchOverlayClosed'));
+  }
+
+  openBtn.addEventListener('click', () => openOverlay());
+
+  // close buttons / backdrop
+  overlay.querySelectorAll('[data-action="close"]').forEach(el => el.addEventListener('click', closeOverlay));
+  overlay.querySelector('.search-close').addEventListener('click', closeOverlay);
+
+  // keyboard: Esc closes
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && overlay.classList.contains('open')) closeOverlay();
   });
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) closeOverlay();
-  });
 
-  // debounce util
-  let timer = null;
-  function debounce(fn, ms=160) {
-    return function(...args){
-      clearTimeout(timer);
-      timer = setTimeout(()=>fn(...args), ms);
-    };
+  function renderNoResults(q) {
+    results.innerHTML = `<div class="no-results">No results for "${escapeHtml(q)}"</div>`;
   }
 
-  // fonctions de rendu (simplifiées mais compatibles avec BURBAN_PRODUCTS)
-  function absoluteUrl(u) {
-    if (!u) return '#';
-    if (/^https?:\/\//i.test(u) || /^\/\//.test(u)) {
-      if (u.startsWith('/')) return window.location.origin + u;
-      return u;
-    }
-    if (u.startsWith('/')) return window.location.origin + u;
-    const base = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/');
-    return new URL(u, base).href;
-  }
-
-  function renderResults(list) {
-    resultsGrid.innerHTML = '';
-    if (!list.length) {
-      noResBox.style.display = 'block';
-      noResBox.innerHTML = `<strong>We couldn’t find that one. Maybe another keyword?</strong>`;
+  function renderResults(items) {
+    if (!items || items.length === 0) {
+      renderNoResults(lastQuery);
       return;
     }
-    noResBox.style.display = 'none';
-    list.forEach(p => {
-      const color = (p.colors && p.colors[0]) ? p.colors[0] : { img:'', url:'#' };
-      const href = absoluteUrl(color.url || '#');
-
-      const a = document.createElement('a');
-      a.className = 'result-card';
-      a.href = href;
-      a.setAttribute('target', '_self');
-      a.setAttribute('rel', 'noopener noreferrer');
-      a.innerHTML = `
-        <img src="${color.img || ''}" alt="${p.name || ''}">
-        <div class="result-info">
-          <h4>${p.name || ''}</h4>
-          <p>${(p.price!=null?Number(p.price).toFixed(2)+'€':'')} • ${p.gender||''} • ${p.type||''}</p>
-        </div>
-      `;
-      a.addEventListener('click', (e) => {
-        e.preventDefault();
-        closeOverlay();
-        setTimeout(()=>{ window.location.href = href; }, 120);
-      });
-      resultsGrid.appendChild(a);
-    });
+    results.innerHTML = items.map(i => (
+      `<a class="search-result-item" href="${escapeHtml(i.url || '#')}">
+         <div class="sr-thumb"><img src="${escapeHtml(i.image || '')}" alt="" loading="lazy"/></div>
+         <div class="sr-meta"><strong>${escapeHtml(i.title || i.name || '')}</strong><div class="sr-price">${escapeHtml(i.price || '')}</div></div>
+       </a>`
+    )).join('');
   }
 
-  function renderSuggestions(pool) {
-    const suggestions = (pool.slice(0,6));
-    resultsGrid.innerHTML = '';
-    suggestions.forEach(p => {
-      const color = (p.colors && p.colors[0]) ? p.colors[0] : { img:'', url:'#' };
-      const href = absoluteUrl(color.url || '#');
-      const a = document.createElement('a');
-      a.className = 'result-card';
-      a.href = href;
-      a.setAttribute('target', '_self');
-      a.setAttribute('rel', 'noopener noreferrer');
-      a.innerHTML = `
-        <img src="${color.img || ''}" alt="${p.name || ''}">
-        <div class="result-info">
-          <h4>${p.name || ''}</h4>
-          <p>${(p.price!=null?Number(p.price).toFixed(2)+'€':'')} • ${p.gender||''} • ${p.type||''}</p>
-        </div>
-      `;
-      a.addEventListener('click', (e) => {
-        e.preventDefault();
-        closeOverlay();
-        setTimeout(()=>{ window.location.href = href; }, 120);
-      });
-      resultsGrid.appendChild(a);
-    });
+  // Basic escape helper
+  function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
 
-    const seeMoreWrap = document.createElement('div');
-    seeMoreWrap.style.gridColumn = '1 / -1';
-    seeMoreWrap.style.display = 'flex';
-    seeMoreWrap.style.justifyContent = 'center';
-    seeMoreWrap.innerHTML = `<a class="see-more-btn" href="https://burbanofficial.com/shop.html">Discover more you might like</a>`;
-    resultsGrid.appendChild(seeMoreWrap);
+  // Try to call a search provider from search.js if present.
+  // search.js can expose window.search or window.performSearch(query) returning a Promise that resolves to an array of items.
+  function callSearchProvider(q) {
+    if (window.search && typeof window.search.query === 'function') {
+      return Promise.resolve(window.search.query(q));
+    }
+    if (typeof window.performSearch === 'function') {
+      return Promise.resolve(window.performSearch(q));
+    }
+    // fallback: no provider available -> show helpful message
+    return Promise.resolve([]);
   }
 
-  // search core (utilise window.BURBAN_PRODUCTS si disponible)
-  function performSearch(q) {
-    resultsGrid.innerHTML = '';
-    if (noResBox) noResBox.style.display = 'none';
-    q = String(q || '').trim().toLowerCase();
-    const products = window.BURBAN_PRODUCTS || [];
-    const isActive = typeof window.BURBAN_IS_PRODUCT_ACTIVE === 'function';
-    const pool = products.filter(p => isActive ? window.BURBAN_IS_PRODUCT_ACTIVE(p) : true);
-    if (!q) {
-      renderSuggestions(pool);
+  function doSearch(q) {
+    lastQuery = q;
+    if (!q || q.trim().length < 1) {
+      suggestions.innerHTML = '';
+      results.innerHTML = '';
       return;
     }
-    const results = pool.filter(p => {
-      const hay = [
-        (p.name||''),
-        (p.id||''),
-        (p.type||''),
-        (p.gender||''),
-        (p.colors||[]).map(c=>c.name).join(' ')
-      ].join(' ').toLowerCase();
-      return hay.includes(q);
+
+    // show a simple "searching" state
+    suggestions.innerHTML = `<div class="searching">Searching…</div>`;
+    results.innerHTML = '';
+
+    return callSearchProvider(q).then(items => {
+      suggestions.innerHTML = '';
+      renderResults(items);
+    }).catch(err => {
+      suggestions.innerHTML = `<div class="search-error">Search unavailable</div>`;
+      console.error('Search provider error', err);
     });
-    if (results.length) renderResults(results);
-    else {
-      if (noResBox) {
-        noResBox.style.display = 'block';
-        noResBox.innerHTML = `<strong>We couldn’t find that one. Maybe another keyword?</strong>`;
+  }
+
+  // debounce input
+  if (input) {
+    input.addEventListener('input', (e) => {
+      const q = e.target.value;
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => doSearch(q), 250);
+    });
+
+    // submit on enter
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        doSearch(input.value);
       }
-      renderSuggestions(pool);
-    }
+    });
   }
 
-  const debouncedSearch = debounce((e) => performSearch(e.target.value), 180);
-  inputLarge.addEventListener('input', debouncedSearch);
+  if (submit) {
+    submit.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (input) doSearch(input.value);
+    });
+  }
 
-  // show suggestions on open
-  overlay.addEventListener('transitionend', () => {
-    if (overlay.classList.contains('open')) performSearch('');
-  });
+  // Expose a small API so external scripts can open/close the overlay
+  window.__BURBAN_SEARCH = window.__BURBAN_SEARCH || {};
+  window.__BURBAN_SEARCH.open = openOverlay;
+  window.__BURBAN_SEARCH.close = closeOverlay;
+}
+
+/* ---------- Inject optional external scripts (search.js + script.js) ---------- */
+function injectExternalScripts() {
+  // Avoid double injection
+  const existing = Array.from(document.querySelectorAll('script')).map(s => s.src || '').filter(Boolean);
+  if (!existing.includes('search.js') && !existing.some(s => s.endsWith('/search.js'))) {
+    const s = document.createElement('script');
+    s.src = 'https://burbanofficial.com/search.js';
+    s.defer = true;
+    document.body.appendChild(s);
+  }
+  if (!existing.includes('script.js') && !existing.some(s => s.endsWith('/script.js'))) {
+    const s2 = document.createElement('script');
+    s2.src = 'https://burbanofficial.com/script.js';
+    s2.defer = true;
+    document.body.appendChild(s2);
+  }
 }
 
 /* ---------- Init all ---------- */
 function initAll() {
   injectHeader();
   injectSvgFiltersIfMissing();
+  injectSearchOverlayIfMissing();
+  injectExternalScripts();
+
   // small delay for injected DOM to be present
   requestAnimationFrame(() => {
     initOverlayMenu();
@@ -506,16 +470,7 @@ function initAll() {
     updateYearIfPresent();
     setActiveNavByPath();
     initNavPuck();
-    // ensure the search and main scripts are present (avoid duplicates)
-    ensureSearchAndMainScripts();
-    // si search.js pour X raison n'a pas injecté le DOM (exécution différée),
-    // on installe un fallback léger qui crée l'overlay + recherche (simple)
-    // on retarde légèrement pour laisser une chance à search.js de s'exécuter normalement
-    setTimeout(() => {
-      if (!document.querySelector('.search-overlay')) {
-        initSearchFallbackIfNeeded();
-      }
-    }, 600); // 600ms : assez court, ajuste si nécessaire
+    initSearchOverlay();
   });
 }
 
