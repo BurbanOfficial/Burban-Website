@@ -17,7 +17,7 @@
         colors: [
           { name: 'Grey', code: '#dcdfe2', img: 'https://i.imgur.com/qmpTHZ8.jpeg', hover: 'https://i.imgur.com/FYzG8vN.jpeg', url: 'https://burbanofficial.com/public/burban-fall-ar00069.html' }
         ],
-        sizes: ['3XS','2XS','S','M','L','XL','2XL','3XL'],
+        sizes: ['3XS','2XS','XS','S','M','L','XL','2XL','3XL'],
         cut: 'Other',
         gender: 'Unisex',
         badge_eco: true,
@@ -38,7 +38,7 @@
         colors: [
           { name: 'White', code: '#fff', img: 'https://i.imgur.com/U79UcI5.jpeg', hover: 'https://i.imgur.com/gYGqWy4.jpeg', url: 'https://burbanofficial.com/public/raw-v-ar00068.html' }
         ],
-        sizes: ['3XS','2XS','S','M','L','XL','2XL','3XL'],
+        sizes: ['3XS','2XS','XS','S','M','L','XL','2XL','3XL'],
         cut: 'Other',
         gender: 'Unisex',
         badge_eco: true,
@@ -59,7 +59,7 @@
         colors: [
           { name: 'White', code: '#fff', img: 'https://i.imgur.com/XJ9yHJq.jpeg', hover: 'https://i.imgur.com/Klnescm.jpeg', url: 'https://burbanofficial.com/public/woven-code-ar00067.html' }
         ],
-        sizes: ['2XS','S','M','L','XL','2XL','3XL'],
+        sizes: ['2XS','XS','S','M','L','XL','2XL','3XL'],
         cut: 'Other',
         gender: 'Unisex',
         badge_eco: true,
@@ -146,7 +146,7 @@
         colors: [
           { name: 'Coral', code: '#d68785', img: 'https://i.imgur.com/7CC5NdZ.jpeg', hover: 'https://i.imgur.com/aNFX6SC.jpeg', url: '/public/echo01-ar00060.html' }
         ],
-        sizes: ['3XS','2XS','S','M','L','XL'],
+        sizes: ['3XS','2XS','XS','S','M','L','XL'],
         cut: 'Straight',
         gender: 'Unisex',
         badge_eco: false,
