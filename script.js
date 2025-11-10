@@ -140,8 +140,8 @@
       {
         id: 'ECHO//01',
         name: 'ECHO//01',
-        originalPrice: 43.99,
-        price: 43.99,
+        originalPrice: 53.90,
+        price: 53.90,
         type: 'Knitted T-Shirt',
         colors: [
           { name: 'Coral', code: '#d68785', img: 'https://i.imgur.com/7CC5NdZ.jpeg', hover: 'https://i.imgur.com/aNFX6SC.jpeg', url: '/public/echo01-ar00060.html' }
@@ -978,4 +978,5 @@ function isProductActive(product, nowMs = Date.now()) {
   }); // end DOMContentLoaded
 
 })(); // end IIFE
+
 
